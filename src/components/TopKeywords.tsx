@@ -2,6 +2,7 @@
 import React from 'react';
 import { Tag } from 'lucide-react';
 import DashboardCard from './DashboardCard';
+import { Badge } from '@/components/ui/badge';
 
 const keywords = [
   { word: 'quality', count: 324, sentiment: 'positive' },
@@ -16,16 +17,16 @@ const keywords = [
   { word: 'user-friendly', count: 62, sentiment: 'positive' },
 ];
 
-const getSentimentColor = (sentiment: string) => {
+const getSentimentVariant = (sentiment: string) => {
   switch (sentiment) {
     case 'positive':
-      return 'text-sentiment-positive bg-sentiment-positive';
+      return 'default';
     case 'neutral':
-      return 'text-sentiment-neutral bg-sentiment-neutral';
+      return 'secondary';
     case 'negative':
-      return 'text-sentiment-negative bg-sentiment-negative';
+      return 'destructive';
     default:
-      return 'text-gray-700 bg-gray-200';
+      return 'default';
   }
 };
 
@@ -38,12 +39,13 @@ const TopKeywords = () => {
     >
       <div className="flex flex-wrap gap-2">
         {keywords.map((keyword, index) => (
-          <div 
+          <Badge 
             key={index} 
-            className={`${getSentimentColor(keyword.sentiment)} bg-opacity-10 px-3 py-1 rounded-full text-sm`}
+            variant={getSentimentVariant(keyword.sentiment)}
+            className="text-xs py-1 px-3"
           >
-            {keyword.word} <span className="font-semibold">({keyword.count})</span>
-          </div>
+            {keyword.word} <span className="font-semibold ml-1">({keyword.count})</span>
+          </Badge>
         ))}
       </div>
     </DashboardCard>
