@@ -1,9 +1,16 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { LogOut, BarChart3 } from 'lucide-react';
+import { 
+  LogOut, 
+  BarChart3,
+  Sun,
+  Moon,
+  Globe,
+  ChevronDown,
+} from 'lucide-react';
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -13,18 +20,27 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
+import { useTheme } from '@/hooks/use-theme';
 
 const Navigation = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    // You would implement actual theme switching here
+  };
   
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <BarChart3 className="h-7 w-7 text-brand-blue" />
-            <Link to="/" className="text-xl font-semibold text-brand-blue">
+            <div className="bg-blue-600 rounded p-1">
+              <BarChart3 className="h-6 w-6 text-white" />
+            </div>
+            <Link to="/" className="text-xl font-semibold text-blue-900">
               RSA
             </Link>
           </div>
@@ -39,44 +55,32 @@ const Navigation = () => {
                 </Link>
               </NavigationMenuItem>
               
-              {isAuthenticated && (
-                <>
-                  <NavigationMenuItem>
-                    <Link to="/dashboard">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Dashboard
-                      </NavigationMenuLink>
+              <NavigationMenuItem>
+                <NavigationMenuTrigger>Solutions</NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="w-[200px] p-2">
+                    <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                      Dashboard
                     </Link>
-                  </NavigationMenuItem>
-                  
-                  <NavigationMenuItem>
-                    <Link to="/demo">
-                      <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                        Demo
-                      </NavigationMenuLink>
+                    <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                      Demo
                     </Link>
-                  </NavigationMenuItem>
-                  
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
-                    <NavigationMenuContent>
-                      <div className="w-[200px] p-2">
-                        <Link to="/blog" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                          Blog
-                        </Link>
-                        <Link to="/contact" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                          Contact
-                        </Link>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                </>
-              )}
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link to="/about">
+                <Link to="/blog">
                   <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                    About
+                    Blog
+                  </NavigationMenuLink>
+                </Link>
+              </NavigationMenuItem>
+              
+              <NavigationMenuItem>
+                <Link to="/contact">
+                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                    Contact
                   </NavigationMenuLink>
                 </Link>
               </NavigationMenuItem>
@@ -84,9 +88,37 @@ const Navigation = () => {
           </NavigationMenu>
           
           <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2">
+              <button className="rounded-full p-1.5 hover:bg-gray-100">
+                <Globe className="h-5 w-5 text-gray-600" />
+              </button>
+              
+              <div className="flex h-6 items-center space-x-1">
+                <Sun className="h-4 w-4 text-gray-500" />
+                <button
+                  onClick={toggleDarkMode}
+                  className={`
+                    relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
+                    transition-colors duration-200 ease-in-out focus:outline-none
+                    ${isDarkMode ? 'bg-blue-600' : 'bg-gray-200'}
+                  `}
+                >
+                  <span className="sr-only">Toggle dark mode</span>
+                  <span
+                    className={`
+                      pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow
+                      ring-0 transition duration-200 ease-in-out
+                      ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}
+                    `}
+                  />
+                </button>
+                <Moon className="h-4 w-4 text-gray-500" />
+              </div>
+            </div>
+            
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="text-sm font-medium">
+                <div className="text-sm font-medium hidden md:block">
                   {user?.name || user?.email}
                 </div>
                 <Button variant="outline" size="sm" onClick={logout}>
@@ -96,11 +128,8 @@ const Navigation = () => {
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm">
-                  <Link to="/login">Login</Link>
-                </Button>
-                <Button asChild size="sm">
-                  <Link to="/signup">Sign up</Link>
+                <Button asChild variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
+                  <Link to="/login">Sign In</Link>
                 </Button>
               </div>
             )}
