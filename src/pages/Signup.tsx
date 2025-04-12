@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -16,6 +16,10 @@ const Signup = () => {
   const { signup } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Get the intended destination if the user was redirected here
+  const from = location.state?.from?.pathname || '/dashboard';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -37,7 +41,8 @@ const Signup = () => {
         title: "Account created",
         description: "Welcome to RSA! Your account has been created successfully.",
       });
-      navigate('/dashboard');
+      // Navigate to the page they were trying to access, or dashboard by default
+      navigate(from, { replace: true });
     } catch (error) {
       toast({
         title: "Sign up failed",

@@ -10,16 +10,27 @@ const AboutPage = () => {
           <h1 className="text-3xl font-bold text-center mb-8">About RSA</h1>
           
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
-            <p className="text-gray-700 mb-4">
-              Review Sentiment Analysis (RSA) is dedicated to helping businesses understand customer feedback at a deeper level. 
-              By leveraging cutting-edge AI technology, we transform raw review data into actionable insights that drive 
-              business decisions and product improvements.
-            </p>
-            <p className="text-gray-700">
-              Our platform makes sentiment analysis accessible to businesses of all sizes, without requiring technical expertise 
-              in natural language processing or machine learning.
-            </p>
+            <div className="flex flex-col md:flex-row md:items-center mb-6">
+              <div className="md:w-1/2 md:pr-6 mb-6 md:mb-0">
+                <h2 className="text-2xl font-semibold mb-4">Our Mission</h2>
+                <p className="text-gray-700 mb-4">
+                  Review Sentiment Analysis (RSA) is dedicated to helping businesses understand customer feedback at a deeper level. 
+                  By leveraging cutting-edge AI technology, we transform raw review data into actionable insights that drive 
+                  business decisions and product improvements.
+                </p>
+                <p className="text-gray-700">
+                  Our platform makes sentiment analysis accessible to businesses of all sizes, without requiring technical expertise 
+                  in natural language processing or machine learning.
+                </p>
+              </div>
+              <div className="md:w-1/2">
+                <img 
+                  src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?ixlib=rb-4.0.3&auto=format&fit=crop&q=80" 
+                  alt="Data Analysis" 
+                  className="rounded-lg shadow-md w-full h-auto"
+                />
+              </div>
+            </div>
           </div>
           
           <h2 className="text-2xl font-semibold mb-4">Technologies We Use</h2>
@@ -68,6 +79,14 @@ const AboutPage = () => {
                 interactive charts and graphs that make insights immediately apparent.
               </p>
             </div>
+          </div>
+          
+          <div className="mb-8">
+            <img 
+              src="https://images.unsplash.com/photo-1721322800607-8c38375eef04?ixlib=rb-4.0.3&auto=format&fit=crop&q=80" 
+              alt="AI Technology" 
+              className="w-full h-64 object-cover rounded-lg shadow-md mb-6"
+            />
           </div>
           
           <h2 className="text-2xl font-semibold mb-4">Future Improvements</h2>

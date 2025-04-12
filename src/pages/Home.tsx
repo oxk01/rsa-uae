@@ -10,9 +10,21 @@ const Home = () => {
   
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Hero section */}
-      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20">
-        <div className="container mx-auto px-6 text-center">
+      {/* Hero section with background image */}
+      <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-20 relative">
+        {/* Semi-transparent overlay */}
+        <div className="absolute inset-0 bg-black opacity-40 z-0"></div>
+        
+        {/* Background image */}
+        <div className="absolute inset-0 z-[-1]">
+          <img 
+            src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&auto=format&fit=crop&q=80"
+            alt="Technology background" 
+            className="w-full h-full object-cover"
+          />
+        </div>
+        
+        <div className="container mx-auto px-6 text-center relative z-10">
           <h1 className="text-4xl font-bold mb-4">
             Review Sentiment Analysis
           </h1>
@@ -73,6 +85,32 @@ const Home = () => {
               <p className="text-gray-600">
                 Get visualized reports highlighting key sentiment trends and areas for improvement.
               </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Image feature section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+              <h2 className="text-2xl font-bold mb-4">Powerful Analytics at Your Fingertips</h2>
+              <p className="text-gray-600 mb-4">
+                RSA provides in-depth sentiment analysis, breaking down customer feedback into actionable insights.
+                Track sentiment trends over time and identify key areas for improvement.
+              </p>
+              <p className="text-gray-600 mb-4">
+                With our advanced AI models, you'll understand not just what customers are saying, but how they feel
+                about specific aspects of your products or services.
+              </p>
+            </div>
+            <div className="md:w-1/2">
+              <img 
+                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&q=80" 
+                alt="Data analytics dashboard" 
+                className="rounded-lg shadow-md w-full h-auto"
+              />
             </div>
           </div>
         </div>
