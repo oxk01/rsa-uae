@@ -6,7 +6,7 @@ import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 const blogPosts = [
   {
     id: 1,
-    title: 'Understanding BERT: The AI Behind RSA's Sentiment Analysis',
+    title: 'Understanding BERT: The AI Behind RSA\'s Sentiment Analysis',
     excerpt: 'An in-depth look at how Bidirectional Encoder Representations from Transformers has revolutionized NLP tasks and sentiment analysis.',
     date: '2025-03-15',
     readTime: '8 min read',
