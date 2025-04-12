@@ -19,7 +19,7 @@ const Signup = () => {
   const location = useLocation();
 
   // Get the intended destination if the user was redirected here
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +41,7 @@ const Signup = () => {
         title: "Account created",
         description: "Welcome to RSA! Your account has been created successfully.",
       });
-      // Navigate to the page they were trying to access, or dashboard by default
+      // Navigate to the page they were trying to access, or home by default
       navigate(from, { replace: true });
     } catch (error) {
       toast({

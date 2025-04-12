@@ -17,7 +17,7 @@ const Login = () => {
   const location = useLocation();
 
   // Get the intended destination if the user was redirected here
-  const from = location.state?.from?.pathname || '/dashboard';
+  const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const Login = () => {
         title: "Login successful",
         description: "Welcome back to RSA!",
       });
-      // Navigate to the page they were trying to access, or dashboard by default
+      // Navigate to the page they were trying to access, or home by default
       navigate(from, { replace: true });
     } catch (error) {
       toast({

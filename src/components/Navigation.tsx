@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -25,12 +25,7 @@ import { useTheme } from '@/hooks/use-theme';
 const Navigation = () => {
   const { isAuthenticated, user, logout } = useAuth();
   const location = useLocation();
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    // You would implement actual theme switching here
-  };
+  const { isDark, toggleTheme } = useTheme();
   
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -96,11 +91,11 @@ const Navigation = () => {
               <div className="flex h-6 items-center space-x-1">
                 <Sun className="h-4 w-4 text-gray-500" />
                 <button
-                  onClick={toggleDarkMode}
+                  onClick={toggleTheme}
                   className={`
                     relative inline-flex h-5 w-10 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent
                     transition-colors duration-200 ease-in-out focus:outline-none
-                    ${isDarkMode ? 'bg-blue-600' : 'bg-gray-200'}
+                    ${isDark ? 'bg-blue-600' : 'bg-gray-200'}
                   `}
                 >
                   <span className="sr-only">Toggle dark mode</span>
@@ -108,7 +103,7 @@ const Navigation = () => {
                     className={`
                       pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow
                       ring-0 transition duration-200 ease-in-out
-                      ${isDarkMode ? 'translate-x-5' : 'translate-x-0'}
+                      ${isDark ? 'translate-x-5' : 'translate-x-0'}
                     `}
                   />
                 </button>
@@ -128,8 +123,11 @@ const Navigation = () => {
               </div>
             ) : (
               <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link to="/login">Log in</Link>
+                </Button>
                 <Button asChild variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Link to="/login">Sign In</Link>
+                  <Link to="/signup">Sign Up</Link>
                 </Button>
               </div>
             )}

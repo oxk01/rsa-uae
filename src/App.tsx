@@ -35,6 +35,8 @@ const App = () => (
             <Route path="/about" element={<AboutPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/contact" element={<Contact />} />
             
             {/* Protected routes */}
             <Route path="/dashboard" element={
@@ -45,16 +47,6 @@ const App = () => (
             <Route path="/demo" element={
               <ProtectedRoute>
                 <Demo />
-              </ProtectedRoute>
-            } />
-            <Route path="/blog" element={
-              <ProtectedRoute>
-                <Blog />
-              </ProtectedRoute>
-            } />
-            <Route path="/contact" element={
-              <ProtectedRoute>
-                <Contact />
               </ProtectedRoute>
             } />
             
