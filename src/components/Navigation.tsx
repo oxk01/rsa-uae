@@ -15,7 +15,6 @@ import {
   NavigationMenu,
   NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
@@ -43,11 +42,11 @@ const Navigation = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link to="/">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <div className={navigationMenuTriggerStyle()}>
+                  <Link to="/">
                     Home
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </div>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
@@ -65,19 +64,19 @@ const Navigation = () => {
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link to="/blog">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <div className={navigationMenuTriggerStyle()}>
+                  <Link to="/blog">
                     Blog
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </div>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <Link to="/contact">
-                  <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                <div className={navigationMenuTriggerStyle()}>
+                  <Link to="/contact">
                     Contact
-                  </NavigationMenuLink>
-                </Link>
+                  </Link>
+                </div>
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>

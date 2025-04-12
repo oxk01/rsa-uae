@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -26,8 +27,8 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="w-12 h-12 rounded-full bg-blue-400 mb-3"></div>
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-3" />
           <div className="text-lg font-medium text-gray-700">Loading...</div>
         </div>
       </div>

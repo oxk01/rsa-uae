@@ -42,7 +42,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // In a real app, this would be an API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (password.length < 6) {
+      // For testing purposes, allow any password with at least 4 characters
+      // In production, you'd verify against a backend
+      if (password.length < 4) {
         throw new Error('Invalid credentials');
       }
       
@@ -71,8 +73,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // In a real app, this would be an API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      if (password.length < 6) {
-        throw new Error('Password must be at least 6 characters');
+      // For testing purposes, allow any password with at least 4 characters
+      if (password.length < 4) {
+        throw new Error('Password must be at least 4 characters');
       }
       
       // Create mock user
