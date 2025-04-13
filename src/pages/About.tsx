@@ -30,7 +30,7 @@ const AboutPage = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <img 
-                src="/lovable-uploads/fe0e17eb-004e-4730-9171-b309f4655ff0.png" 
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3" 
                 alt="Our Mission" 
                 className="rounded-lg shadow-md w-full"
               />
@@ -96,21 +96,16 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Technology section - Updated to match the image */}
+      {/* Technology section - Simplified to one tab */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Technology</h2>
           
-          {/* Tab content container - Both in one card as requested */}
+          {/* Single technology card */}
           <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden max-w-5xl mx-auto">
-            {/* Tabs header */}
-            <div className="flex border-b">
-              <div className="w-1/2 py-4 px-6 text-center font-medium bg-white text-blue-900 border-b-2 border-blue-900">
-                BERT Technology
-              </div>
-              <div className="w-1/2 py-4 px-6 text-center font-medium text-gray-600 bg-gray-50">
-                ABSA Technology
-              </div>
+            {/* Header */}
+            <div className="bg-blue-900 text-white py-4 px-6">
+              <h3 className="text-2xl font-bold">BERT Technology</h3>
             </div>
             
             {/* Main content area */}
@@ -235,7 +230,7 @@ const AboutPage = () => {
               <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
                 <Link to="/signup">Sign Up Now</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-700">
+              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-700 bg-transparent">
                 <Link to="/login">Log In <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             </div>

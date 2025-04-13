@@ -60,19 +60,24 @@ const Navigation = () => {
                   </Link>
                 </div>
               </NavigationMenuItem>
+
+              <NavigationMenuItem>
+                <div className={navigationMenuTriggerStyle()}>
+                  <Link to="/about">
+                    {t('about')}
+                  </Link>
+                </div>
+              </NavigationMenuItem>
               
               <NavigationMenuItem>
                 <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="w-[200px] p-2">
-                    <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                      {t('dashboard')}
+                    <Link to="/blog" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                      {t('blog')}
                     </Link>
-                    <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                      {t('demo')}
-                    </Link>
-                    <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                      {t('pricingPlans')}
+                    <Link to="/contact" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                      {t('contact')}
                     </Link>
                   </div>
                 </NavigationMenuContent>

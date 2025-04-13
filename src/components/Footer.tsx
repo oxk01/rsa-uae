@@ -48,23 +48,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors">
-                  {t('demo')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
-                  {t('dashboard')}
-                </Link>
-              </li>
-              <li>
                 <Link to="/blog" className="text-gray-300 hover:text-white transition-colors">
                   {t('blog')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors">
-                  {t('pricingPlans')}
                 </Link>
               </li>
               <li>

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart } from 'lucide-react';
+import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart, Brain, Database, Lightbulb } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,7 +30,7 @@ const Home = () => {
               <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white px-8">
                 <Link to={isAuthenticated ? "/demo" : "/signup"}>Try Demo</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-800">
+              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-800 bg-transparent">
                 <Link to="/about">Learn More</Link>
               </Button>
             </div>
@@ -148,25 +148,27 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Image feature section */}
+      {/* NEW Innovation Hub section (replacing Powerful Analytics) */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-              <h2 className="text-2xl font-bold mb-4">Powerful Analytics at Your Fingertips</h2>
+              <h2 className="text-2xl font-bold mb-4">Innovation Hub: AI-Driven Insights</h2>
               <p className="text-gray-600 mb-4">
-                RSA provides in-depth sentiment analysis, breaking down customer feedback into actionable insights.
-                Track sentiment trends over time and identify key areas for improvement.
+                Our innovation hub combines cutting-edge AI models with domain expertise to deliver unparalleled 
+                sentiment analysis capabilities. We're continuously refining our algorithms to detect 
+                subtle nuances in customer feedback.
               </p>
               <p className="text-gray-600 mb-4">
-                With our advanced AI models, you'll understand not just what customers are saying, but how they feel
-                about specific aspects of your products or services.
+                With deep learning techniques and natural language understanding, our system identifies 
+                emergent trends and patterns in your review data before they become apparent through 
+                traditional analysis methods.
               </p>
             </div>
             <div className="md:w-1/2">
               <img 
-                src="/lovable-uploads/8522cef6-d858-4b61-a17a-8bf3b1fc6497.png" 
-                alt="Data analytics dashboard" 
+                src="/lovable-uploads/9d39e136-00b3-485c-88e7-81868a56cc63.png" 
+                alt="AI Innovation Hub" 
                 className="rounded-lg shadow-md w-full h-auto"
               />
             </div>
