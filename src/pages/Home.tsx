@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
+  const { language } = useLanguage();
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen bg-white ${language === 'ar' ? 'rtl' : ''}`}>
       {/* Hero section with background */}
       <section className="bg-gradient-to-r from-blue-900 to-blue-950 text-white py-20 relative">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
@@ -163,7 +165,7 @@ const Home = () => {
             </div>
             <div className="md:w-1/2">
               <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&q=80" 
+                src="/lovable-uploads/8522cef6-d858-4b61-a17a-8bf3b1fc6497.png" 
                 alt="Data analytics dashboard" 
                 className="rounded-lg shadow-md w-full h-auto"
               />
@@ -205,7 +207,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* CTA section */}
+      {/* CTA section with updated button colors */}
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to gain insights from your reviews?</h2>
@@ -214,11 +216,11 @@ const Home = () => {
           </p>
           
           {!isAuthenticated ? (
-            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
               <Link to="/signup">Create an Account</Link>
             </Button>
           ) : (
-            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
               <Link to="/demo">Try Demo Analysis</Link>
             </Button>
           )}

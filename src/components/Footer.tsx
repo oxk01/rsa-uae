@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Phone, Mail, MapPin, Facebook, Instagram, Twitter, Linkedin } from 'lucide-react';
 
 const Footer = () => {
   const { t, language } = useLanguage();
@@ -9,52 +10,65 @@ const Footer = () => {
   const year = new Date().getFullYear();
   
   return (
-    <footer className={`bg-gray-100 py-8 border-t border-gray-200 ${language === 'ar' ? 'rtl' : ''}`}>
+    <footer className={`bg-blue-900 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div>
-            <h3 className="font-semibold text-lg mb-4">RSA</h3>
-            <p className="text-gray-600">
-              Review Sentiment Analysis - Understand your customers' feedback with AI-powered sentiment analysis.
+            <h3 className="font-semibold text-xl mb-4">RSA</h3>
+            <p className="text-gray-300 mb-4">
+              Advanced sentiment analysis for customer reviews using AI and Big Data.
             </p>
+            <div className="flex space-x-4 mt-6">
+              <a href="#" className="text-white hover:text-gray-300">
+                <Facebook className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white hover:text-gray-300">
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white hover:text-gray-300">
+                <Twitter className="h-5 w-5" />
+              </a>
+              <a href="#" className="text-white hover:text-gray-300">
+                <Linkedin className="h-5 w-5" />
+              </a>
+            </div>
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">{t('solutions')}</h3>
+            <h3 className="font-semibold text-xl mb-4">{t('quickLinks')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/demo" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t('demo')}
+                <Link to="/" className="text-gray-300 hover:text-white transition-colors">
+                  {t('home')}
                 </Link>
               </li>
               <li>
-                <Link to="/dashboard" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t('dashboard')}
-                </Link>
-              </li>
-              <li>
-                <Link to="/pricing" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t('pricingPlans')}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h3 className="font-semibold text-lg mb-4">{t('company')}</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
                   {t('about')}
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors">
+                  {t('demo')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/dashboard" className="text-gray-300 hover:text-white transition-colors">
+                  {t('dashboard')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors">
                   {t('blog')}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-600 hover:text-blue-600 transition-colors">
+                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors">
+                  {t('pricingPlans')}
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors">
                   {t('contact')}
                 </Link>
               </li>
@@ -62,24 +76,62 @@ const Footer = () => {
           </div>
           
           <div>
-            <h3 className="font-semibold text-lg mb-4">{t('legal')}</h3>
+            <h3 className="font-semibold text-xl mb-4">{t('technology')}</h3>
             <ul className="space-y-2">
               <li>
-                <Link to="/terms" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t('termsAndConditions')}
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                  BERT
                 </Link>
               </li>
               <li>
-                <Link to="/privacy" className="text-gray-600 hover:text-blue-600 transition-colors">
-                  {t('privacyPolicy')}
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                  ABSA
                 </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                  Big Data
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors">
+                  AI
+                </Link>
+              </li>
+            </ul>
+          </div>
+          
+          <div>
+            <h3 className="font-semibold text-xl mb-4">{t('contact')}</h3>
+            <ul className="space-y-3">
+              <li className="flex items-center">
+                <Phone className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="text-gray-300">+971 50 5350403</span>
+              </li>
+              <li className="flex items-center">
+                <Mail className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="text-gray-300">E4485834@live.tees.ac.uk</span>
+              </li>
+              <li className="flex items-center">
+                <MapPin className="h-5 w-5 mr-3 flex-shrink-0" />
+                <span className="text-gray-300">Dubai, United Arab Emirates</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="mt-8 pt-6 border-t border-gray-200 text-center text-gray-500 text-sm">
-          © {year} RSA. All rights reserved.
+        <div className="mt-12 pt-6 border-t border-blue-800 flex flex-col md:flex-row md:justify-between items-center text-gray-300 text-sm">
+          <div className="mb-4 md:mb-0">
+            <Link to="/terms" className="hover:text-white mr-4">
+              {t('termsAndConditions')}
+            </Link>
+            <Link to="/privacy" className="hover:text-white">
+              {t('privacyPolicy')}
+            </Link>
+          </div>
+          <div>
+            © {year} RSA. All rights reserved.
+          </div>
         </div>
       </div>
     </footer>

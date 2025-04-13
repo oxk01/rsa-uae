@@ -4,12 +4,14 @@ import { Link } from 'react-router-dom';
 import { BarChart3, Code, BrainCircuit, Globe, Sparkles, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const AboutPage = () => {
   const { isAuthenticated } = useAuth();
+  const { language } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className={`min-h-screen bg-gray-50 ${language === 'ar' ? 'rtl' : ''}`}>
       {/* Hero section */}
       <section className="bg-gradient-to-r from-blue-900 to-blue-950 text-white py-20 relative">
         <div className="absolute inset-0 bg-black opacity-10 z-0"></div>
@@ -22,14 +24,14 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Mission section */}
+      {/* Mission section with updated image */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <img 
-                src="https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?ixlib=rb-4.0.3&auto=format&fit=crop&q=80"
-                alt="Code on computer screen" 
+                src="/lovable-uploads/6d9d3817-7e99-41b1-8d06-206c26ae5514.png" 
+                alt="Our Technology Approach" 
                 className="rounded-lg shadow-md w-full"
               />
             </div>
@@ -49,7 +51,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Technology section */}
+      {/* Technology section with updated image */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Technology</h2>
@@ -87,6 +89,116 @@ const AboutPage = () => {
               <p className="text-gray-700">
                 This granular approach allows businesses to understand precisely which aspects of their products or services 
                 are receiving positive or negative feedback, enabling targeted improvements and strategic decision-making.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Our Approach section - New section based on the reference image */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Our Approach</h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-blue-900 text-white rounded-lg p-8">
+              <div className="flex items-center mb-6">
+                <div className="bg-blue-800 p-3 rounded-full">
+                  <BrainCircuit className="h-8 w-8 text-blue-200" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Contextual AI</h3>
+              <p className="text-blue-100">
+                State-of-the-art language models that understand context and nuance of professional language.
+              </p>
+            </div>
+            
+            <div className="bg-teal-700 text-white rounded-lg p-8">
+              <div className="flex items-center mb-6">
+                <div className="bg-teal-800 p-3 rounded-full">
+                  <BarChart3 className="h-8 w-8 text-teal-200" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Big Data Processing</h3>
+              <p className="text-teal-100">
+                Distributed infrastructure to handle massive volumes of customer feedback at scale.
+              </p>
+            </div>
+            
+            <div className="bg-amber-700 text-white rounded-lg p-8">
+              <div className="flex items-center mb-6">
+                <div className="bg-amber-800 p-3 rounded-full">
+                  <Sparkles className="h-8 w-8 text-amber-200" />
+                </div>
+              </div>
+              <h3 className="text-xl font-semibold mb-3">Contextual Understanding</h3>
+              <p className="text-amber-100">
+                Domain-specific insights provide accurate and precise sentiment analysis.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* BERT Technology detailed section - New section based on the reference image */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Our Technology</h2>
+          
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-4xl mx-auto">
+            <div className="flex items-center mb-6">
+              <div className="bg-blue-100 p-3 rounded-full mr-4">
+                <Code className="h-8 w-8 text-blue-600" />
+              </div>
+              <h3 className="text-2xl font-semibold">BERT (Bidirectional Encoder Representations from Transformers)</h3>
+            </div>
+            
+            <p className="text-gray-700 mb-6">
+              BERT represents a breakthrough in natural language understanding, allowing AI to grasp context from both directions in text.
+            </p>
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div>
+                <h4 className="text-lg font-semibold mb-3">How BERT Works</h4>
+                <p className="text-gray-700">
+                  BERT is pre-trained on a massive corpus of text to understand language in context. Unlike previous models that read text sequentially, BERT reads entire sentences simultaneously, understanding words based on their surroundings.
+                </p>
+                <p className="text-gray-700 mt-2">
+                  This bidirectional approach allows BERT to capture nuanced meanings, handle ambiguity, and understand complex linguistic phenomena like sarcasm and implicit sentiment.
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-semibold mb-3">Benefits for Sentiment Analysis</h4>
+                <ul className="space-y-2">
+                  <li className="flex items-start">
+                    <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                    <span>Superior contextual understanding of reviews</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                    <span>Accurate detection of implicit sentiment</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                    <span>Recognition of domain-specific language</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                    <span>Handling of complex sentence structures</span>
+                  </li>
+                  <li className="flex items-start">
+                    <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5" />
+                    <span>Adaptability to different review styles</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            <div className="bg-blue-50 rounded-lg p-6">
+              <h4 className="text-lg font-semibold mb-3">Technical Implementation</h4>
+              <p className="text-gray-700">
+                We fine-tune BERT models on industry-specific datasets to optimize performance for particular domains. Our implementation includes careful hyperparameter tuning, domain adaptation techniques, and ensemble methods to maximize accuracy.
               </p>
             </div>
           </div>
@@ -135,7 +247,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* CTA section */}
+      {/* CTA section with fixed button colors */}
       <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to see RSA in action?</h2>
@@ -145,7 +257,7 @@ const AboutPage = () => {
           
           {!isAuthenticated ? (
             <div className="flex justify-center space-x-4">
-              <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
                 <Link to="/signup">Sign Up Now</Link>
               </Button>
               <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-700">
@@ -153,7 +265,7 @@ const AboutPage = () => {
               </Button>
             </div>
           ) : (
-            <Button asChild size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
               <Link to="/demo">Try Demo Analysis</Link>
             </Button>
           )}
