@@ -10,7 +10,7 @@ const Footer = () => {
   const year = new Date().getFullYear();
   
   return (
-    <footer className={`bg-blue-900 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
+    <footer className={`bg-blue-950 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
           <div>
@@ -19,16 +19,16 @@ const Footer = () => {
               Advanced sentiment analysis for customer reviews using AI and Big Data.
             </p>
             <div className="flex space-x-4 mt-6">
-              <a href="#" className="text-white hover:text-gray-300">
+              <a href="#" className="text-white hover:text-gray-300 transition-colors">
                 <Facebook className="h-5 w-5" />
               </a>
-              <a href="#" className="text-white hover:text-gray-300">
+              <a href="#" className="text-white hover:text-gray-300 transition-colors">
                 <Instagram className="h-5 w-5" />
               </a>
-              <a href="#" className="text-white hover:text-gray-300">
+              <a href="#" className="text-white hover:text-gray-300 transition-colors">
                 <Twitter className="h-5 w-5" />
               </a>
-              <a href="#" className="text-white hover:text-gray-300">
+              <a href="#" className="text-white hover:text-gray-300 transition-colors">
                 <Linkedin className="h-5 w-5" />
               </a>
             </div>
@@ -120,7 +120,7 @@ const Footer = () => {
           </div>
         </div>
         
-        <div className="mt-12 pt-6 border-t border-blue-800 flex flex-col md:flex-row md:justify-between items-center text-gray-300 text-sm">
+        <div className="mt-12 pt-6 border-t border-blue-900 flex flex-col md:flex-row md:justify-between items-center text-gray-300 text-sm">
           <div className="mb-4 md:mb-0">
             <Link to="/terms" className="hover:text-white mr-4">
               {t('termsAndConditions')}
