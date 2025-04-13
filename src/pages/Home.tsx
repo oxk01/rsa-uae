@@ -109,46 +109,130 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Features section */}
+      {/* Features section - UPDATED to match the image */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">How RSA Works</h2>
+          <h2 className="text-3xl font-bold text-center mb-4">Powerful Features</h2>
+          <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
+            Our platform combines advanced AI, machine learning, and intuitive interfaces to deliver actionable insights.
+          </p>
           
           <div className="grid md:grid-cols-3 gap-8">
+            {/* BERT-Powered Analytics */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <MessageSquare className="h-6 w-6 text-blue-600" />
+                <Brain className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Review Analysis</h3>
+              <h3 className="text-xl font-semibold mb-2">BERT-Powered Analytics</h3>
               <p className="text-gray-600">
-                Input your customer reviews or upload CSV/Excel files for batch processing.
+                Leverage BERT's deep contextual understanding to accurately interpret complex language variations in reviews.
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Share2 className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">AI Processing</h3>
-              <p className="text-gray-600">
-                Our advanced BERT and ABSA models analyze sentiment at both document and aspect levels.
-              </p>
-            </div>
-            
+            {/* Aspect-Based Sentiment */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
                 <BarChart3 className="h-6 w-6 text-blue-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Actionable Insights</h3>
+              <h3 className="text-xl font-semibold mb-2">Aspect-Based Sentiment</h3>
               <p className="text-gray-600">
-                Get visualized reports highlighting key sentiment trends and areas for improvement.
+                Identify specific aspects of your products or services mentioned in reviews and understand the sentiment around them.
+              </p>
+            </div>
+            
+            {/* Big Data Processing */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                <Database className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Big Data Processing</h3>
+              <p className="text-gray-600">
+                Process thousands of reviews quickly and efficiently to help improve business decisions efficiently.
+              </p>
+            </div>
+            
+            {/* Trend Analysis */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                <TrendingUp className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Trend Analysis</h3>
+              <p className="text-gray-600">
+                Track sentiment trends over time to gauge the impact of product changes, marketing campaigns, or service improvements.
+              </p>
+            </div>
+            
+            {/* Interactive Dashboards */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                <PieChart className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Interactive Dashboards</h3>
+              <p className="text-gray-600">
+                Intuitive dashboards with in-depth customizable visualizations to make data accessible and actionable to all stakeholders.
+              </p>
+            </div>
+            
+            {/* Automated Reports */}
+            <div className="bg-white p-6 rounded-lg shadow-md">
+              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
+                <MessageSquare className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Automated Reports</h3>
+              <p className="text-gray-600">
+                Get auto-generated, comprehensive, actionable reporting for immediate insights and informed business decisions.
               </p>
             </div>
           </div>
         </div>
       </section>
       
-      {/* NEW Innovation Hub section (replacing Powerful Analytics) */}
+      {/* How It Works section */}
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-4">How It Works</h2>
+          <p className="text-gray-600 mb-12 max-w-2xl mx-auto">
+            Our advanced AI processes customer reviews and extracts meaningful insights in just a few simple steps.
+          </p>
+          
+          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+            {/* Step 1: Data Collection */}
+            <div className="relative">
+              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 font-bold">1</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Data Collection</h3>
+              <p className="text-gray-600">
+                Upload reviews from multiple sources or connect to data sources through our automated data collection.
+              </p>
+            </div>
+            
+            {/* Step 2: AI Processing */}
+            <div>
+              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 font-bold">2</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">AI Processing</h3>
+              <p className="text-gray-600">
+                Our BERT and ABSA algorithms analyze the data, identifying entities, aspects, sentiment, and relevant keywords.
+              </p>
+            </div>
+            
+            {/* Step 3: Insight Generation */}
+            <div>
+              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                <span className="text-blue-600 font-bold">3</span>
+              </div>
+              <h3 className="text-xl font-semibold mb-2">Insight Generation</h3>
+              <p className="text-gray-600">
+                Review the processed data through visual dashboards for actionable business insights.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      {/* Innovation Hub section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <div className="flex flex-col md:flex-row items-center">
@@ -209,7 +293,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* CTA section with updated button colors */}
+      {/* CTA section */}
       <section className="py-16 bg-blue-600 text-white">
         <div className="container mx-auto px-6 text-center">
           <h2 className="text-3xl font-bold mb-6">Ready to gain insights from your reviews?</h2>

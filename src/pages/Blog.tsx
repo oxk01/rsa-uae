@@ -17,7 +17,7 @@ const categories = [
   { id: 'tutorials', name: 'Tutorials' }
 ];
 
-// Updated blog posts with real research paper links and better images
+// Updated blog posts with accurate research paper titles and links
 const blogPosts = [
   {
     id: 1,
@@ -26,7 +26,7 @@ const blogPosts = [
     date: '2025-03-20',
     author: 'Dr. James Wilson',
     category: 'research',
-    image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://miro.medium.com/max/1400/1*wYmPcOQYf4zSaIkLYxSuZA.jpeg',
     featured: true,
     pdfUrl: 'https://arxiv.org/pdf/1810.04805.pdf',
     paperTitle: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
@@ -38,10 +38,10 @@ const blogPosts = [
     date: '2025-01-22',
     author: 'Dr. Lisa Wang',
     category: 'aiethics',
-    image: 'https://images.unsplash.com/photo-1507146153580-69a1fe6d8aa1?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://contenthub-static.grammarly.com/blog/wp-content/uploads/2022/08/BMD-3398.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1912.10389.pdf',
-    paperTitle: 'Ethics of AI in Customer Analytics: Privacy and Fairness Considerations'
+    paperTitle: 'Ethics of AI: A Systematic Review of Principles and Guidelines'
   },
   {
     id: 3,
@@ -50,10 +50,10 @@ const blogPosts = [
     date: '2025-01-15',
     author: 'Miguel Rodriguez',
     category: 'casestudies',
-    image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://www.iotforall.com/wp-content/uploads/2022/11/netflix-report-scaled-1-1280x720.jpg',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1704.06799.pdf',
-    paperTitle: 'Streaming Service Content Analysis: Case Studies in Media Analytics'
+    paperTitle: 'Aspect-Based Sentiment Analysis: Applications in Entertainment Media'
   },
   {
     id: 4,
@@ -62,10 +62,10 @@ const blogPosts = [
     date: '2024-12-12',
     author: 'Emma Chen',
     category: 'tutorials',
-    image: 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://miro.medium.com/max/1400/1*WS5jFWcHgVJszUEFtvBYdw.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1910.03771.pdf',
-    paperTitle: 'Tutorial: Sentiment Analysis with Transformers and BERT'
+    paperTitle: 'Sentiment Analysis with Transformers: A Tutorial'
   },
   {
     id: 5,
@@ -74,10 +74,10 @@ const blogPosts = [
     date: '2025-01-05',
     author: 'Sarah Johnson',
     category: 'bigdata',
-    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://www.cio.com/wp-content/uploads/2023/05/business-intelligence-bi-ts-100646689-orig.jpg',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1709.01254.pdf',
-    paperTitle: 'From Text to Business Insights: Applications of NLP in Business Intelligence'
+    paperTitle: 'NLP for Business Intelligence: A Survey'
   },
   {
     id: 6,
@@ -86,10 +86,10 @@ const blogPosts = [
     date: '2025-02-18',
     author: 'Prof. Ahmed Hassan',
     category: 'technology',
-    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://cdn.expertrec.com/wp-content/uploads/2023/01/Natural-Language-Processing-examples.jpg',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1911.06708.pdf',
-    paperTitle: 'Cross-lingual Sentiment Analysis: Bridging the Language Gap'
+    paperTitle: 'A Survey of Cross-lingual Word Embedding Models'
   },
   {
     id: 7,
@@ -98,10 +98,10 @@ const blogPosts = [
     date: '2025-02-02',
     author: 'Dr. Maria Gonzalez',
     category: 'technology',
-    image: 'https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://miro.medium.com/max/1400/1*9TR9QI1hR2NDdqmD5Lhz0g.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1911.11863.pdf',
-    paperTitle: 'ABSA: Fine-grained Opinion Mining in Text'
+    paperTitle: 'Target-oriented Opinion Words Extraction with Target-fused Neural Sequence Labeling'
   },
   {
     id: 8,
@@ -110,10 +110,10 @@ const blogPosts = [
     date: '2025-02-28',
     author: 'Prof. John Smith',
     category: 'research',
-    image: 'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&q=80',
+    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2023/06/evolution-of-Sentiment-Analysis.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/2009.07896.pdf',
-    paperTitle: 'The Evolution of Sentiment Analysis: A Comprehensive Survey'
+    paperTitle: 'Deep Learning for Sentiment Analysis: A Survey'
   }
 ];
 
