@@ -1,57 +1,54 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import DashboardCard from '@/components/DashboardCard';
 import StatCard from '@/components/StatCard';
 import { Button } from '@/components/ui/button';
-import TopKeywords from '@/components/TopKeywords';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart3, Trash2, MessageCircle, Star, Clock, Smile, ChevronUp, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Mock saved analysis results
-const initialAnalyses = [
-  {
-    id: 1,
-    title: "Product A Reviews Analysis",
-    date: "2025-04-10",
-    reviewCount: 156,
-    sentiment: {
-      positive: 62,
-      neutral: 23,
-      negative: 15
-    },
-    keywords: [
-      { word: 'quality', count: 48, sentiment: 'positive' },
-      { word: 'price', count: 35, sentiment: 'neutral' },
-      { word: 'design', count: 29, sentiment: 'positive' },
-      { word: 'shipping', count: 18, sentiment: 'negative' }
-    ]
-  },
-  {
-    id: 2,
-    title: "Service Feedback Analysis",
-    date: "2025-04-05",
-    reviewCount: 93,
-    sentiment: {
-      positive: 45,
-      neutral: 32,
-      negative: 16
-    },
-    keywords: [
-      { word: 'support', count: 32, sentiment: 'positive' },
-      { word: 'response', count: 26, sentiment: 'positive' },
-      { word: 'waiting', count: 17, sentiment: 'negative' },
-      { word: 'resolution', count: 12, sentiment: 'neutral' }
-    ]
-  }
-];
+// Type definition for saved analyses
+interface Analysis {
+  id: number;
+  title: string;
+  date: string;
+  reviewCount: number;
+  sentiment: {
+    positive: number;
+    neutral: number;
+    negative: number;
+  };
+  keywords: {
+    word: string;
+    sentiment: string;
+    count: number;
+  }[];
+}
 
 const Dashboard = () => {
-  const [savedAnalyses, setSavedAnalyses] = useState(initialAnalyses);
+  const [savedAnalyses, setSavedAnalyses] = useState<Analysis[]>([]);
   const [expandedAnalysis, setExpandedAnalysis] = useState<number | null>(null);
   const { toast } = useToast();
+  const { t, language } = useLanguage();
+
+  // Load saved analyses from localStorage on component mount
+  useEffect(() => {
+    const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
+    if (savedAnalysesStr) {
+      const analyses = JSON.parse(savedAnalysesStr);
+      setSavedAnalyses(analyses);
+    }
+  }, []);
   
   const deleteAnalysis = (id: number) => {
-    setSavedAnalyses(savedAnalyses.filter(analysis => analysis.id !== id));
+    // Filter out the deleted analysis
+    const updatedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
+    setSavedAnalyses(updatedAnalyses);
+    
+    // Update localStorage
+    localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+    
     toast({
       title: "Analysis deleted",
       description: "The analysis has been removed from your dashboard.",
@@ -66,16 +63,22 @@ const Dashboard = () => {
     }
   };
   
+  // Calculate total reviews count across all analyses
+  const totalReviewsCount = savedAnalyses.reduce((acc, analysis) => acc + analysis.reviewCount, 0);
+
+  // Apply RTL class for Arabic
+  const rtlClass = language === 'ar' ? 'rtl' : '';
+  
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen bg-gray-50 py-8 ${rtlClass}`}>
       <div className="container mx-auto px-4">
-        <h1 className="text-2xl font-semibold mb-6">Dashboard</h1>
+        <h1 className="text-2xl font-semibold mb-6">{t('dashboard')}</h1>
         
         {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard 
-            title="Total Reviews Analyzed" 
-            value={savedAnalyses.reduce((acc, analysis) => acc + analysis.reviewCount, 0).toString()}
+            title={t('totalReviews')}
+            value={totalReviewsCount.toString()}
             icon={<MessageCircle className="h-5 w-5 text-blue-600" />}
           />
           <StatCard 
@@ -101,13 +104,13 @@ const Dashboard = () => {
         
         {/* Saved Analyses */}
         <div className="mb-8">
-          <h2 className="text-xl font-semibold mb-4">Saved Analyses</h2>
+          <h2 className="text-xl font-semibold mb-4">{t('savedAnalyses')}</h2>
           
           {savedAnalyses.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-500 mb-4">You haven't saved any analyses yet.</p>
               <Button asChild>
-                <a href="/demo">Go to Demo to Analyze Reviews</a>
+                <Link to="/demo">{t('analyzeNewReviews')}</Link>
               </Button>
             </div>
           ) : (
@@ -121,7 +124,7 @@ const Dashboard = () => {
                     <div>
                       <h3 className="font-semibold">{analysis.title}</h3>
                       <p className="text-sm text-gray-500">
-                        {analysis.date} • {analysis.reviewCount} reviews
+                        {analysis.date} • {analysis.reviewCount} {t('totalReviews').toLowerCase()}
                       </p>
                     </div>
                     <div className="flex items-center">
@@ -158,7 +161,7 @@ const Dashboard = () => {
                                 className="w-16 bg-green-500 rounded-t-md"
                                 style={{ height: `${(analysis.sentiment.positive / analysis.reviewCount) * 100}%` }}
                               ></div>
-                              <p className="text-xs mt-2">Positive</p>
+                              <p className="text-xs mt-2">{t('positive')}</p>
                               <p className="font-semibold">{analysis.sentiment.positive}</p>
                             </div>
                             <div className="flex flex-col items-center">
@@ -166,7 +169,7 @@ const Dashboard = () => {
                                 className="w-16 bg-gray-300 rounded-t-md"
                                 style={{ height: `${(analysis.sentiment.neutral / analysis.reviewCount) * 100}%` }}
                               ></div>
-                              <p className="text-xs mt-2">Neutral</p>
+                              <p className="text-xs mt-2">{t('neutral')}</p>
                               <p className="font-semibold">{analysis.sentiment.neutral}</p>
                             </div>
                             <div className="flex flex-col items-center">
@@ -174,7 +177,7 @@ const Dashboard = () => {
                                 className="w-16 bg-red-500 rounded-t-md"
                                 style={{ height: `${(analysis.sentiment.negative / analysis.reviewCount) * 100}%` }}
                               ></div>
-                              <p className="text-xs mt-2">Negative</p>
+                              <p className="text-xs mt-2">{t('negative')}</p>
                               <p className="font-semibold">{analysis.sentiment.negative}</p>
                             </div>
                           </div>
@@ -206,7 +209,7 @@ const Dashboard = () => {
                       
                       <div className="flex justify-center mt-4">
                         <Button variant="outline" size="sm">
-                          View Full Report
+                          {t('viewFullReport')}
                         </Button>
                       </div>
                     </div>
@@ -219,7 +222,7 @@ const Dashboard = () => {
         
         <div className="text-center">
           <Button asChild>
-            <a href="/demo">Analyze New Reviews</a>
+            <Link to="/demo">{t('analyzeNewReviews')}</Link>
           </Button>
         </div>
       </div>

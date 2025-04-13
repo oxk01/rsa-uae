@@ -2,6 +2,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { 
   LogOut, 
@@ -20,11 +21,22 @@ import {
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { useTheme } from '@/hooks/use-theme';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Navigation = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
+  
+  const handleLanguageChange = (lang: 'en' | 'ar') => {
+    setLanguage(lang);
+  };
   
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
@@ -44,20 +56,23 @@ const Navigation = () => {
               <NavigationMenuItem>
                 <div className={navigationMenuTriggerStyle()}>
                   <Link to="/">
-                    Home
+                    {t('home')}
                   </Link>
                 </div>
               </NavigationMenuItem>
               
               <NavigationMenuItem>
-                <NavigationMenuTrigger>Solutions</NavigationMenuTrigger>
+                <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="w-[200px] p-2">
                     <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                      Dashboard
+                      {t('dashboard')}
                     </Link>
                     <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
-                      Demo
+                      {t('demo')}
+                    </Link>
+                    <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                      {t('pricingPlans')}
                     </Link>
                   </div>
                 </NavigationMenuContent>
@@ -66,7 +81,7 @@ const Navigation = () => {
               <NavigationMenuItem>
                 <div className={navigationMenuTriggerStyle()}>
                   <Link to="/blog">
-                    Blog
+                    {t('blog')}
                   </Link>
                 </div>
               </NavigationMenuItem>
@@ -74,7 +89,7 @@ const Navigation = () => {
               <NavigationMenuItem>
                 <div className={navigationMenuTriggerStyle()}>
                   <Link to="/contact">
-                    Contact
+                    {t('contact')}
                   </Link>
                 </div>
               </NavigationMenuItem>
@@ -83,9 +98,27 @@ const Navigation = () => {
           
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <button className="rounded-full p-1.5 hover:bg-gray-100">
-                <Globe className="h-5 w-5 text-gray-600" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="rounded-full p-1.5 hover:bg-gray-100">
+                    <Globe className="h-5 w-5 text-gray-600" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem 
+                    onClick={() => handleLanguageChange('en')}
+                    className={language === 'en' ? 'bg-gray-100' : ''}
+                  >
+                    English
+                  </DropdownMenuItem>
+                  <DropdownMenuItem 
+                    onClick={() => handleLanguageChange('ar')}
+                    className={language === 'ar' ? 'bg-gray-100' : ''}
+                  >
+                    العربية
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
               
               <div className="flex h-6 items-center space-x-1">
                 <Sun className="h-4 w-4 text-gray-500" />
@@ -117,16 +150,16 @@ const Navigation = () => {
                 </div>
                 <Button variant="outline" size="sm" onClick={logout}>
                   <LogOut className="h-4 w-4 mr-2" />
-                  Logout
+                  {t('logout')}
                 </Button>
               </div>
             ) : (
               <div className="flex gap-2">
                 <Button asChild variant="outline" size="sm">
-                  <Link to="/login">Log in</Link>
+                  <Link to="/login">{t('login')}</Link>
                 </Button>
                 <Button asChild variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">
-                  <Link to="/signup">Sign Up</Link>
+                  <Link to="/signup">{t('signup')}</Link>
                 </Button>
               </div>
             )}

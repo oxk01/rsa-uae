@@ -3,7 +3,9 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { UploadCloud, Save, Trash2, FileText, RefreshCw, Check } from 'lucide-react';
+import { useLanguage } from '@/contexts/LanguageContext';
+import { UploadCloud, Save, Trash2, FileText, RefreshCw } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 // Mock sentiment analysis function
 const analyzeSentiment = async (text: string) => {
@@ -61,6 +63,8 @@ const Demo = () => {
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
+  const { t, language } = useLanguage();
+  const navigate = useNavigate();
   
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -130,15 +134,55 @@ const Demo = () => {
     
     setIsSaving(true);
     
-    // Simulate saving to server
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    toast({
-      title: "Analysis saved",
-      description: "Your analysis has been saved to your dashboard.",
-    });
-    
-    setIsSaving(false);
+    try {
+      // Get existing saved analyses from localStorage
+      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
+      let savedAnalyses = savedAnalysesStr ? JSON.parse(savedAnalysesStr) : [];
+      
+      // Create a new analysis entry
+      const newAnalysis = {
+        id: Date.now(), // Use timestamp as a simple ID
+        title: file ? file.name : `Review Analysis ${new Date().toLocaleDateString()}`,
+        date: new Date().toISOString().split('T')[0],
+        reviewCount: file ? analysisResult.fileAnalysis.totalReviews : 1,
+        sentiment: file ? 
+          analysisResult.fileAnalysis.sentimentBreakdown : 
+          {
+            positive: analysisResult.sentiment === 'positive' ? 1 : 0,
+            neutral: analysisResult.sentiment === 'neutral' ? 1 : 0,
+            negative: analysisResult.sentiment === 'negative' ? 1 : 0
+          },
+        keywords: analysisResult.keywords.map((k: any) => ({
+          word: k.word,
+          sentiment: k.sentiment,
+          count: 1
+        }))
+      };
+      
+      // Add to saved analyses
+      savedAnalyses.unshift(newAnalysis);
+      
+      // Save back to localStorage
+      localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
+      
+      toast({
+        title: "Analysis saved",
+        description: "Your analysis has been saved to your dashboard.",
+      });
+      
+      // Navigate to dashboard after a brief delay
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: "Save failed",
+        description: "There was an error saving your analysis. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   const handleReset = () => {
@@ -167,40 +211,43 @@ const Demo = () => {
     }
   };
   
+  // Apply RTL class for Arabic
+  const rtlClass = language === 'ar' ? 'rtl' : '';
+  
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className={`min-h-screen bg-gray-50 py-8 ${rtlClass}`}>
       <div className="container mx-auto px-4">
-        <h1 className="text-2xl font-semibold mb-6">Sentiment Analysis Demo</h1>
+        <h1 className="text-2xl font-semibold mb-6">{t('demo')}</h1>
         
         <div className="grid md:grid-cols-2 gap-8">
           {/* Input Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-medium mb-4">Input Review</h2>
+            <h2 className="text-xl font-medium mb-4">{t('inputReview')}</h2>
             
             <div className="space-y-6">
               <div>
                 <label htmlFor="review" className="block text-sm font-medium text-gray-700 mb-1">
-                  Review Text
+                  {t('reviewText')}
                 </label>
                 <textarea
                   id="review"
                   rows={6}
                   value={reviewText}
                   onChange={(e) => setReviewText(e.target.value)}
-                  placeholder="Enter a review to analyze sentiment..."
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  placeholder={t('enterReview')}
+                  className={`w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${language === 'ar' ? 'text-right' : 'text-left'}`}
                 />
               </div>
               
               <div className="flex items-center">
                 <div className="flex-grow border-t border-gray-300"></div>
-                <span className="mx-4 text-sm text-gray-500">OR</span>
+                <span className="mx-4 text-sm text-gray-500">{t('or')}</span>
                 <div className="flex-grow border-t border-gray-300"></div>
               </div>
               
               <div>
                 <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-1">
-                  Upload CSV/Excel File
+                  {t('uploadFile')}
                 </label>
                 <div className="mt-1 flex items-center">
                   <label
@@ -208,7 +255,7 @@ const Demo = () => {
                     className="cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 border border-gray-300 py-2 px-3 flex items-center"
                   >
                     <UploadCloud className="h-5 w-5 mr-2" />
-                    <span>{file ? file.name : 'Choose file'}</span>
+                    <span>{file ? file.name : t('chooseFile')}</span>
                     <Input
                       id="file-upload"
                       name="file-upload"
@@ -220,7 +267,7 @@ const Demo = () => {
                   </label>
                 </div>
                 <p className="mt-1 text-xs text-gray-500">
-                  Upload a CSV or Excel file containing multiple reviews
+                  {t('uploadDescription')}
                 </p>
               </div>
               
@@ -232,16 +279,16 @@ const Demo = () => {
                   {isAnalyzing ? (
                     <>
                       <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                      Analyzing...
+                      {t('analyzing')}
                     </>
                   ) : (
-                    'Analyze'
+                    t('analyze')
                   )}
                 </Button>
                 
                 <Button variant="outline" onClick={handleReset}>
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Reset
+                  {t('reset')}
                 </Button>
               </div>
             </div>
@@ -249,24 +296,24 @@ const Demo = () => {
           
           {/* Results Section */}
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-xl font-medium mb-4">Results</h2>
+            <h2 className="text-xl font-medium mb-4">{t('results')}</h2>
             
             {!analysisResult ? (
               <div className="text-center py-12">
                 <FileText className="h-12 w-12 mx-auto text-gray-300 mb-4" />
-                <p className="text-gray-500">Enter a review or upload a file to see analysis results</p>
+                <p className="text-gray-500">{t('enterReview')}</p>
               </div>
             ) : (
               <div className="space-y-6">
                 {/* Overall Sentiment */}
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">OVERALL SENTIMENT</h3>
+                  <h3 className="text-sm font-medium text-gray-500">{t('overallSentiment')}</h3>
                   <div className="mt-2 flex items-center">
                     <div className={`px-3 py-1 rounded-md text-sm font-medium ${getSentimentColor(analysisResult.sentiment)}`}>
-                      {analysisResult.sentiment.charAt(0).toUpperCase() + analysisResult.sentiment.slice(1)}
+                      {t(analysisResult.sentiment)}
                     </div>
                     <div className="ml-3 text-sm text-gray-500">
-                      {Math.round(analysisResult.confidenceScore * 100)}% confidence
+                      {Math.round(analysisResult.confidenceScore * 100)}% {t('confidence')}
                     </div>
                   </div>
                 </div>
@@ -274,24 +321,24 @@ const Demo = () => {
                 {/* File Analysis (if file was uploaded) */}
                 {analysisResult.fileAnalysis && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">FILE ANALYSIS</h3>
+                    <h3 className="text-sm font-medium text-gray-500">{t('fileAnalysis')}</h3>
                     <div className="mt-2">
                       <p className="text-sm text-gray-700 mb-2">
-                        Total Reviews: <span className="font-medium">{analysisResult.fileAnalysis.totalReviews}</span>
+                        {t('totalReviews')}: <span className="font-medium">{analysisResult.fileAnalysis.totalReviews}</span>
                       </p>
                       
                       <div className="flex items-center gap-4 mt-4">
                         <div className="flex flex-col items-center">
                           <div className="text-lg font-bold text-green-600">{analysisResult.fileAnalysis.sentimentBreakdown.positive}</div>
-                          <div className="text-xs text-gray-500">Positive</div>
+                          <div className="text-xs text-gray-500">{t('positive')}</div>
                         </div>
                         <div className="flex flex-col items-center">
                           <div className="text-lg font-bold text-gray-600">{analysisResult.fileAnalysis.sentimentBreakdown.neutral}</div>
-                          <div className="text-xs text-gray-500">Neutral</div>
+                          <div className="text-xs text-gray-500">{t('neutral')}</div>
                         </div>
                         <div className="flex flex-col items-center">
                           <div className="text-lg font-bold text-red-600">{analysisResult.fileAnalysis.sentimentBreakdown.negative}</div>
-                          <div className="text-xs text-gray-500">Negative</div>
+                          <div className="text-xs text-gray-500">{t('negative')}</div>
                         </div>
                       </div>
                     </div>
@@ -300,7 +347,7 @@ const Demo = () => {
                 
                 {/* Keywords */}
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">KEY ASPECTS</h3>
+                  <h3 className="text-sm font-medium text-gray-500">{t('keyAspects')}</h3>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {analysisResult.keywords.map((keyword: any, index: number) => (
                       <div
@@ -316,8 +363,8 @@ const Demo = () => {
                 {/* Review Highlight */}
                 {analysisResult.text !== "Multiple reviews from file" && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">ANALYZED TEXT</h3>
-                    <p className="mt-2 text-sm text-gray-700 p-3 bg-gray-50 rounded-md">
+                    <h3 className="text-sm font-medium text-gray-500">{t('analyzedText')}</h3>
+                    <p className={`mt-2 text-sm text-gray-700 p-3 bg-gray-50 rounded-md ${language === 'ar' ? 'text-right' : 'text-left'}`}>
                       {analysisResult.text}
                     </p>
                   </div>
@@ -329,12 +376,12 @@ const Demo = () => {
                     {isSaving ? (
                       <>
                         <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                        Saving...
+                        {t('saving')}
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4 mr-2" />
-                        Save to Dashboard
+                        {t('saveToDashboard')}
                       </>
                     )}
                   </Button>

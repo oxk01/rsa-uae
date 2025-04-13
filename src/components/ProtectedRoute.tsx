@@ -2,6 +2,7 @@
 import React, { useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { isAuthenticated, isLoading } = useAuth();
+  const { t, language } = useLanguage();
   const { toast } = useToast();
   const location = useLocation();
   
@@ -40,7 +42,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
   
-  return <>{children}</>;
+  // Apply RTL class for Arabic
+  const rtlClass = language === 'ar' ? 'rtl' : '';
+  
+  return <div className={rtlClass}>{children}</div>;
 };
 
 export default ProtectedRoute;
