@@ -110,9 +110,9 @@
   @apply border-gray-700;
 }
 
-/* High contrast buttons in dark mode */
-.dark .bg-blue-600 {
-  @apply bg-blue-500;
+/* High contrast buttons in dark mode - fixed circular dependency */
+.dark .blue-button-dark {
+  background-color: rgb(59 130 246); /* blue-500 */
 }
 
 .dark .text-blue-600 {
@@ -172,11 +172,21 @@
   @apply text-gray-900 dark:text-gray-100;
 }
 
-/* Fix for all buttons to ensure they're visible */
+/* Fix for all buttons to ensure they're visible - fixed circular dependency */
 .dark button[class*="bg-blue"] {
-  @apply bg-blue-600 hover:bg-blue-700 text-white;
+  background-color: rgb(37 99 235); /* blue-600 */
+  color: white;
+}
+
+.dark button[class*="bg-blue"]:hover {
+  background-color: rgb(29 78 216); /* blue-700 */
 }
 
 .dark button[class*="bg-gray"] {
-  @apply bg-gray-700 hover:bg-gray-600 text-white;
+  background-color: rgb(55 65 81); /* gray-700 */
+  color: white;
+}
+
+.dark button[class*="bg-gray"]:hover {
+  background-color: rgb(75 85 99); /* gray-600 */
 }
