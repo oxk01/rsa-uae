@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { CheckCircle, Save, RefreshCcw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import RecentReviews from '@/components/RecentReviews';
+import { useToast } from '@/hooks/use-toast';
 
 interface ResultProps {
   result: any;
@@ -14,6 +15,7 @@ interface ResultProps {
 }
 
 const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: ResultProps) => {
+  const { toast } = useToast();
   const sentiment = result?.overallSentiment?.sentiment || 'neutral';
   const score = result?.overallSentiment?.score || 50;
   const keyPhrases = result?.keyPhrases || [];
@@ -21,6 +23,19 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
   const totalReviews = result?.fileAnalysis?.totalReviews || 1;
   const accuracyScore = result?.fileAnalysis?.accuracyScore || 80;
   const isFileAnalysis = totalReviews > 1;
+  
+  const handleSave = () => {
+    try {
+      onSave();
+    } catch (error) {
+      console.error("Error in save handler:", error);
+      toast({
+        title: "Save failed",
+        description: "There was an error saving your analysis. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
   
   // Construct review data to display in RecentReviews component
   const reviewData = isFileAnalysis && result?.fileAnalysis?.reviews
@@ -125,7 +140,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
       </div>
       
       <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-        <Button onClick={onSave} className="bg-green-600 hover:bg-green-700 gap-2">
+        <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700 gap-2">
           <Save className="h-4 w-4" />
           Save to Dashboard
         </Button>

@@ -1,8 +1,8 @@
-import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, AlertCircle } from 'lucide-react';
+
+import React, { useState, useMemo } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import { AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
 
 interface SentimentTrendProps {
   trendData?: Array<{
@@ -18,7 +18,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
   const hasData = trendData && trendData.length > 0;
   
   // Process dates to ensure they're in a consistent format
-  const processedData = React.useMemo(() => {
+  const processedData = useMemo(() => {
     if (!hasData) {
       // If no data, use sample data for display
       return [
@@ -61,6 +61,10 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
     { aspect: 'Price', positive: 40, neutral: 25, negative: 35 },
     { aspect: 'Service', positive: 55, neutral: 30, negative: 15 }
   ];
+
+  // Add state for chart customization
+  const [chartHeight, setChartHeight] = useState(300);
+  const [showLegend, setShowLegend] = useState(true);
   
   return (
     <div className="bg-white rounded-lg border shadow-sm p-6">
@@ -86,7 +90,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
               </div>
             )}
             
-            <div className="h-64 mt-8">
+            <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
                   data={processedData}
@@ -101,6 +105,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                   <XAxis dataKey="date" />
                   <YAxis />
                   <Tooltip content={<CustomTooltip />} />
+                  {showLegend && <Legend />}
                   <Line 
                     type="monotone" 
                     dataKey="positive" 
@@ -108,6 +113,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                     strokeWidth={2} 
                     activeDot={{ r: 8 }} 
                     dot={{ r: 4 }}
+                    name="Positive"
                   />
                   <Line 
                     type="monotone" 
@@ -115,6 +121,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                     stroke="#6b7280" 
                     strokeWidth={2} 
                     dot={{ r: 4 }}
+                    name="Neutral"
                   />
                   <Line 
                     type="monotone" 
@@ -122,6 +129,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                     stroke="#ef4444" 
                     strokeWidth={2} 
                     dot={{ r: 4 }}
+                    name="Negative"
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -157,7 +165,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
               </div>
             </div>
             
-            <div className="h-64 mt-8">
+            <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={aspectData}
@@ -168,6 +176,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                   <XAxis type="number" />
                   <YAxis dataKey="aspect" type="category" />
                   <Tooltip />
+                  {showLegend && <Legend />}
                   <Bar dataKey="positive" stackId="a" fill="#10b981" name="Positive" />
                   <Bar dataKey="neutral" stackId="a" fill="#6b7280" name="Neutral" />
                   <Bar dataKey="negative" stackId="a" fill="#ef4444" name="Negative" />
@@ -202,9 +211,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
     return (
       <div className="bg-white p-3 border border-gray-200 rounded shadow-sm">
         <p className="font-semibold mb-1">{label}</p>
-        <div className="text-[#10b981]">Positive: {payload[0].value}</div>
-        <div className="text-[#6b7280]">Neutral: {payload[1].value}</div>
-        <div className="text-[#ef4444]">Negative: {payload[2].value}</div>
+        <div className="text-[#10b981]">Positive: {payload[0]?.value || 0}</div>
+        <div className="text-[#6b7280]">Neutral: {payload[1]?.value || 0}</div>
+        <div className="text-[#ef4444]">Negative: {payload[2]?.value || 0}</div>
       </div>
     );
   }

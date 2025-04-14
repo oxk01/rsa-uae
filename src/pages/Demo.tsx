@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -9,14 +8,11 @@ import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
 import { KeywordItem, Review } from '@/components/RecentReviews/types';
 
-// Analysis for single text reviews
 const analyzeSentimentForText = async (text: string) => {
-  // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 1500)); 
   
   const { sentiment, score, accuracy } = analyzeSentiment(text);
   
-  // Identify aspects in the review
   const aspects = [];
   
   if (text.toLowerCase().includes('quality')) {
@@ -49,7 +45,6 @@ const analyzeSentimentForText = async (text: string) => {
     });
   }
   
-  // Always include an "Overall" aspect
   if (aspects.length === 0) {
     aspects.push({ 
       name: 'Overall', 
@@ -59,7 +54,6 @@ const analyzeSentimentForText = async (text: string) => {
     });
   }
   
-  // Extract keywords from the text
   const keywords = extractKeywords(text, sentiment);
   const keyPhrasesText = keywords.map(keyword => keyword.word);
   
@@ -84,13 +78,10 @@ const analyzeSentimentForText = async (text: string) => {
   };
 };
 
-// Analysis function for Excel files - optimized for large datasets
 const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, status: string) => void) => {
   try {
-    // Progress update
     onProgressUpdate?.(10, "Reading Excel file...");
     
-    // Parse the Excel file
     const reviews = await parseExcelFile(file);
     
     onProgressUpdate?.(30, `Processing ${reviews.length} reviews...`);
@@ -100,14 +91,12 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     let totalNegative = 0;
     let totalAccuracy = 0;
     
-    // Process reviews in chunks to avoid blocking the UI
     const processedReviews = [];
-    const CHUNK_SIZE = 100; // Process 100 reviews at a time
+    const CHUNK_SIZE = 100;
     
     for (let i = 0; i < reviews.length; i += CHUNK_SIZE) {
       const chunk = reviews.slice(i, Math.min(i + CHUNK_SIZE, reviews.length));
       
-      // Process each review in the chunk
       const chunkResults = chunk.map(review => {
         const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
         
@@ -117,7 +106,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         
         totalAccuracy += accuracy;
         
-        // Calculate rating
         let ratingValue = "0/5";
         if (review.rating) {
           const ratingNum = parseFloat(review.rating);
@@ -131,16 +119,14 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
             }
           }
         } else {
-          // Generate rating based on sentiment
           const sentimentRating = sentiment === 'positive' ? 
-                            Math.floor(Math.random() * 2) + 4 : // 4-5
+                            Math.floor(Math.random() * 2) + 4 : 
                             sentiment === 'negative' ?
-                            Math.floor(Math.random() * 2) + 1 : // 1-2
-                            3; // neutral = 3
+                            Math.floor(Math.random() * 2) + 1 : 
+                            3;
           ratingValue = `${sentimentRating}/5`;
         }
         
-        // Extract keywords
         const keywords = extractKeywords(review.reviewText, sentiment);
         
         return {
@@ -164,18 +150,14 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       
       processedReviews.push(...chunkResults);
       
-      // Update progress
       const progress = Math.min(30 + Math.round(60 * ((i + chunk.length) / reviews.length)), 90);
       onProgressUpdate?.(progress, `Analyzed ${i + chunk.length} of ${reviews.length} reviews...`);
       
-      // Pause briefly to allow UI updates
       await new Promise(resolve => setTimeout(resolve, 0));
     }
     
-    // Calculate the average accuracy
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    // Create overall aspects
     const aspects = [
       {
         name: 'Overall',
@@ -185,7 +167,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       }
     ];
     
-    // Compile all keywords and find the most frequent ones
     const allKeywords = processedReviews
       .flatMap((r: any) => r.keywords || [])
       .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
@@ -202,7 +183,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         return acc;
       }, {});
     
-    // Get top keywords
     const topKeywords = Object.entries(allKeywords)
       .sort(([, a], [, b]) => {
         const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
@@ -214,7 +194,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     onProgressUpdate?.(100, "Analysis complete!");
     
-    // Return the final analysis result
     return {
       text: `Analysis of file: ${file.name}`,
       overallSentiment: {
@@ -328,116 +307,102 @@ const Demo = () => {
   
   const handleSaveToDashboard = () => {
     try {
-      // Get existing analyses from localStorage
-      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
-      let savedAnalyses = savedAnalysesStr ? JSON.parse(savedAnalysesStr) : [];
+      let savedAnalyses = [];
+      try {
+        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
+        if (savedAnalysesStr) {
+          savedAnalyses = JSON.parse(savedAnalysesStr);
+          
+          if (!Array.isArray(savedAnalyses)) {
+            console.error("Saved analyses is not an array:", savedAnalyses);
+            savedAnalyses = [];
+          }
+        }
+      } catch (parseError) {
+        console.error("Error parsing saved analyses from localStorage:", parseError);
+        savedAnalyses = [];
+      }
       
-      // Handle file analysis with multiple reviews
-      if (file && analysisResult.fileAnalysis.reviews) {
+      if (file && analysisResult?.fileAnalysis?.reviews) {
         const fileReviews = analysisResult.fileAnalysis.reviews as Review[];
         
-        // Create a new analysis entry for each review in the file
         const newAnalyses = fileReviews.map((review: any) => ({
           id: Date.now() + Math.random(),
           title: review.title || file.name,
-          date: review.date || new Date().toISOString().split('T')[0],
+          date: new Date().toISOString().split('T')[0],
           reviewCount: 1,
-          sentiment: review.sentiment,
-          keywords: review.keywords,
-          reviewText: review.reviewText,
+          sentiment: review.sentiment || {
+            positive: 0,
+            neutral: 0,
+            negative: 0
+          },
+          keywords: review.keywords || [],
+          reviewText: review.reviewText || "",
           source: 'excel',
-          rating: review.rating,
-          sentimentLabel: review.sentimentLabel,
-          accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore
+          rating: review.rating || "0/5",
+          sentimentLabel: review.sentimentLabel || "neutral",
+          accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore || 0
         }));
         
-        // Compile all keywords to find the most frequent ones
-        const allKeywords = fileReviews
-          .flatMap((r: any) => r.keywords || [])
-          .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
-            if (!curr) return acc;
-            
-            const word = curr.word || '';
-            if (!acc[word]) {
-              acc[word] = { 
-                count: 0, 
-                sentiment: curr.sentiment || 'neutral' 
-              };
-            }
-            acc[word].count += 1;
-            return acc;
-          }, {});
-        
-        // Get top keywords with proper type checking
-        const topKeywords = Object.entries(allKeywords)
-          .sort(([, a], [, b]) => {
-            const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
-            const countB = b && typeof b === 'object' && 'count' in b ? (b.count as number) : 0;
-            return countB - countA;
-          })
-          .slice(0, 5)
-          .map(([word]) => word);
-        
-        // Create an overall analysis summary for the file
         const overallAnalysis = {
           id: Date.now(),
           title: file.name,
           date: new Date().toISOString().split('T')[0],
-          reviewCount: analysisResult.fileAnalysis.totalReviews,
-          dataPoints: analysisResult.fileAnalysis.dataPoints,
-          sentiment: analysisResult.fileAnalysis.sentimentBreakdown,
-          keywords: analysisResult.keyPhrases.map((phrase: string) => ({
+          reviewCount: analysisResult.fileAnalysis.totalReviews || 0,
+          dataPoints: analysisResult.fileAnalysis.dataPoints || analysisResult.fileAnalysis.totalReviews || 0,
+          sentiment: analysisResult.fileAnalysis.sentimentBreakdown || {
+            positive: 0,
+            neutral: 0, 
+            negative: 0
+          },
+          keywords: (analysisResult.keyPhrases || []).map((phrase: string) => ({
             word: phrase,
-            sentiment: analysisResult.overallSentiment.sentiment,
+            sentiment: analysisResult.overallSentiment?.sentiment || "neutral",
             count: 1
           })),
-          accuracyScore: analysisResult.fileAnalysis.accuracyScore
+          accuracyScore: analysisResult.fileAnalysis.accuracyScore || 0
         };
         
-        // Combine new analyses with existing ones
-        savedAnalyses = [...newAnalyses, overallAnalysis, ...savedAnalyses];
+        savedAnalyses = [overallAnalysis, ...newAnalyses, ...savedAnalyses];
       } else {
-        // Handle single review analysis
         const newAnalysis = {
           id: Date.now(),
           title: file ? file.name : `Review Analysis ${new Date().toLocaleDateString()}`,
           date: new Date().toISOString().split('T')[0],
-          reviewCount: analysisResult.fileAnalysis.totalReviews,
-          sentiment: analysisResult.fileAnalysis.sentimentBreakdown,
-          keywords: analysisResult.keyPhrases.map((phrase: string) => ({
+          reviewCount: analysisResult?.fileAnalysis?.totalReviews || 1,
+          sentiment: analysisResult?.fileAnalysis?.sentimentBreakdown || {
+            positive: analysisResult?.overallSentiment?.sentiment === 'positive' ? 100 : 0,
+            neutral: analysisResult?.overallSentiment?.sentiment === 'neutral' ? 100 : 0,
+            negative: analysisResult?.overallSentiment?.sentiment === 'negative' ? 100 : 0
+          },
+          keywords: (analysisResult?.keyPhrases || []).map((phrase: string) => ({
             word: phrase,
-            sentiment: analysisResult.overallSentiment.sentiment,
+            sentiment: analysisResult?.overallSentiment?.sentiment || "neutral",
             count: 1
           })),
-          reviewText: reviewText,
+          reviewText: reviewText || "",
           source: 'text',
-          accuracyScore: analysisResult.fileAnalysis.accuracyScore
+          accuracyScore: analysisResult?.fileAnalysis?.accuracyScore || 0
         };
         
-        // Add new analysis to the beginning of the array
         savedAnalyses.unshift(newAnalysis);
       }
       
-      // Save updated analyses to localStorage
       localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
       
-      // Show success toast
       toast({
         title: "Analysis saved",
         description: file ? 
-          `All ${analysisResult.fileAnalysis.totalReviews} reviews from the file have been saved to your dashboard.` : 
+          `All ${analysisResult?.fileAnalysis?.totalReviews || 0} reviews from the file have been saved to your dashboard.` : 
           "Your analysis has been saved to your dashboard.",
       });
       
-      // Navigate to dashboard after a short delay
       setTimeout(() => {
         navigate('/dashboard');
-      }, 1500);
+      }, 1000);
     } catch (error) {
-      // Log the error to help with debugging
       console.error("Error saving to dashboard:", error);
       
-      // Show error toast
       toast({
         title: "Save failed",
         description: "There was an error saving your analysis. Please try again.",
