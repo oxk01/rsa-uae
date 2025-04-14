@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext } from 'react';
 
 type Language = 'en' | 'ar';
@@ -12,6 +13,8 @@ interface TranslationStrings {
 interface LanguageContextProps {
   currentLanguage: Language;
   setCurrentLanguage: (language: Language) => void;
+  language: Language;  // Added this property
+  setLanguage: (language: Language) => void;  // Added this property
   t: (key: string) => string;
 }
 
@@ -173,9 +176,15 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     return translations[key]?.[currentLanguage] || key;
   };
 
+  // Create alias functions for backward compatibility
+  const language = currentLanguage;
+  const setLanguage = setCurrentLanguage;
+
   const value: LanguageContextProps = {
     currentLanguage,
     setCurrentLanguage,
+    language,  // Add the language property
+    setLanguage,  // Add the setLanguage property
     t,
   };
 
