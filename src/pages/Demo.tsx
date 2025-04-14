@@ -133,6 +133,53 @@ const analyzeFile = async (file: File) => {
   const aspects = ['Quality', 'Price', 'Service', 'Delivery', 'Support', 'Features', 'Usability', 'Performance'];
   const keywords = ['product', 'service', 'experience', 'quality', 'price', 'delivery', 'support', 'features', 'design', 'performance'];
   
+  // Sample context excerpts for each aspect
+  const contextExcerpts = {
+    'Quality': [
+      "The quality of this product is terrible, everything broke within a week.",
+      "I cannot believe how poor the quality control is on this item.",
+      "The product's quality is subpar compared to competitors.",
+      "Materials feel cheap and the construction is flimsy."
+    ],
+    'Price': [
+      "The price is way too high for what you get.",
+      "Overpriced for the features and quality offered.",
+      "Not worth the cost when similar products are available for less."
+    ],
+    'Service': [
+      "Customer service was unhelpful when I tried to resolve my issue.",
+      "Their service team took days to respond to my urgent request.",
+      "Service representatives were rude and dismissive."
+    ],
+    'Delivery': [
+      "Package arrived ahead of schedule and in perfect condition.",
+      "Delivery was faster than expected and well-packaged.",
+      "Impressed with the careful handling during shipping."
+    ],
+    'Support': [
+      "Technical support went above and beyond to solve my problem.",
+      "Support team was patient and helped me through the entire process.",
+      "Their support resources are comprehensive and easy to use."
+    ],
+    'Features': [
+      "Many of the advertised features don't work as described.",
+      "Missing key features that competitors include as standard.",
+      "The software lacks basic functionality I expected to have.",
+      "Features are clunky and difficult to use effectively."
+    ],
+    'Usability': [
+      "The interface is intuitive and easy to navigate.",
+      "Even as a beginner, I found it simple to use all functions.",
+      "The design prioritizes user experience very effectively."
+    ],
+    'Performance': [
+      "Runs smoothly even with heavy workloads.",
+      "Processing speed exceeded my expectations.",
+      "Performance remains stable during extended use.",
+      "No lag or slowdowns even with multiple applications running."
+    ]
+  };
+  
   let reviews = [];
   let totalPositive = 0;
   let totalNeutral = 0;
@@ -195,18 +242,44 @@ const analyzeFile = async (file: File) => {
   const dataQualityFactor = Math.random() * 10 + 88; // 88-98% quality factor
   const accuracyScore = Math.min(100, Math.floor((dataPointAccuracy + dataQualityFactor) / 2));
   
+  // Generate aspects with relevant context excerpts
+  const analyzedAspects = aspects.map(aspect => {
+    const sentiment = aspect === 'Quality' || aspect === 'Price' || aspect === 'Service' || aspect === 'Features' 
+      ? 'negative'
+      : 'positive';
+      
+    const confidenceMap = {
+      'Quality': 48,
+      'Price': 18,
+      'Service': 12,
+      'Delivery': 18,
+      'Support': 10,
+      'Features': 40,
+      'Usability': 23,
+      'Performance': 32
+    };
+    
+    const confidence = confidenceMap[aspect] || Math.floor(Math.random() * 40) + 10;
+    
+    // Get a random context excerpt for this aspect
+    const excerptOptions = contextExcerpts[aspect] || ["No specific context available."];
+    const context = excerptOptions[Math.floor(Math.random() * excerptOptions.length)];
+    
+    return { 
+      name: aspect, 
+      sentiment: sentiment,
+      confidence: confidence,
+      context: context
+    };
+  });
+  
   return {
     text: `Analysis of file: ${file.name}`,
     overallSentiment: {
       sentiment: totalPositive > totalNegative ? "positive" : totalNegative > totalPositive ? "negative" : "neutral",
       score: Math.round(((totalPositive - totalNegative) / numberOfReviews + 1) * 50)
     },
-    aspects: aspects.map(aspect => ({ 
-      name: aspect, 
-      sentiment: Math.random() > 0.5 ? 'positive' : 'negative',
-      confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
-    })),
+    aspects: analyzedAspects,
     keyPhrases: keywords.slice(0, 5),
     fileAnalysis: {
       totalReviews: numberOfReviews,

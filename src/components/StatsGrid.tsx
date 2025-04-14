@@ -22,6 +22,10 @@ interface StatsGridProps {
   responsePositive?: boolean;
   sentimentPositive?: boolean;
   accuracyPositive?: boolean;
+  // Total data points processed
+  totalDataPoints?: string;
+  dataPointsChange?: string;
+  dataPointsPositive?: boolean;
 }
 
 const StatsGrid = ({
@@ -39,7 +43,10 @@ const StatsGrid = ({
   ratingPositive = true,
   responsePositive = true,
   sentimentPositive = true,
-  accuracyPositive = true
+  accuracyPositive = true,
+  totalDataPoints = "0",
+  dataPointsChange = "No previous data",
+  dataPointsPositive = true
 }: StatsGridProps) => {
   return (
     <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

@@ -190,7 +190,7 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
                         {aspect.confidence}%
                       </td>
                       <td className="px-4 py-4 text-sm text-gray-500">
-                        {aspect.context}
+                        {aspect.context || "No context available"}
                       </td>
                     </tr>
                   ))}
