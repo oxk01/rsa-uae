@@ -6,6 +6,7 @@ import ReviewInput from '@/components/ReviewDemo/ReviewInput';
 import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
+import { KeywordItem } from '@/components/RecentReviews/types';
 
 // Analysis for single text reviews
 const analyzeSentimentForText = async (text: string) => {
@@ -185,13 +186,18 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     // Compile all keywords and find the most frequent ones
     const allKeywords = processedReviews
-      .flatMap(r => r.keywords)
-      .reduce((acc: Record<string, { count: number, sentiment: string }>, curr) => {
+      .flatMap((r: any) => r.keywords || [])
+      .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
+        if (!curr) return acc;
+        
         const word = curr.word || '';
         if (!acc[word]) {
-          acc[word] = { count: 0, sentiment: curr.sentiment || 'neutral' };
+          acc[word] = { 
+            count: 0, 
+            sentiment: curr.sentiment || 'neutral' 
+          };
         }
-        acc[word].count++;
+        acc[word].count += 1;
         return acc;
       }, {});
     
@@ -335,6 +341,23 @@ const Demo = () => {
           accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore
         }));
         
+        // Compile all keywords and find the most frequent ones
+        const allKeywords = processedReviews
+          .flatMap((r: any) => r.keywords || [])
+          .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
+            if (!curr) return acc;
+            
+            const word = curr.word || '';
+            if (!acc[word]) {
+              acc[word] = { 
+                count: 0, 
+                sentiment: curr.sentiment || 'neutral' 
+              };
+            }
+            acc[word].count += 1;
+            return acc;
+          }, {});
+        
         const overallAnalysis = {
           id: Date.now(),
           title: file.name,
@@ -390,7 +413,6 @@ const Demo = () => {
         description: "There was an error saving your analysis. Please try again.",
         variant: "destructive",
       });
-      
     }
   };
   
