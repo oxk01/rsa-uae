@@ -10,6 +10,9 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  LayoutDashboard,
+  PlayCircle,
+  Tag,
 } from 'lucide-react';
 import {
   NavigationMenu,
@@ -69,17 +72,32 @@ const Navigation = () => {
               {isAuthenticated && (
                 <>
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
+                    <NavigationMenuTrigger className="bg-gradient-to-r from-blue-600 to-blue-700 text-white hover:from-blue-700 hover:to-blue-800 hover:text-white focus:ring-blue-500 group">
+                      <span>{t('solutions')}</span>
+                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                    </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="w-[200px] p-2">
-                        <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                          {t('dashboard')}
+                      <div className="w-[240px] p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-100 dark:border-gray-700">
+                        <Link 
+                          to="/dashboard"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <LayoutDashboard className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium">{t('dashboard')}</span>
                         </Link>
-                        <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                          {t('demo')}
+                        <Link 
+                          to="/demo" 
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <PlayCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
+                          <span className="font-medium">{t('demo')}</span>
                         </Link>
-                        <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                          {t('pricing')}
+                        <Link 
+                          to="/pricing" 
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <Tag className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                          <span className="font-medium">{t('pricing')}</span>
                         </Link>
                       </div>
                     </NavigationMenuContent>
