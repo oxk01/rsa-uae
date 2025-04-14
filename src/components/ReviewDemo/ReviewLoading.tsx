@@ -1,19 +1,30 @@
 
 import React from 'react';
+import { Loader2 } from 'lucide-react';
+import { Progress } from "@/components/ui/progress";
 
-const ReviewLoading = () => {
+interface ReviewLoadingProps {
+  progress?: number;
+  status?: string;
+}
+
+const ReviewLoading = ({ progress = 0, status = 'Analyzing...' }: ReviewLoadingProps) => {
   return (
-    <div className="flex flex-col items-center justify-center py-16">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-700 mb-4"></div>
-      <h3 className="text-lg font-medium text-gray-800 mb-2">Analyzing Review...</h3>
-      <p className="text-sm text-gray-500">
-        Our AI is processing your review to extract sentiments and insights.
-      </p>
-      
-      {/* Progress bar */}
-      <div className="w-64 mt-8 mb-4">
-        <div className="h-1 w-full bg-gray-200 rounded-full overflow-hidden">
-          <div className="bg-blue-700 h-full w-3/5"></div>
+    <div className="flex flex-col items-center justify-center p-12">
+      <div className="w-full max-w-md space-y-6">
+        <div className="flex flex-col items-center">
+          <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-4" />
+          <h2 className="text-2xl font-semibold text-blue-900 mb-1">Analyzing your data</h2>
+          <p className="text-gray-500">{status}</p>
+        </div>
+        
+        <div className="w-full">
+          <Progress value={progress} className="h-2" />
+          <p className="text-sm text-gray-500 mt-2 text-center">{progress}% complete</p>
+        </div>
+        
+        <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-blue-800">
+          <p>Our sentiment analysis algorithm is processing your data. For large files, this may take a few moments.</p>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -7,18 +8,21 @@ import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
 
+// Analysis for single text reviews
 const analyzeSentimentForText = async (text: string) => {
+  // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 1500)); 
   
   const { sentiment, score, accuracy } = analyzeSentiment(text);
   
+  // Identify aspects in the review
   const aspects = [];
   
   if (text.toLowerCase().includes('quality')) {
     aspects.push({ 
       name: 'Quality', 
       sentiment: sentiment,
-      confidence: Math.floor(Math.random() * 40) + 10,
+      confidence: accuracy,
       context: text.substring(Math.max(0, text.toLowerCase().indexOf('quality') - 30), 
                  Math.min(text.length, text.toLowerCase().indexOf('quality') + 30))
     });
@@ -28,7 +32,7 @@ const analyzeSentimentForText = async (text: string) => {
     aspects.push({ 
       name: 'Price', 
       sentiment: sentiment,
-      confidence: Math.floor(Math.random() * 40) + 10,
+      confidence: accuracy,
       context: text.substring(Math.max(0, text.toLowerCase().indexOf('price') - 30), 
                  Math.min(text.length, text.toLowerCase().indexOf('price') + 30))
     });
@@ -37,24 +41,25 @@ const analyzeSentimentForText = async (text: string) => {
   if (text.toLowerCase().includes('service') || text.toLowerCase().includes('support')) {
     aspects.push({ 
       name: 'Service', 
-      sentiment: sentiment === 'positive' ? 'positive' : 'negative',
-      confidence: Math.floor(Math.random() * 40) + 10,
+      sentiment: sentiment,
+      confidence: accuracy,
       context: text.substring(Math.max(0, text.toLowerCase().indexOf('service') - 30), 
                  Math.min(text.length, text.toLowerCase().indexOf('service') + 30))
     });
   }
   
+  // Always include an "Overall" aspect
   if (aspects.length === 0) {
     aspects.push({ 
       name: 'Overall', 
       sentiment: sentiment,
-      confidence: Math.floor(Math.random() * 40) + 10,
+      confidence: accuracy,
       context: text.substring(0, Math.min(60, text.length))
     });
   }
   
+  // Extract keywords from the text
   const keywords = extractKeywords(text, sentiment);
-  
   const keyPhrasesText = keywords.map(keyword => keyword.word);
   
   return {
@@ -78,67 +83,98 @@ const analyzeSentimentForText = async (text: string) => {
   };
 };
 
-const analyzeFile = async (file: File) => {
+// Analysis function for Excel files - optimized for large datasets
+const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, status: string) => void) => {
   try {
+    // Progress update
+    onProgressUpdate?.(10, "Reading Excel file...");
+    
+    // Parse the Excel file
     const reviews = await parseExcelFile(file);
+    
+    onProgressUpdate?.(30, `Processing ${reviews.length} reviews...`);
+    
     let totalPositive = 0;
     let totalNeutral = 0;
     let totalNegative = 0;
     let totalAccuracy = 0;
     
-    const processedReviews = reviews.map(review => {
-      const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
-      
-      if (sentiment === 'positive') totalPositive++;
-      else if (sentiment === 'negative') totalNegative++;
-      else totalNeutral++;
-      
-      totalAccuracy += accuracy;
-      
-      let ratingValue = "0/5";
-      if (review.rating) {
-        const ratingNum = parseFloat(review.rating);
-        if (!isNaN(ratingNum)) {
-          if (ratingNum <= 5) {
-            ratingValue = `${ratingNum}/5`;
-          } else if (ratingNum <= 10) {
-            ratingValue = `${(ratingNum / 2).toFixed(1)}/5`;
-          } else if (ratingNum <= 100) {
-            ratingValue = `${(ratingNum / 20).toFixed(1)}/5`;
-          }
-        }
-      } else {
-        const sentimentRating = sentiment === 'positive' ? 
-                          Math.floor(Math.random() * 2) + 4 : // 4-5
-                          sentiment === 'negative' ?
-                          Math.floor(Math.random() * 2) + 1 : // 1-2
-                          3; // neutral = 3
-        ratingValue = `${sentimentRating}/5`;
-      }
-      
-      const keywords = extractKeywords(review.reviewText, sentiment);
-      
-      return {
-        id: Date.now() + Math.random(),
-        title: review.productId,
-        date: review.date || new Date().toISOString().split('T')[0],
-        sentiment: {
-          positive: sentiment === 'positive' ? score : 10,
-          neutral: sentiment === 'neutral' ? score : 10,
-          negative: sentiment === 'negative' ? 100 - score : 10
-        },
-        reviewCount: 1,
-        source: 'excel',
-        rating: ratingValue,
-        reviewText: review.reviewText,
-        sentimentLabel: sentiment,
-        accuracyScore: accuracy,
-        keywords: keywords
-      };
-    });
+    // Process reviews in chunks to avoid blocking the UI
+    const processedReviews = [];
+    const CHUNK_SIZE = 100; // Process 100 reviews at a time
     
+    for (let i = 0; i < reviews.length; i += CHUNK_SIZE) {
+      const chunk = reviews.slice(i, Math.min(i + CHUNK_SIZE, reviews.length));
+      
+      // Process each review in the chunk
+      const chunkResults = chunk.map(review => {
+        const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
+        
+        if (sentiment === 'positive') totalPositive++;
+        else if (sentiment === 'negative') totalNegative++;
+        else totalNeutral++;
+        
+        totalAccuracy += accuracy;
+        
+        // Calculate rating
+        let ratingValue = "0/5";
+        if (review.rating) {
+          const ratingNum = parseFloat(review.rating);
+          if (!isNaN(ratingNum)) {
+            if (ratingNum <= 5) {
+              ratingValue = `${ratingNum}/5`;
+            } else if (ratingNum <= 10) {
+              ratingValue = `${(ratingNum / 2).toFixed(1)}/5`;
+            } else if (ratingNum <= 100) {
+              ratingValue = `${(ratingNum / 20).toFixed(1)}/5`;
+            }
+          }
+        } else {
+          // Generate rating based on sentiment
+          const sentimentRating = sentiment === 'positive' ? 
+                            Math.floor(Math.random() * 2) + 4 : // 4-5
+                            sentiment === 'negative' ?
+                            Math.floor(Math.random() * 2) + 1 : // 1-2
+                            3; // neutral = 3
+          ratingValue = `${sentimentRating}/5`;
+        }
+        
+        // Extract keywords
+        const keywords = extractKeywords(review.reviewText, sentiment);
+        
+        return {
+          id: Date.now() + Math.random(),
+          title: review.productId,
+          date: review.date || new Date().toISOString().split('T')[0],
+          sentiment: {
+            positive: sentiment === 'positive' ? score : 10,
+            neutral: sentiment === 'neutral' ? score : 10,
+            negative: sentiment === 'negative' ? 100 - score : 10
+          },
+          reviewCount: 1,
+          source: 'excel',
+          rating: ratingValue,
+          reviewText: review.reviewText,
+          sentimentLabel: sentiment,
+          accuracyScore: accuracy,
+          keywords: keywords
+        };
+      });
+      
+      processedReviews.push(...chunkResults);
+      
+      // Update progress
+      const progress = Math.min(30 + Math.round(60 * ((i + chunk.length) / reviews.length)), 90);
+      onProgressUpdate?.(progress, `Analyzed ${i + chunk.length} of ${reviews.length} reviews...`);
+      
+      // Pause briefly to allow UI updates
+      await new Promise(resolve => setTimeout(resolve, 0));
+    }
+    
+    // Calculate the average accuracy
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
+    // Create overall aspects
     const aspects = [
       {
         name: 'Overall',
@@ -148,6 +184,7 @@ const analyzeFile = async (file: File) => {
       }
     ];
     
+    // Compile all keywords and find the most frequent ones
     const allKeywords = processedReviews
       .flatMap(r => r.keywords)
       .reduce((acc: Record<string, { count: number, sentiment: string }>, curr) => {
@@ -158,11 +195,15 @@ const analyzeFile = async (file: File) => {
         return acc;
       }, {});
     
+    // Get top keywords
     const topKeywords = Object.entries(allKeywords)
       .sort(([, a], [, b]) => b.count - a.count)
       .slice(0, 5)
       .map(([word, data]) => word);
     
+    onProgressUpdate?.(100, "Analysis complete!");
+    
+    // Return the final analysis result
     return {
       text: `Analysis of file: ${file.name}`,
       overallSentiment: {
@@ -199,6 +240,8 @@ const Demo = () => {
   const [analysisState, setAnalysisState] = useState<AnalysisState>('input');
   const [analysisResult, setAnalysisResult] = useState<any>(null);
   const [characterCount, setCharacterCount] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const [status, setStatus] = useState('');
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -220,6 +263,11 @@ const Demo = () => {
     }
   };
   
+  const handleProgressUpdate = (newProgress: number, newStatus: string) => {
+    setProgress(newProgress);
+    setStatus(newStatus);
+  };
+  
   const handleAnalyze = async () => {
     if (!reviewText && !file) {
       toast({
@@ -231,14 +279,20 @@ const Demo = () => {
     }
     
     setAnalysisState('analyzing');
+    setProgress(0);
+    setStatus('Starting analysis...');
     
     try {
       let result;
       
       if (file) {
-        result = await analyzeFile(file);
+        result = await analyzeFile(file, handleProgressUpdate);
       } else {
+        setProgress(50);
+        setStatus('Analyzing review text...');
         result = await analyzeSentimentForText(reviewText);
+        setProgress(100);
+        setStatus('Analysis complete!');
       }
       
       setAnalysisResult(result);
@@ -247,7 +301,7 @@ const Demo = () => {
       toast({
         title: "Analysis complete",
         description: file 
-          ? `Successfully analyzed ${result.fileAnalysis.totalReviews} reviews and ${result.fileAnalysis.dataPoints || 0} data points with ${result.fileAnalysis.accuracyScore}% accuracy.` 
+          ? `Successfully analyzed ${result.fileAnalysis.totalReviews} reviews with ${result.fileAnalysis.accuracyScore}% accuracy.` 
           : `Review analysis complete with ${result.fileAnalysis.accuracyScore}% accuracy.`,
       });
     } catch (error) {
@@ -344,6 +398,8 @@ const Demo = () => {
     setReviewText('');
     setFile(null);
     setAnalysisResult(null);
+    setProgress(0);
+    setStatus('');
   };
   
   const rtlClass = language === 'ar' ? 'rtl' : '';
@@ -364,7 +420,7 @@ const Demo = () => {
           )}
           
           {analysisState === 'analyzing' && (
-            <ReviewLoading />
+            <ReviewLoading progress={progress} status={status} />
           )}
           
           {analysisState === 'results' && analysisResult && (
@@ -372,6 +428,7 @@ const Demo = () => {
               result={analysisResult}
               onSave={handleSaveToDashboard}
               onStartOver={handleStartOver}
+              displayMode={file && analysisResult.fileAnalysis.totalReviews > 10 ? 'table' : 'cards'}
             />
           )}
         </div>
