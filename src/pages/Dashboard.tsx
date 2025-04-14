@@ -8,7 +8,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart3, Trash2, MessageCircle, Star, Clock, Smile, ChevronUp, ChevronDown } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-// Type definition for saved analyses
 interface Analysis {
   id: number;
   title: string;
@@ -32,7 +31,6 @@ const Dashboard = () => {
   const { toast } = useToast();
   const { t, language } = useLanguage();
 
-  // Load saved analyses from localStorage on component mount
   useEffect(() => {
     const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
     if (savedAnalysesStr) {
@@ -42,13 +40,9 @@ const Dashboard = () => {
   }, []);
   
   const deleteAnalysis = (id: number) => {
-    // Filter out the deleted analysis
     const updatedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
     setSavedAnalyses(updatedAnalyses);
-    
-    // Update localStorage
     localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
-    
     toast({
       title: "Analysis deleted",
       description: "The analysis has been removed from your dashboard.",
@@ -63,10 +57,8 @@ const Dashboard = () => {
     }
   };
   
-  // Calculate total reviews count across all analyses
   const totalReviewsCount = savedAnalyses.reduce((acc, analysis) => acc + analysis.reviewCount, 0);
 
-  // Calculate average sentiment score if we have data
   const calculateAvgSentiment = () => {
     if (savedAnalyses.length === 0) return "0%";
     
@@ -76,7 +68,6 @@ const Dashboard = () => {
     return totalReviews > 0 ? `${Math.round((totalPositive / totalReviews) * 100)}%` : "0%";
   };
 
-  // Apply RTL class for Arabic
   const rtlClass = language === 'ar' ? 'rtl' : '';
   
   return (
@@ -84,7 +75,6 @@ const Dashboard = () => {
       <div className="container mx-auto px-4">
         <h1 className="text-2xl font-semibold mb-6">{t('dashboard')}</h1>
         
-        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <StatCard 
             title={t('totalReviews')}
@@ -108,7 +98,6 @@ const Dashboard = () => {
           />
         </div>
         
-        {/* Interactive Charts - Only show if we have data */}
         {savedAnalyses.length > 0 ? (
           <DashboardCharts />
         ) : (
@@ -117,7 +106,6 @@ const Dashboard = () => {
           </div>
         )}
         
-        {/* Saved Analyses */}
         <div className="mb-8">
           <h2 className="text-xl font-semibold mb-4">{t('savedAnalyses')}</h2>
           
@@ -233,12 +221,6 @@ const Dashboard = () => {
               ))}
             </div>
           )}
-        </div>
-        
-        <div className="text-center">
-          <Button asChild className="bg-blue-600 hover:bg-blue-700">
-            <Link to="/demo">{t('analyzeNewReviews')}</Link>
-          </Button>
         </div>
       </div>
     </div>
