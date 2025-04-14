@@ -120,7 +120,7 @@ const AboutPage = () => {
                   <Brain className="h-12 w-12 text-blue-100" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">Abdallah Rok</h3>
-                <p className="text-blue-200 mb-4 font-medium">Chief Machine Learning and Data Scientist</p>
+                <p className="text-blue-200 mb-4 font-medium">Chief ML and Data Scientist</p>
                 <p className="text-center text-blue-100 text-sm">
                   Leading our AI research initiatives and developing cutting-edge sentiment analysis algorithms.
                 </p>
