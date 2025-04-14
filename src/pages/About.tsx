@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { BarChart3, Code, BrainCircuit, Globe, Sparkles, ArrowRight, Book, CheckCircle } from 'lucide-react';
+import { BarChart3, Code, BrainCircuit, Globe, Sparkles, ArrowRight, Book, CheckCircle, FileText, Network } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -30,7 +30,7 @@ const AboutPage = () => {
           <div className="flex flex-col md:flex-row items-center gap-12">
             <div className="md:w-1/2">
               <img 
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3" 
+                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
                 alt="Our Mission" 
                 className="rounded-lg shadow-md w-full"
               />
@@ -96,81 +96,128 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Technology section - Simplified to one tab */}
+      {/* Our Technology section - Updated with NLP and ABSA */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Technology</h2>
           
-          {/* Single technology card */}
-          <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden max-w-5xl mx-auto">
-            {/* Header */}
-            <div className="bg-blue-900 text-white py-4 px-6">
-              <h3 className="text-2xl font-bold">BERT Technology</h3>
-            </div>
-            
-            {/* Main content area */}
-            <div className="p-8">
-              <div className="flex items-start mb-6">
-                <Book className="h-8 w-8 text-blue-900 mr-4 flex-shrink-0" />
-                <div>
-                  <h3 className="text-2xl font-bold text-gray-800">BERT (Bidirectional Encoder Representations from Transformers)</h3>
-                  <p className="text-gray-600 mt-2">
-                    BERT represents a breakthrough in natural language understanding, allowing AI to grasp context from both directions in text.
-                  </p>
-                </div>
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            {/* NLP Technology Card */}
+            <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+              <div className="bg-blue-900 text-white py-4 px-6">
+                <h3 className="text-2xl font-bold">NLP Technology</h3>
               </div>
               
-              <div className="grid md:grid-cols-2 gap-8 mt-8">
-                <div>
+              <div className="p-8">
+                <div className="flex items-start mb-6">
+                  <BrainCircuit className="h-8 w-8 text-blue-900 mr-4 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-800">Natural Language Processing</h3>
+                    <p className="text-gray-600 mt-2">
+                      Our advanced NLP technology understands human language in all its complexity, enabling precise analysis of customer feedback.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-8">
                   <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
                     <Code className="h-5 w-5 text-blue-700 mr-2" />
-                    How BERT Works
+                    How Our NLP Works
                   </h4>
                   <p className="text-gray-700 mb-3">
-                    BERT is pre-trained on a massive corpus of text to understand language in context. Unlike previous models that read text sequentially, BERT reads entire sentences simultaneously, understanding words based on their surroundings.
-                  </p>
-                  <p className="text-gray-700">
-                    This bidirectional approach allows BERT to capture nuanced meanings, handle ambiguity, and understand complex linguistic phenomena like sarcasm and implicit sentiment.
+                    Our NLP models use transformers architecture and contextual embeddings to understand text semantics beyond simple keyword matching. We employ techniques like named entity recognition, part-of-speech tagging, and dependency parsing to extract meaningful information from unstructured text.
                   </p>
                 </div>
                 
-                <div>
+                <div className="mt-6">
                   <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
                     <CheckCircle className="h-5 w-5 text-blue-700 mr-2" />
-                    Benefits for Sentiment Analysis
+                    Key NLP Features
                   </h4>
                   <ul className="space-y-3">
                     <li className="flex items-start">
                       <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">Superior contextual understanding of reviews</span>
+                      <span className="text-gray-700">Contextual language understanding</span>
                     </li>
                     <li className="flex items-start">
                       <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">Accurate detection of implicit sentiment</span>
+                      <span className="text-gray-700">Sentiment detection with 93% accuracy</span>
                     </li>
                     <li className="flex items-start">
                       <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">Recognition of domain-specific language</span>
+                      <span className="text-gray-700">Multilingual support for global businesses</span>
                     </li>
                     <li className="flex items-start">
                       <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">Handling of complex sentence structures</span>
-                    </li>
-                    <li className="flex items-start">
-                      <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-gray-700">Adaptability to different review styles</span>
+                      <span className="text-gray-700">Integration with domain-specific knowledge</span>
                     </li>
                   </ul>
                 </div>
               </div>
+            </div>
+            
+            {/* ABSA Technology Card */}
+            <div className="bg-gray-50 rounded-lg shadow-md overflow-hidden">
+              <div className="bg-blue-900 text-white py-4 px-6">
+                <h3 className="text-2xl font-bold">ABSA Technology</h3>
+              </div>
               
-              <div className="bg-blue-50 rounded-lg p-6 mt-8">
-                <h4 className="text-lg font-semibold mb-3 text-gray-800">Technical Implementation</h4>
-                <p className="text-gray-700">
-                  We fine-tune BERT models on industry-specific datasets to optimize performance for particular domains. Our implementation includes careful hyperparameter tuning, domain adaptation techniques, and ensemble methods to maximize accuracy.
-                </p>
+              <div className="p-8">
+                <div className="flex items-start mb-6">
+                  <Network className="h-8 w-8 text-blue-900 mr-4 flex-shrink-0" />
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-800">Aspect-Based Sentiment Analysis</h3>
+                    <p className="text-gray-600 mt-2">
+                      ABSA technology allows us to analyze sentiment at a granular level, identifying specific aspects of products or services mentioned in reviews.
+                    </p>
+                  </div>
+                </div>
+                
+                <div className="mt-8">
+                  <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                    <Code className="h-5 w-5 text-blue-700 mr-2" />
+                    How ABSA Works
+                  </h4>
+                  <p className="text-gray-700 mb-3">
+                    ABSA breaks down reviews into specific aspects or features, then determines the sentiment associated with each aspect. This granular approach provides detailed insights into what customers specifically like or dislike about different features of a product or service.
+                  </p>
+                </div>
+                
+                <div className="mt-6">
+                  <h4 className="text-lg font-semibold mb-4 text-gray-800 flex items-center">
+                    <CheckCircle className="h-5 w-5 text-blue-700 mr-2" />
+                    Benefits of ABSA
+                  </h4>
+                  <ul className="space-y-3">
+                    <li className="flex items-start">
+                      <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">Detailed feature-level sentiment analysis</span>
+                    </li>
+                    <li className="flex items-start">
+                      <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">Identifies specific improvement areas</span>
+                    </li>
+                    <li className="flex items-start">
+                      <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">Competitive benchmarking by aspect</span>
+                    </li>
+                    <li className="flex items-start">
+                      <ArrowRight className="h-5 w-5 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+                      <span className="text-gray-700">Prioritization of product improvements</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
+          </div>
+          
+          <div className="text-center mt-12">
+            <Button asChild size="lg" className="bg-blue-600 hover:bg-blue-700">
+              <a href="#" className="text-white flex items-center">
+                <FileText className="mr-2 h-5 w-5" />
+                Read Our Technical Whitepaper
+              </a>
+            </Button>
           </div>
         </div>
       </section>

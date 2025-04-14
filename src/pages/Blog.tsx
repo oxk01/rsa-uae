@@ -26,7 +26,7 @@ const blogPosts = [
     date: '2025-03-20',
     author: 'Dr. James Wilson',
     category: 'research',
-    image: 'https://miro.medium.com/max/1400/1*wYmPcOQYf4zSaIkLYxSuZA.jpeg',
+    image: 'https://www.kdnuggets.com/wp-content/uploads/transformer-model-3.jpg',
     featured: true,
     pdfUrl: 'https://arxiv.org/pdf/1810.04805.pdf',
     paperTitle: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
@@ -38,10 +38,10 @@ const blogPosts = [
     date: '2025-01-22',
     author: 'Dr. Lisa Wang',
     category: 'aiethics',
-    image: 'https://contenthub-static.grammarly.com/blog/wp-content/uploads/2022/08/BMD-3398.png',
+    image: 'https://www.mdpi.com/sustainability/sustainability-12-01470/article_deploy/html/images/sustainability-12-01470-g001.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1912.10389.pdf',
-    paperTitle: 'Ethics of AI: A Systematic Review of Principles and Guidelines'
+    paperTitle: 'The Ethics of AI Ethics: An Evaluation of Guidelines'
   },
   {
     id: 3,
@@ -50,10 +50,10 @@ const blogPosts = [
     date: '2025-01-15',
     author: 'Miguel Rodriguez',
     category: 'casestudies',
-    image: 'https://www.iotforall.com/wp-content/uploads/2022/11/netflix-report-scaled-1-1280x720.jpg',
+    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2023/02/Netflix-Data-Science-Case-Study.png',
     featured: false,
-    pdfUrl: 'https://arxiv.org/pdf/1704.06799.pdf',
-    paperTitle: 'Aspect-Based Sentiment Analysis: Applications in Entertainment Media'
+    pdfUrl: 'https://arxiv.org/pdf/2104.12463.pdf',
+    paperTitle: 'Recommendation Systems in the Media Industry: Applications and Impacts on Viewing Experience'
   },
   {
     id: 4,
@@ -62,10 +62,10 @@ const blogPosts = [
     date: '2024-12-12',
     author: 'Emma Chen',
     category: 'tutorials',
-    image: 'https://miro.medium.com/max/1400/1*WS5jFWcHgVJszUEFtvBYdw.png',
+    image: 'https://www.datacamp.com/blog/images/sentiment-analysis.fb456785.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1910.03771.pdf',
-    paperTitle: 'Sentiment Analysis with Transformers: A Tutorial'
+    paperTitle: 'A Practical Tutorial on Building Transformers-Based NLP Applications'
   },
   {
     id: 5,
@@ -74,10 +74,10 @@ const blogPosts = [
     date: '2025-01-05',
     author: 'Sarah Johnson',
     category: 'bigdata',
-    image: 'https://www.cio.com/wp-content/uploads/2023/05/business-intelligence-bi-ts-100646689-orig.jpg',
+    image: 'https://dmm2njo0ugzmw.cloudfront.net/wp-content/uploads/2020/02/BI-Process.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1709.01254.pdf',
-    paperTitle: 'NLP for Business Intelligence: A Survey'
+    paperTitle: 'Natural Language Processing for Business Intelligence Analytics'
   },
   {
     id: 6,
@@ -86,10 +86,10 @@ const blogPosts = [
     date: '2025-02-18',
     author: 'Prof. Ahmed Hassan',
     category: 'technology',
-    image: 'https://cdn.expertrec.com/wp-content/uploads/2023/01/Natural-Language-Processing-examples.jpg',
+    image: 'https://miro.medium.com/max/1400/0*74CJ_75Vjk5Vzx0R.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1911.06708.pdf',
-    paperTitle: 'A Survey of Cross-lingual Word Embedding Models'
+    paperTitle: 'A Survey of Cross-lingual Word Embedding Models for Multilingual Sentiment Analysis'
   },
   {
     id: 7,
@@ -98,7 +98,7 @@ const blogPosts = [
     date: '2025-02-02',
     author: 'Dr. Maria Gonzalez',
     category: 'technology',
-    image: 'https://miro.medium.com/max/1400/1*9TR9QI1hR2NDdqmD5Lhz0g.png',
+    image: 'https://d3i71xaburhd42.cloudfront.net/fdf98d3a619d8f0b2fbfbebd09583a5c82cfbd12/5-Figure1-1.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1911.11863.pdf',
     paperTitle: 'Target-oriented Opinion Words Extraction with Target-fused Neural Sequence Labeling'
@@ -110,7 +110,7 @@ const blogPosts = [
     date: '2025-02-28',
     author: 'Prof. John Smith',
     category: 'research',
-    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2023/06/evolution-of-Sentiment-Analysis.png',
+    image: 'https://miro.medium.com/max/1400/0*1zi9FUhP96mqbU8Y.png',
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/2009.07896.pdf',
     paperTitle: 'Deep Learning for Sentiment Analysis: A Survey'

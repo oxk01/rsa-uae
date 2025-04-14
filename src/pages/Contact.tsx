@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Send, Mail, MapPin, Phone } from 'lucide-react';
+import { Send, Mail, MapPin, Phone, ExternalLink, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Contact = () => {
   const [name, setName] = useState('');
@@ -11,6 +12,7 @@ const Contact = () => {
   const [message, setMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+  const { t, language } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +34,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12">
+    <div className={`min-h-screen bg-gray-50 py-12 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-bold text-center mb-8">Contact Us</h1>
@@ -87,7 +89,7 @@ const Contact = () => {
                 
                 <Button 
                   type="submit" 
-                  className="w-full"
+                  className="w-full bg-blue-600 hover:bg-blue-700"
                   disabled={isSubmitting}
                 >
                   <Send className="mr-2 h-4 w-4" />
@@ -110,7 +112,7 @@ const Contact = () => {
                   <Mail className="h-5 w-5 text-blue-600 mr-3 mt-1" />
                   <div>
                     <h3 className="font-medium">Email</h3>
-                    <p className="text-gray-600">support@rsa-analytics.com</p>
+                    <p className="text-gray-600">E4485834@live.tees.ac.uk</p>
                   </div>
                 </div>
                 
@@ -118,7 +120,7 @@ const Contact = () => {
                   <Phone className="h-5 w-5 text-blue-600 mr-3 mt-1" />
                   <div>
                     <h3 className="font-medium">Phone</h3>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
+                    <p className="text-gray-600">+971 50 5350403</p>
                   </div>
                 </div>
                 
@@ -127,20 +129,48 @@ const Contact = () => {
                   <div>
                     <h3 className="font-medium">Address</h3>
                     <p className="text-gray-600">
-                      123 AI Boulevard<br />
-                      Tech District<br />
-                      San Francisco, CA 94105
+                      Dubai<br />
+                      United Arab Emirates
                     </p>
                   </div>
                 </div>
               </div>
               
               <div className="mt-8">
+                <h3 className="font-medium mb-2">Connect With Us</h3>
+                <div className="flex space-x-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-blue-600 border-blue-600"
+                    asChild
+                  >
+                    <a href="https://www.linkedin.com/" target="_blank" rel="noopener noreferrer">
+                      LinkedIn <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    className="text-blue-600 border-blue-600"
+                    asChild
+                  >
+                    <a href="https://twitter.com/" target="_blank" rel="noopener noreferrer">
+                      Twitter <ExternalLink className="ml-1 h-3 w-3" />
+                    </a>
+                  </Button>
+                </div>
+              </div>
+              
+              <div className="mt-8">
                 <h3 className="font-medium mb-2">Business Hours</h3>
-                <p className="text-gray-600">
-                  Monday - Friday: 9AM - 5PM (PST)<br />
-                  Saturday - Sunday: Closed
-                </p>
+                <div className="flex items-start">
+                  <Clock className="h-5 w-5 text-blue-600 mr-3 mt-1" />
+                  <p className="text-gray-600">
+                    Monday - Friday: 9AM - 5PM (GST)<br />
+                    Saturday - Sunday: Closed
+                  </p>
+                </div>
               </div>
             </div>
           </div>

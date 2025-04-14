@@ -88,3 +88,44 @@
     font-family: 'Inter', sans-serif;
   }
 }
+
+/* Specific dark mode overrides for better readability */
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  @apply text-gray-300;
+}
+
+.dark .bg-white {
+  @apply bg-gray-800;
+}
+
+.dark .bg-gray-50 {
+  @apply bg-gray-900;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  @apply border-gray-700;
+}
+
+/* High contrast buttons in dark mode */
+.dark .bg-blue-600 {
+  @apply bg-blue-500;
+}
+
+.dark .text-blue-600 {
+  @apply text-blue-400;
+}
+
+/* Fix for link visibility in dark mode */
+.dark .hover\:text-gray-300:hover {
+  @apply text-white;
+}
+
+/* Better shadows for dark mode */
+.dark .shadow-md,
+.dark .shadow-sm {
+  @apply shadow-gray-900;
+}
