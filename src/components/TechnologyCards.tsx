@@ -13,11 +13,11 @@ interface TechCardProps {
 const TechCard = ({ icon, title, description, className = '' }: TechCardProps) => {
   return (
     <div className={`bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm ${className}`}>
-      <div className="flex flex-col items-center text-center mb-3">
-        <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-3 flex items-center justify-center">
+      <div className="flex flex-col items-center text-center">
+        <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-4 flex items-center justify-center w-16 h-16">
           {icon}
         </div>
-        <h3 className="text-lg font-semibold">{title}</h3>
+        <h3 className="text-xl font-semibold mb-3">{title}</h3>
       </div>
       <p className="text-gray-600 dark:text-gray-300 text-center">{description}</p>
     </div>
