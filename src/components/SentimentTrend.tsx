@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
@@ -47,7 +47,6 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
               <Line type="monotone" dataKey="positive" stroke="#2c7a7b" strokeWidth={2} activeDot={{ r: 8 }} />
               <Line type="monotone" dataKey="neutral" stroke="#4a5568" strokeWidth={2} />
               <Line type="monotone" dataKey="negative" stroke="#e53e3e" strokeWidth={2} />
@@ -55,6 +54,20 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
           </ResponsiveContainer>
         </div>
       )}
+      <div className="flex justify-center gap-4 mt-2">
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-sentiment-positive mr-1"></div>
+          <span className="text-xs">Positive</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-sentiment-neutral mr-1"></div>
+          <span className="text-xs">Neutral</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 rounded-full bg-sentiment-negative mr-1"></div>
+          <span className="text-xs">Negative</span>
+        </div>
+      </div>
     </DashboardCard>
   );
 };

@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 import { MessageSquare } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
@@ -36,11 +36,6 @@ const ReviewSources = () => {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Legend
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-            />
           </PieChart>
         </ResponsiveContainer>
       </div>

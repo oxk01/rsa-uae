@@ -1,7 +1,7 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { ThumbsUp, Minus, ThumbsDown, AlertCircle } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
 // Sample data only used when no real data is available
@@ -52,17 +52,11 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(value) => `${value}%`} />
-            <Legend
-              layout="horizontal"
-              verticalAlign="bottom"
-              align="center"
-            />
           </PieChart>
         </ResponsiveContainer>
       </div>
       
-      <div className="flex justify-between mt-2">
+      <div className="flex justify-center gap-4 mt-2">
         <div className="flex items-center">
           <div className="w-3 h-3 rounded-full bg-sentiment-positive mr-1"></div>
           <span className="text-xs">Positive</span>
