@@ -9,7 +9,7 @@ interface ResearchPaperCardProps {
   title: string;
   authors: string;
   publication?: string;
-  year: string;
+  year?: string; // Make year optional
   abstract?: string;
   imageUrl: string;
   paperUrl: string;
@@ -70,12 +70,10 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
               <span>{authors}</span>
             </div>
             
-            {date && (
-              <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
-                <Calendar className="h-3.5 w-3.5" />
-                <span>{date}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1 text-xs text-gray-500 mb-3">
+              <Calendar className="h-3.5 w-3.5" />
+              <span>{date || year}</span>
+            </div>
             
             <a href={paperUrl} target="_blank" rel="noopener noreferrer" className="w-full">
               <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950 w-full">
@@ -115,12 +113,10 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
               <span>{authors}</span>
             </div>
             
-            {date && (
-              <div className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span>{date}</span>
-              </div>
-            )}
+            <div className="flex items-center gap-1">
+              <Calendar className="h-4 w-4" />
+              <span>{date || year}</span>
+            </div>
           </div>
         </div>
       </div>
