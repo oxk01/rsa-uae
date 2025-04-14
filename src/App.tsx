@@ -26,21 +26,6 @@ import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
-// Component to handle route guarding
-const RouteGuard = ({ component: Component, requiresAuth = false }) => {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
-  }
-
-  if (requiresAuth && !isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
-
-  return <Component />;
-};
-
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -53,7 +38,7 @@ const App = () => (
               <Navigation />
               <div className="flex-grow">
                 <Routes>
-                  {/* Public routes */}
+                  {/* Public routes - always accessible */}
                   <Route path="/" element={<Home />} />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/login" element={<Login />} />

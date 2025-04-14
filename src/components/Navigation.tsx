@@ -53,6 +53,7 @@ const Navigation = () => {
           
           <NavigationMenu>
             <NavigationMenuList>
+              {/* Home and About are always visible */}
               <NavigationMenuItem>
                 <div className={navigationMenuTriggerStyle()}>
                   <Link to="/">
@@ -69,48 +70,43 @@ const Navigation = () => {
                 </div>
               </NavigationMenuItem>
               
-              <NavigationMenuItem>
-                <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
-                <NavigationMenuContent>
-                  <div className="w-[200px] p-2">
-                    <Link to="/blog" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                      {t('blog')}
-                    </Link>
-                    <Link to="/contact" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                      {t('contact')}
-                    </Link>
-                    {isAuthenticated && (
-                      <>
+              {/* Only show the following menu items when authenticated */}
+              {isAuthenticated && (
+                <>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
+                    <NavigationMenuContent>
+                      <div className="w-[200px] p-2">
                         <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
                           {t('dashboard')}
                         </Link>
                         <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
                           {t('demo')}
                         </Link>
-                      </>
-                    )}
-                    <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
-                      {t('pricing')}
-                    </Link>
-                  </div>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <div className={navigationMenuTriggerStyle()}>
-                  <Link to="/blog">
-                    {t('blog')}
-                  </Link>
-                </div>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <div className={navigationMenuTriggerStyle()}>
-                  <Link to="/contact">
-                    {t('contact')}
-                  </Link>
-                </div>
-              </NavigationMenuItem>
+                        <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+                          {t('pricing')}
+                        </Link>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                  
+                  <NavigationMenuItem>
+                    <div className={navigationMenuTriggerStyle()}>
+                      <Link to="/blog">
+                        {t('blog')}
+                      </Link>
+                    </div>
+                  </NavigationMenuItem>
+                  
+                  <NavigationMenuItem>
+                    <div className={navigationMenuTriggerStyle()}>
+                      <Link to="/contact">
+                        {t('contact')}
+                      </Link>
+                    </div>
+                  </NavigationMenuItem>
+                </>
+              )}
             </NavigationMenuList>
           </NavigationMenu>
           

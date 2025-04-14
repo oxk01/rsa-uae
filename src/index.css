@@ -45,10 +45,6 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    --sentiment-positive: 142 72% 29%;
-    --sentiment-neutral: 215 16% 47%;
-    --sentiment-negative: 0 84% 60%;
   }
 
   .dark {
@@ -79,10 +75,6 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    --sentiment-positive: 142 69% 58%;
-    --sentiment-neutral: 215 20% 70%;
-    --sentiment-negative: 0 84% 65%;
   }
 }
 
@@ -118,9 +110,9 @@
   @apply border-gray-700;
 }
 
-/* High contrast buttons in dark mode - fixed circular dependency */
-.dark .blue-button-dark {
-  background-color: rgb(59 130 246); /* blue-500 */
+/* High contrast buttons in dark mode - Fix circular dependency */
+.dark .bg-blue-600 {
+  background-color: rgb(59, 130, 246); /* Using direct color instead of @apply */
 }
 
 .dark .text-blue-600 {
@@ -180,57 +172,20 @@
   @apply text-gray-900 dark:text-gray-100;
 }
 
-/* Fix for all buttons to ensure they're visible - fixed circular dependency */
+/* Fix for all buttons to ensure they're visible */
 .dark button[class*="bg-blue"] {
-  background-color: rgb(37 99 235); /* blue-600 */
+  background-color: rgb(37, 99, 235); /* Using direct color instead of @apply */
   color: white;
 }
 
 .dark button[class*="bg-blue"]:hover {
-  background-color: rgb(29 78 216); /* blue-700 */
+  background-color: rgb(29, 78, 216); /* Using direct color for hover state */
 }
 
 .dark button[class*="bg-gray"] {
-  background-color: rgb(55 65 81); /* gray-700 */
-  color: white;
+  @apply bg-gray-700 text-white;
 }
 
 .dark button[class*="bg-gray"]:hover {
-  background-color: rgb(75 85 99); /* gray-600 */
-}
-
-/* RTL support for Arabic language */
-.rtl {
-  direction: rtl;
-  text-align: right;
-}
-
-.rtl .ml-auto {
-  margin-left: 0;
-  margin-right: auto;
-}
-
-.rtl .mr-auto {
-  margin-right: 0;
-  margin-left: auto;
-}
-
-.rtl .ml-1, .rtl .ml-2, .rtl .ml-3, .rtl .ml-4 {
-  margin-left: 0;
-  margin-right: 0.25rem;
-}
-
-.rtl .mr-1, .rtl .mr-2, .rtl .mr-3, .rtl .mr-4 {
-  margin-right: 0;
-  margin-left: 0.25rem;
-}
-
-.rtl .space-x-1 > *, .rtl .space-x-2 > *, .rtl .space-x-3 > *, .rtl .space-x-4 > * {
-  margin-right: 0;
-  margin-left: var(--tw-space-x-reverse, 0.25rem);
-}
-
-/* Ensure charts work properly in RTL layouts */
-.rtl .recharts-wrapper {
-  direction: ltr;
+  @apply bg-gray-600;
 }

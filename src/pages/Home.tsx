@@ -109,7 +109,7 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Features section - UPDATED to match the image */}
+      {/* Features section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-4">Powerful Features</h2>
@@ -227,34 +227,6 @@ const Home = () => {
               <p className="text-gray-600">
                 Review the processed data through visual dashboards for actionable business insights.
               </p>
-            </div>
-          </div>
-        </div>
-      </section>
-      
-      {/* Innovation Hub section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center">
-            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-              <h2 className="text-2xl font-bold mb-4">Innovation Hub: AI-Driven Insights</h2>
-              <p className="text-gray-600 mb-4">
-                Our innovation hub combines cutting-edge AI models with domain expertise to deliver unparalleled 
-                sentiment analysis capabilities. We're continuously refining our algorithms to detect 
-                subtle nuances in customer feedback.
-              </p>
-              <p className="text-gray-600 mb-4">
-                With deep learning techniques and natural language understanding, our system identifies 
-                emergent trends and patterns in your review data before they become apparent through 
-                traditional analysis methods.
-              </p>
-            </div>
-            <div className="md:w-1/2">
-              <img 
-                src="/lovable-uploads/9d39e136-00b3-485c-88e7-81868a56cc63.png" 
-                alt="AI Innovation Hub" 
-                className="rounded-lg shadow-md w-full h-auto"
-              />
             </div>
           </div>
         </div>
