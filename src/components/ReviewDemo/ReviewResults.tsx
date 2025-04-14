@@ -1,7 +1,9 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Save, RotateCcw, BarChart3 } from 'lucide-react'; // Replace FileChart with BarChart3
+import { Save, RotateCcw, BarChart3 } from 'lucide-react';
 import GenerateReportButton from '@/components/GenerateReportButton';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface ResultProps {
   result: {
@@ -143,50 +145,112 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
       </div>
       
       <div className="bg-white rounded-lg border p-6 mb-6">
-        <h3 className="text-lg font-medium mb-2">ABSA Breakdown</h3>
-        <p className="text-sm text-gray-500 mb-4">
-          Aspect-Based Sentiment Analysis (ABSA) identifies specific aspects of a product or service mentioned in the review 
-          and determines the sentiment expressed toward each aspect.
-        </p>
-        
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Aspect
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Sentiment
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Confidence
-                </th>
-                <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Context
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {result.aspects.map((aspect, index) => (
-                <tr key={index}>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    <span className="font-medium">{aspect.name}</span>
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    {getSentimentBadge(aspect.sentiment)}
-                  </td>
-                  <td className="px-4 py-4 whitespace-nowrap">
-                    {aspect.confidence}%
-                  </td>
-                  <td className="px-4 py-4 text-sm text-gray-500">
-                    {aspect.context}
-                  </td>
-                </tr>
+        <Tabs defaultValue="absa-breakdown">
+          <TabsList className="mb-4 bg-gray-100 p-1 rounded-md w-full">
+            <TabsTrigger value="absa-breakdown" className="flex-1">ABSA Breakdown</TabsTrigger>
+            <TabsTrigger value="sentiment-details" className="flex-1">Sentiment Details</TabsTrigger>
+            <TabsTrigger value="key-phrases" className="flex-1">Key Phrases</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="absa-breakdown">
+            <h3 className="text-lg font-medium mb-2">Aspect-Based Sentiment Analysis</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Aspect-Based Sentiment Analysis (ABSA) identifies specific aspects of a product or service mentioned in the review 
+              and determines the sentiment expressed toward each aspect.
+            </p>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Aspect
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Sentiment
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Confidence
+                    </th>
+                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Context
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-200">
+                  {result.aspects.map((aspect, index) => (
+                    <tr key={index}>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        <span className="font-medium">{aspect.name}</span>
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {getSentimentBadge(aspect.sentiment)}
+                      </td>
+                      <td className="px-4 py-4 whitespace-nowrap">
+                        {aspect.confidence}%
+                      </td>
+                      <td className="px-4 py-4 text-sm text-gray-500">
+                        {aspect.context}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="sentiment-details">
+            <h3 className="text-lg font-medium mb-2">Sentiment Analysis Details</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Detailed breakdown of the sentiment analysis results and confidence scores.
+            </p>
+            
+            <div className="bg-gray-50 p-4 rounded-lg mb-4">
+              <h4 className="font-medium mb-2">Overall Sentiment: {getSentimentLabel(result.overallSentiment.sentiment)}</h4>
+              <p className="text-sm mb-4">Confidence score: {result.overallSentiment.score}%</p>
+              <div className="w-full bg-gray-200 rounded-full h-4">
+                <div
+                  className={`h-4 rounded-full ${
+                    result.overallSentiment.sentiment === 'positive'
+                      ? 'bg-green-600'
+                      : result.overallSentiment.sentiment === 'negative'
+                      ? 'bg-red-600'
+                      : 'bg-gray-600'
+                  }`}
+                  style={{ width: `${result.overallSentiment.score}%` }}
+                ></div>
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-600 italic">
+              The sentiment analysis is performed using advanced natural language processing models that evaluate 
+              the emotional tone of the text based on word choice, context, and linguistic patterns.
+            </p>
+          </TabsContent>
+          
+          <TabsContent value="key-phrases">
+            <h3 className="text-lg font-medium mb-2">Key Phrases Extracted</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              Important phrases and keywords identified in the analysis.
+            </p>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
+              {result.keyPhrases.map((phrase, index) => (
+                <span
+                  key={index}
+                  className="bg-blue-100 text-blue-800 text-sm font-medium px-4 py-2 rounded-full"
+                >
+                  {phrase}
+                </span>
               ))}
-            </tbody>
-          </table>
-        </div>
+            </div>
+            
+            <p className="text-sm text-gray-600 italic">
+              Key phrases are extracted using NLP techniques that identify significant words and phrases based on 
+              their relevance to the overall context and sentiment of the review.
+            </p>
+          </TabsContent>
+        </Tabs>
       </div>
       
       <div className="flex flex-col mt-10 gap-4">

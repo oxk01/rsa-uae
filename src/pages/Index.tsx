@@ -4,7 +4,6 @@ import StatsGrid from '@/components/StatsGrid';
 import SentimentOverview from '@/components/SentimentOverview';
 import TopKeywords from '@/components/TopKeywords';
 import SentimentTrend from '@/components/SentimentTrend';
-import RecentReviews from '@/components/RecentReviews';
 import ReviewSources from '@/components/ReviewSources';
 import GenerateReportButton from '@/components/GenerateReportButton';
 import { Card, CardContent } from '@/components/ui/card';
@@ -185,10 +184,6 @@ const Index = () => {
             
             <div className="mt-8">
               <SentimentTrend trendData={trendData} />
-            </div>
-
-            <div className="mt-8">
-              <RecentReviews reviews={enhancedAnalyses} />
             </div>
             
             <div className="mt-10 pt-6 border-t flex justify-center">
