@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Save, RotateCcw, BarChart3 } from 'lucide-react'; // Replace FileChart with BarChart3
@@ -80,15 +79,6 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
             <Save className="h-4 w-4 mr-2" />
             Save to Dashboard
           </Button>
-          
-          {hasSavedAnalyses() && (
-            <GenerateReportButton
-              hasData={true}
-              showReport={true}
-              variant="outline"
-              className="border-blue-600 text-blue-700 hover:bg-blue-50"
-            />
-          )}
         </div>
       </div>
       
@@ -199,11 +189,24 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
         </div>
       </div>
       
-      <div className="text-center">
-        <Button variant="outline" onClick={onStartOver}>
-          <RotateCcw className="h-4 w-4 mr-2" />
-          Start Over
-        </Button>
+      <div className="flex flex-col mt-10 gap-4">
+        <div>
+          <Button variant="outline" onClick={onStartOver} className="mr-2">
+            <RotateCcw className="h-4 w-4 mr-2" />
+            Start Over
+          </Button>
+        </div>
+        
+        {hasSavedAnalyses() && (
+          <div className="pt-4 border-t">
+            <GenerateReportButton
+              hasData={true}
+              showReport={false}
+              variant="default"
+              className="w-full justify-center bg-blue-600 hover:bg-blue-700"
+            />
+          </div>
+        )}
       </div>
     </div>
   );

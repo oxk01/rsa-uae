@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import StatsGrid from '@/components/StatsGrid';
@@ -14,7 +13,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
-// Interface for saved analyses
 interface Analysis {
   id: number;
   title: string;
@@ -39,7 +37,6 @@ const Index = () => {
   const [trendData, setTrendData] = useState<any[]>([]);
   const { t } = useLanguage();
   
-  // Load saved analyses from localStorage on component mount
   useEffect(() => {
     const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
     if (savedAnalysesStr) {
@@ -48,15 +45,12 @@ const Index = () => {
       setHasData(analyses.length > 0);
       
       if (analyses.length > 0) {
-        // Process data for charts
         processDataForCharts(analyses);
       }
     }
   }, []);
   
-  // Process the saved analyses data for chart components
   const processDataForCharts = (analyses: Analysis[]) => {
-    // Calculate overall sentiment for pie chart
     let totalPositive = 0;
     let totalNeutral = 0;
     let totalNegative = 0;
@@ -73,14 +67,11 @@ const Index = () => {
       { name: 'Negative', value: totalNegative }
     ]);
     
-    // Generate trend data if we have multiple analyses
     if (analyses.length > 1) {
-      // Sort analyses by date
       const sortedAnalyses = [...analyses].sort((a, b) => 
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
-      // Map to trend data format
       const trend = sortedAnalyses.map(analysis => ({
         date: analysis.date,
         positive: analysis.sentiment.positive,
@@ -92,7 +83,6 @@ const Index = () => {
     }
   };
   
-  // Calculate metrics based on actual data
   const calculateAverageRating = () => {
     if (!hasData) return "N/A";
     
@@ -105,11 +95,10 @@ const Index = () => {
     });
     
     if (totalReviews === 0) return "N/A";
-    const score = (totalPositive / totalReviews) * 5; // Scale to 5-star rating
+    const score = (totalPositive / totalReviews) * 5;
     return `${score.toFixed(1)}/5`;
   };
   
-  // Calculate sentiment score from 0-100
   const calculateSentimentScore = () => {
     if (!hasData) return "N/A";
     
@@ -124,19 +113,16 @@ const Index = () => {
     });
     
     if (totalReviews === 0) return "N/A";
-    const score = Math.round(((totalPositive - totalNegative) / totalReviews + 1) * 50); // Scale to 0-100
+    const score = Math.round(((totalPositive - totalNegative) / totalReviews + 1) * 50);
     return `${score}/100`;
   };
   
-  // Calculate total review count
   const getTotalReviews = () => {
     if (!hasData) return "0";
     return savedAnalyses.reduce((total, analysis) => total + analysis.reviewCount, 0).toString();
   };
   
-  // Enhance savedAnalyses with additional properties for RecentReviews
   const enhancedAnalyses = savedAnalyses.map(analysis => {
-    // Derive sentiment label from sentiment percentages
     let sentimentLabel = "Neutral";
     if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
       sentimentLabel = "Positive";
@@ -144,10 +130,8 @@ const Index = () => {
       sentimentLabel = "Negative";
     }
     
-    // Calculate rating based on positive sentiment (1-5 scale)
     const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
     
-    // Add placeholder review text if not present
     const reviewText = analysis.reviewText || `This is a sample review for ${analysis.title}.`;
     
     return {
@@ -167,23 +151,6 @@ const Index = () => {
           <div>
             <h1 className="text-2xl font-semibold text-gray-900">Sentiment Analysis Dashboard</h1>
             <p className="text-gray-500 mt-1">Analyze customer reviews with AI-powered contextual sentiment analysis</p>
-          </div>
-          
-          <div className="flex gap-2">
-            <GenerateReportButton 
-              hasData={hasData} 
-              variant="default"
-              size="default"
-              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-            />
-            
-            <GenerateReportButton 
-              hasData={hasData} 
-              variant="outline"
-              size="default"
-              showReport={true}
-              className="border-blue-600 text-blue-700 hover:bg-blue-50"
-            />
           </div>
         </div>
         
@@ -222,6 +189,15 @@ const Index = () => {
 
             <div className="mt-8">
               <RecentReviews reviews={enhancedAnalyses} />
+            </div>
+            
+            <div className="mt-10 pt-6 border-t flex justify-center">
+              <GenerateReportButton 
+                hasData={hasData}
+                variant="default"
+                size="default"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md py-3 px-6 text-base"
+              />
             </div>
           </>
         ) : (

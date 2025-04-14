@@ -39,7 +39,6 @@ interface Analysis {
     sentiment: string;
     count: number;
   }[];
-  // Add missing properties to fix TypeScript errors
   reviewText?: string;
   source?: string;
 }
@@ -62,22 +61,18 @@ const Dashboard = () => {
       const analyses = JSON.parse(savedAnalysesStr);
       setSavedAnalyses(analyses);
       
-      // Generate trend data for SentimentTrend component
       if (analyses.length > 0) {
         generateTrendData(analyses);
       }
     }
   }, []);
   
-  // Generate trend data from saved analyses
   const generateTrendData = (analyses: Analysis[]) => {
     if (analyses.length > 1) {
-      // Sort analyses by date
       const sortedAnalyses = [...analyses].sort((a, b) => 
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
-      // Map to trend data format
       const trend = sortedAnalyses.map(analysis => ({
         date: new Date(analysis.date).toLocaleDateString('en-US', { month: 'short' }),
         positive: analysis.sentiment.positive,
@@ -87,7 +82,6 @@ const Dashboard = () => {
       
       setTrendData(trend);
     } else if (analyses.length === 1) {
-      // If only one analysis, create a single point
       setTrendData([{
         date: new Date(analyses[0].date).toLocaleDateString('en-US', { month: 'short' }),
         positive: analyses[0].sentiment.positive,
@@ -105,7 +99,6 @@ const Dashboard = () => {
       title: "Analysis deleted",
       description: "The analysis has been removed from your dashboard.",
     });
-    // Update trend data after deletion
     generateTrendData(updatedAnalyses);
   };
 
@@ -136,7 +129,6 @@ const Dashboard = () => {
     }
   };
 
-  // Prepare sentiment data for pie chart
   const prepareSentimentData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -157,7 +149,6 @@ const Dashboard = () => {
     ];
   };
   
-  // Prepare review volume data for line chart
   const prepareVolumeData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -181,7 +172,6 @@ const Dashboard = () => {
     })).filter(item => item.reviews > 0);
   };
   
-  // Prepare keywords data for horizontal bar chart
   const prepareKeywordsData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -203,7 +193,6 @@ const Dashboard = () => {
       .slice(0, 5);
   };
 
-  // Prepare aspect-based sentiment data
   const prepareAspectData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -244,9 +233,7 @@ const Dashboard = () => {
   const COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
   const ASPECT_COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
   
-  // Add enhanced reviews for RecentReviews component
   const enhancedReviews = savedAnalyses.map(analysis => {
-    // Derive sentiment label from sentiment percentages
     let sentimentLabel = "Neutral";
     if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
       sentimentLabel = "Positive";
@@ -254,10 +241,8 @@ const Dashboard = () => {
       sentimentLabel = "Negative";
     }
     
-    // Calculate rating based on positive sentiment (1-5 scale)
     const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
     
-    // Add placeholder review text if not present
     const reviewText = analysis.reviewText || `Analysis for ${analysis.title} with ${analysis.reviewCount} reviews.`;
     
     return {
@@ -272,30 +257,26 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold text-blue-900">Sentiment Analysis Dashboard</h1>
-            <p className="text-gray-600">Analyze and visualize customer sentiment data</p>
-          </div>
-          <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-            <GenerateReportButton 
-              hasData={savedAnalyses.length > 0}
-              variant="default" 
-              showReport={true}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            />
-            <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={refreshData}>
-              <Calendar className="h-4 w-4" />
-              {currentDate}
-            </Button>
-            <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={refreshData}>
-              <RefreshCw className="h-4 w-4" />
-              Refresh
-            </Button>
-            <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
-              <XCircle className="h-4 w-4" />
-              Delete Last Review
-            </Button>
+        <div className="flex flex-col mb-6">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-blue-900">Sentiment Analysis Dashboard</h1>
+              <p className="text-gray-600">Analyze and visualize customer sentiment data</p>
+            </div>
+            <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Calendar className="h-4 w-4" />
+                {currentDate}
+              </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={refreshData}>
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
+              <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
+                <XCircle className="h-4 w-4" />
+                Delete Last Review
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -308,8 +289,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              {/* Overall Sentiment */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card className="p-4 shadow-sm">
                 <h2 className="font-semibold mb-1">Overall Sentiment</h2>
                 <p className="text-xs text-gray-500 mb-4">Distribution of sentiment in reviews</p>
@@ -348,7 +328,6 @@ const Dashboard = () => {
                 </div>
               </Card>
 
-              {/* Review Volume */}
               <Card className="p-4 shadow-sm">
                 <h2 className="font-semibold mb-1">Review Volume</h2>
                 <p className="text-xs text-gray-500 mb-4">Number of reviews over time</p>
@@ -368,7 +347,6 @@ const Dashboard = () => {
                 </div>
               </Card>
 
-              {/* Top Keywords */}
               <Card className="p-4 shadow-sm">
                 <h2 className="font-semibold mb-1">Top Keywords</h2>
                 <p className="text-xs text-gray-500 mb-4">Most mentioned topics in reviews</p>
@@ -390,12 +368,10 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Add Sentiment Trend component */}
             <div className="mb-6">
               <SentimentTrend trendData={trendData} />
             </div>
 
-            {/* Add Recent Reviews component */}
             <div className="mb-6">
               <RecentReviews reviews={enhancedReviews} />
             </div>
@@ -492,6 +468,15 @@ const Dashboard = () => {
                   </div>
                 </Card>
               )}
+            </div>
+            
+            <div className="mt-10 pt-6 border-t flex justify-center">
+              <GenerateReportButton 
+                hasData={savedAnalyses.length > 0}
+                variant="default" 
+                showReport={false}
+                className="bg-blue-600 hover:bg-blue-700 text-white shadow-md py-3 px-6 text-base"
+              />
             </div>
           </>
         )}
