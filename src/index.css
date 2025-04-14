@@ -105,8 +105,9 @@
   @apply text-gray-200;
 }
 
+/* Fix for the circular dependency - use direct color instead of apply */
 .dark .text-gray-500 {
-  @apply text-gray-300;
+  color: rgb(209, 213, 219); /* This is the equivalent of text-gray-300 */
 }
 
 .dark .bg-white {
@@ -226,8 +227,9 @@
   @apply text-gray-200;
 }
 
+/* Fix circular dependency in placeholder styling */
 .dark .placeholder-slate-400::placeholder {
-  @apply text-gray-500;
+  color: rgb(156, 163, 175); /* Equivalent of text-gray-400 */
 }
 
 /* Enhanced chat button visibility */
