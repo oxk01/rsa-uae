@@ -112,7 +112,7 @@ const AboutPage = () => {
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Expert Team</h2>
           
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-4 gap-8">
             {/* Team Member 1 */}
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
@@ -166,6 +166,25 @@ const AboutPage = () => {
                 <p className="text-blue-200 mb-4 font-medium">Chief Data Analyst</p>
                 <p className="text-center text-blue-100 text-sm">
                   Transforming complex data into actionable insights that drive business decisions.
+                </p>
+              </div>
+            </Card>
+
+            {/* New Team Member: Ahmed Rok */}
+            <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
+              <div className="relative p-6 flex flex-col items-center">
+                <div className="absolute right-0 top-0 bg-indigo-700/40 w-32 h-32 rounded-full blur-2xl"></div>
+                <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Brain className="h-10 w-10 text-indigo-100" />
+                </div>
+                <Avatar className="w-20 h-20 mb-4 border-4 border-indigo-700 z-10">
+                  <AvatarFallback className="bg-indigo-700 text-white text-xl">AR</AvatarFallback>
+                  <AvatarImage src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=300" />
+                </Avatar>
+                <h3 className="text-xl font-bold mb-1">Ahmed Rok</h3>
+                <p className="text-indigo-200 mb-4 font-medium">AI Research Lead</p>
+                <p className="text-center text-indigo-100 text-sm">
+                  Driving innovative AI research and developing cutting-edge machine learning strategies.
                 </p>
               </div>
             </Card>
