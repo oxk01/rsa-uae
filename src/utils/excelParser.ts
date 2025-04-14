@@ -1,4 +1,3 @@
-
 import * as XLSX from 'xlsx';
 
 export interface ParsedReview {
@@ -162,10 +161,8 @@ export const analyzeSentiment = (text: string): {
   const totalWords = words.length;
   const totalMatches = positiveCount + negativeCount;
   
-  // Calculate accuracy based on how many sentiment words were found
-  // Higher match percentage = higher accuracy
-  const matchPercentage = Math.min(1, totalMatches / (Math.max(totalWords * 0.1, 1)));
-  const accuracy = Math.floor(70 + matchPercentage * 25);
+  // Calculate accuracy based on review quality and length
+  const accuracy = calculateAccuracy(text);
   
   // Context awareness - check for negations
   let negationAdjustment = 0;
@@ -263,4 +260,22 @@ export const extractKeywords = (text: string, sentiment: string): Array<{word: s
     word,
     sentiment
   }));
+};
+
+// Calculate accuracy based on review quality and length
+const calculateAccuracy = (text: string): number => {
+  // Basic calculation based on review length and diversity of words
+  const length = text.length;
+  const words = text.split(/\s+/);
+  const uniqueWords = new Set(words).size;
+  
+  // Calculate base accuracy score
+  let accuracyValue = Math.min(95, Math.max(70, 
+    70 + 
+    (length > 100 ? 10 : length > 50 ? 5 : 0) + 
+    (uniqueWords > 20 ? 10 : uniqueWords > 10 ? 5 : 0) +
+    (text.includes('.') ? 5 : 0) // Proper sentences with periods
+  ));
+  
+  return accuracyValue;
 };

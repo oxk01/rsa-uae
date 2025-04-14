@@ -188,10 +188,11 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     const allKeywords = processedReviews
       .flatMap(r => r.keywords)
       .reduce((acc: Record<string, { count: number, sentiment: string }>, curr) => {
-        if (!acc[curr.word]) {
-          acc[curr.word] = { count: 0, sentiment: curr.sentiment };
+        const word = curr.word || '';
+        if (!acc[word]) {
+          acc[word] = { count: 0, sentiment: curr.sentiment || 'neutral' };
         }
-        acc[curr.word].count++;
+        acc[word].count++;
         return acc;
       }, {});
     
@@ -199,7 +200,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     const topKeywords = Object.entries(allKeywords)
       .sort(([, a], [, b]) => b.count - a.count)
       .slice(0, 5)
-      .map(([word, data]) => word);
+      .map(([word]) => word);
     
     onProgressUpdate?.(100, "Analysis complete!");
     
