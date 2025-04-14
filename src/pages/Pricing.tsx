@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -22,54 +23,56 @@ const PricingPlan = () => {
   const { language } = useLanguage();
   const [billingCycle, setBillingCycle] = useState('monthly');
 
-  // Pricing data
+  // Pricing data with updated plans
   const plans = [
     {
-      name: "Free",
-      description: "Perfect for individuals getting started with review analysis",
-      price: { monthly: 0, annually: 0 },
+      name: "Basic",
+      description: "Perfect for small businesses or startups with minimal data needs",
+      price: { monthly: 199, annually: 179 },
       highlight: false,
       features: [
-        "100 reviews per month",
+        "Up to 5,000 reviews per month",
         "Basic sentiment analysis",
-        "5 saved analyses",
-        "CSV uploads",
-        "Email support"
+        "Single aspect-based analysis",
+        "Accuracy reports (85-90%)",
+        "Basic dashboard with graphs",
+        "Export reports (CSV, PDF)"
       ],
       buttonText: "Get Started",
       buttonVariant: "outline"
     },
     {
-      name: "Pro",
-      description: "For businesses with moderate review volume",
-      price: { monthly: 29, annually: 24 },
+      name: "Standard",
+      description: "For medium-sized businesses handling moderate data volumes",
+      price: { monthly: 499, annually: 449 },
       highlight: true,
       features: [
-        "1,000 reviews per month",
-        "Advanced sentiment analysis",
-        "50 saved analyses",
-        "CSV/Excel uploads",
-        "Trend analysis & reporting",
-        "Priority support",
-        "API access (100 calls/day)"
+        "Up to 15,000 reviews per month",
+        "Advanced contextual sentiment analysis",
+        "Multi-aspect analysis",
+        "Real-time analysis with updates",
+        "Accuracy reports (90-95%)",
+        "Customizable dashboard",
+        "Export options (CSV, PDF)"
       ],
       buttonText: "Get Started",
       buttonVariant: "default"
     },
     {
-      name: "Enterprise",
-      description: "For large companies with high volume needs",
-      price: { monthly: 99, annually: 84 },
+      name: "Premium",
+      description: "For larger enterprises with high volumes of customer reviews",
+      price: { monthly: 999, annually: 899 },
       highlight: false,
       features: [
-        "Unlimited reviews",
-        "AI-powered deep analysis",
-        "Unlimited saved analyses",
-        "Any file format uploads",
-        "Advanced reporting & analytics",
-        "Unlimited API access",
-        "Dedicated account manager",
-        "Custom integrations"
+        "Up to 50,000 reviews per month",
+        "Full contextual sentiment analysis",
+        "Multi-aspect sentiment analysis",
+        "Real-time & continuous data processing",
+        "High accuracy (95-99%)",
+        "Comprehensive customizable dashboard",
+        "Detailed analytical reports",
+        "Export options (CSV, Excel, PDF)",
+        "Priority customer support"
       ],
       buttonText: "Contact Sales",
       buttonVariant: "outline"
@@ -77,12 +80,34 @@ const PricingPlan = () => {
   ];
 
   const comparisonFeatures = [
-    { name: "Reviews per month", free: "100", pro: "1,000", enterprise: "Unlimited" },
-    { name: "Sentiment analysis depth", free: "Basic", pro: "Advanced", enterprise: "Deep AI" },
-    { name: "Aspect-based analysis", free: "Limited", pro: "Full", enterprise: "Custom" },
-    { name: "API access", free: "No", pro: "100 calls/day", enterprise: "Unlimited" },
-    { name: "Saved analyses", free: "5", pro: "50", enterprise: "Unlimited" },
-    { name: "Support", free: "Email", pro: "Priority", enterprise: "Dedicated" }
+    { name: "Reviews per month", basic: "5,000", standard: "15,000", premium: "50,000" },
+    { name: "Sentiment analysis", basic: "Basic", standard: "Advanced contextual", premium: "Full contextual (BERT)" },
+    { name: "Aspect analysis", basic: "Single aspect", standard: "Multi-aspect", premium: "Complete ABSA" },
+    { name: "Accuracy", basic: "85-90%", standard: "90-95%", premium: "95-99%" },
+    { name: "Dashboard", basic: "Basic", standard: "Customizable", premium: "Comprehensive" },
+    { name: "Export options", basic: "CSV, PDF", standard: "CSV, PDF", premium: "CSV, Excel, PDF" },
+    { name: "Support", basic: "Email", standard: "Standard", premium: "Priority" }
+  ];
+
+  const addOns = [
+    {
+      name: "Data Setup & Integration",
+      description: "Initial setup and system integration",
+      price: 199,
+      oneTime: true
+    },
+    {
+      name: "Advanced Model Training & Optimization",
+      description: "Continuous improvements and fine-tuning of AI models",
+      price: 500,
+      oneTime: false
+    },
+    {
+      name: "Additional Support (Extended Hours)",
+      description: "Priority support with extended hours",
+      price: 100,
+      oneTime: false
+    }
   ];
 
   const faqs = [
@@ -134,10 +159,10 @@ const PricingPlan = () => {
         {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600">
-            Simple, Transparent Pricing
+            Enterprise-Grade Review Analysis
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-8">
-            Choose the perfect plan for your needs. All plans include core features with different limits.
+            Choose the perfect plan for your business needs. All plans include core review analysis features with different capacities.
           </p>
           
           {/* Billing Toggle */}
@@ -162,7 +187,7 @@ const PricingPlan = () => {
                 Annual
               </span>
               <span className="ml-2 bg-green-100 text-green-800 text-xs font-semibold px-2 py-0.5 rounded dark:bg-green-900 dark:text-green-300">
-                Save 15%
+                Save 10%
               </span>
             </div>
           </div>
@@ -219,8 +244,33 @@ const PricingPlan = () => {
           ))}
         </div>
         
-        {/* Plan comparison table */}
+        {/* Add-ons Section */}
         <div className="mt-20 max-w-5xl mx-auto">
+          <Card>
+            <CardHeader className="bg-gray-50 dark:bg-gray-800/50 border-b">
+              <CardTitle className="text-xl md:text-2xl">Optional Add-ons</CardTitle>
+            </CardHeader>
+            <div className="p-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {addOns.map((addon, index) => (
+                  <Card key={index} className="border shadow-sm">
+                    <CardHeader className="pb-2">
+                      <CardTitle className="text-lg">{addon.name}</CardTitle>
+                      <CardDescription>{addon.description}</CardDescription>
+                    </CardHeader>
+                    <CardFooter className="pt-2 flex justify-between items-center">
+                      <div className="font-semibold">${addon.price}</div>
+                      <div className="text-sm text-gray-500">{addon.oneTime ? 'One-time fee' : '/month'}</div>
+                    </CardFooter>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </Card>
+        </div>
+        
+        {/* Plan comparison table */}
+        <div className="mt-12 max-w-5xl mx-auto">
           <Card>
             <CardHeader className="bg-gray-50 dark:bg-gray-800/50 border-b">
               <CardTitle className="text-xl md:text-2xl">Plan Comparison</CardTitle>
@@ -230,18 +280,18 @@ const PricingPlan = () => {
                 <thead>
                   <tr className="border-b dark:border-gray-700">
                     <th className="text-left py-4 px-2 font-medium">Feature</th>
-                    <th className="text-center py-4 px-2 font-medium">Free</th>
-                    <th className="text-center py-4 px-2 font-medium text-blue-600 dark:text-blue-400">Pro</th>
-                    <th className="text-center py-4 px-2 font-medium">Enterprise</th>
+                    <th className="text-center py-4 px-2 font-medium">Basic</th>
+                    <th className="text-center py-4 px-2 font-medium text-blue-600 dark:text-blue-400">Standard</th>
+                    <th className="text-center py-4 px-2 font-medium">Premium</th>
                   </tr>
                 </thead>
                 <tbody>
                   {comparisonFeatures.map((feature, index) => (
                     <tr key={index} className={index !== comparisonFeatures.length - 1 ? "border-b dark:border-gray-700" : ""}>
                       <td className="py-3 px-2">{feature.name}</td>
-                      <td className="py-3 px-2 text-center">{feature.free}</td>
-                      <td className="py-3 px-2 text-center">{feature.pro}</td>
-                      <td className="py-3 px-2 text-center">{feature.enterprise}</td>
+                      <td className="py-3 px-2 text-center">{feature.basic}</td>
+                      <td className="py-3 px-2 text-center">{feature.standard}</td>
+                      <td className="py-3 px-2 text-center">{feature.premium}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -275,9 +325,9 @@ const PricingPlan = () => {
         
         {/* Call to action */}
         <div className="mt-16 text-center">
-          <h3 className="text-2xl md:text-3xl font-semibold mb-4">Still have questions?</h3>
+          <h3 className="text-2xl md:text-3xl font-semibold mb-4">Ready to get started?</h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-lg mx-auto">
-            Our team is ready to help you choose the right plan for your needs.
+            Contact our team for a personalized demo and to discuss how our solution can meet your specific needs.
           </p>
           <Button 
             className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" 
@@ -292,3 +342,4 @@ const PricingPlan = () => {
 };
 
 export default PricingPlan;
+
