@@ -76,12 +76,23 @@ const Index = () => {
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
-      const trend = sortedAnalyses.map(analysis => ({
-        date: analysis.date,
-        positive: analysis.sentiment.positive,
-        neutral: analysis.sentiment.neutral,
-        negative: analysis.sentiment.negative
-      }));
+      const trend = sortedAnalyses.map(analysis => {
+        let formattedDate;
+        try {
+          const dateObj = new Date(analysis.date);
+          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+        } catch (e) {
+          console.error("Error parsing date:", e);
+          formattedDate = "Unknown";
+        }
+        
+        return {
+          date: formattedDate,
+          positive: analysis.sentiment.positive,
+          neutral: analysis.sentiment.neutral,
+          negative: analysis.sentiment.negative
+        };
+      });
       
       setTrendData(trend);
     }

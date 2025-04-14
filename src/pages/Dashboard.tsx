@@ -74,21 +74,45 @@ const Dashboard = () => {
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
-      const trend = sortedAnalyses.map(analysis => ({
-        date: new Date(analysis.date).toLocaleDateString('en-US', { month: 'short' }),
-        positive: analysis.sentiment.positive,
-        neutral: analysis.sentiment.neutral,
-        negative: analysis.sentiment.negative
-      }));
+      const trend = sortedAnalyses.map(analysis => {
+        let formattedDate;
+        try {
+          const dateObj = new Date(analysis.date);
+          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+        } catch (e) {
+          console.error("Error parsing date:", e);
+          formattedDate = "Unknown";
+        }
+        
+        return {
+          date: formattedDate,
+          positive: analysis.sentiment.positive,
+          neutral: analysis.sentiment.neutral,
+          negative: analysis.sentiment.negative
+        };
+      });
       
       setTrendData(trend);
     } else if (analyses.length === 1) {
-      setTrendData([{
-        date: new Date(analyses[0].date).toLocaleDateString('en-US', { month: 'short' }),
-        positive: analyses[0].sentiment.positive,
-        neutral: analyses[0].sentiment.neutral,
-        negative: analyses[0].sentiment.negative
-      }]);
+      try {
+        const dateObj = new Date(analyses[0].date);
+        const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+        
+        setTrendData([{
+          date: formattedDate,
+          positive: analyses[0].sentiment.positive,
+          neutral: analyses[0].sentiment.neutral,
+          negative: analyses[0].sentiment.negative
+        }]);
+      } catch (e) {
+        console.error("Error parsing single date:", e);
+        setTrendData([{
+          date: "Latest",
+          positive: analyses[0].sentiment.positive,
+          neutral: analyses[0].sentiment.neutral,
+          negative: analyses[0].sentiment.negative
+        }]);
+      }
     }
   };
   

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { TrendingUp, AlertCircle, Download } from 'lucide-react';
@@ -18,15 +17,43 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
   // Check if we have actual data
   const hasData = trendData && trendData.length > 0;
   
-  // If no data, use sample data for display
-  const displayData = hasData ? trendData : [
-    { date: 'Jan', positive: 0, neutral: 0, negative: 0 },
-    { date: 'Feb', positive: 0, neutral: 0, negative: 0 },
-    { date: 'Mar', positive: 0.2, neutral: 0, negative: 0 },
-    { date: 'Apr', positive: 1.0, neutral: 1.0, negative: 2.0 },
-    { date: 'May', positive: 0, neutral: 0, negative: 0 },
-    { date: 'Jun', positive: 0, neutral: 0, negative: 0 },
-  ];
+  // Process dates to ensure they're in a consistent format
+  const processedData = React.useMemo(() => {
+    if (!hasData) {
+      // If no data, use sample data for display
+      return [
+        { date: 'Jan', positive: 0, neutral: 0, negative: 0 },
+        { date: 'Feb', positive: 0, neutral: 0, negative: 0 },
+        { date: 'Mar', positive: 0.2, neutral: 0, negative: 0 },
+        { date: 'Apr', positive: 1.0, neutral: 1.0, negative: 2.0 },
+        { date: 'May', positive: 0, neutral: 0, negative: 0 },
+        { date: 'Jun', positive: 0, neutral: 0, negative: 0 },
+      ];
+    }
+    
+    return trendData.map(item => {
+      // Format the date properly
+      let formattedDate = item.date;
+      try {
+        // Try to parse and format the date
+        const dateObj = new Date(item.date);
+        if (!isNaN(dateObj.getTime())) {
+          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+        } else if (typeof item.date === 'string') {
+          // If it's already a string like "Jan", keep it as is
+          formattedDate = item.date;
+        }
+      } catch (e) {
+        console.error("Date parsing error:", e);
+        // If there's an error, keep the original value
+      }
+      
+      return {
+        ...item,
+        date: formattedDate
+      };
+    });
+  }, [trendData, hasData]);
   
   // Sample aspect data
   const aspectData = [
@@ -66,7 +93,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
             <div className="h-64 mt-8">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={displayData}
+                  data={processedData}
                   margin={{
                     top: 5,
                     right: 30,
