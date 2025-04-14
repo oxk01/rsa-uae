@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -110,6 +109,7 @@ const Footer = () => {
             <Link to="/terms" className="hover:text-white mr-4">
               {t('termsAndConditions')}
             </Link>
+            <span className="mx-2 text-gray-500">|</span>
             <Link to="/privacy" className="hover:text-white">
               {t('privacyPolicy')}
             </Link>
