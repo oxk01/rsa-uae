@@ -7,7 +7,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { TechnologyTabs } from '@/components/TechnologyTabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 
 const AboutPage = () => {
@@ -107,7 +106,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Team members section */}
+      {/* Team members section - Updated to remove images and keep only icons */}
       <section className="py-16 bg-gradient-to-r from-blue-800 to-blue-900 text-white">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Expert Team</h2>
@@ -117,14 +116,10 @@ const AboutPage = () => {
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
                 <div className="absolute right-0 top-0 bg-blue-700/40 w-32 h-32 rounded-full blur-2xl"></div>
-                <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
-                  <Brain className="h-10 w-10 text-blue-100" />
+                <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-8 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Brain className="h-12 w-12 text-blue-100" />
                 </div>
-                <Avatar className="w-20 h-20 mb-4 border-4 border-blue-700 z-10">
-                  <AvatarFallback className="bg-blue-700 text-white text-xl">AR</AvatarFallback>
-                  <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=300" />
-                </Avatar>
-                <h3 className="text-xl font-bold mb-1">Abdallah Rok</h3>
+                <h3 className="text-xl font-bold mb-2">Abdallah Rok</h3>
                 <p className="text-blue-200 mb-4 font-medium">Chief Machine Learning and Data Scientist</p>
                 <p className="text-center text-blue-100 text-sm">
                   Leading our AI research initiatives and developing cutting-edge sentiment analysis algorithms.
@@ -136,14 +131,10 @@ const AboutPage = () => {
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
                 <div className="absolute right-0 top-0 bg-teal-700/40 w-32 h-32 rounded-full blur-2xl"></div>
-                <div className="bg-gradient-to-br from-teal-600 to-teal-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
-                  <Package className="h-10 w-10 text-teal-100" />
+                <div className="bg-gradient-to-br from-teal-600 to-teal-800 p-8 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Package className="h-12 w-12 text-teal-100" />
                 </div>
-                <Avatar className="w-20 h-20 mb-4 border-4 border-teal-700 z-10">
-                  <AvatarFallback className="bg-teal-700 text-white text-xl">RA</AvatarFallback>
-                  <AvatarImage src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300" />
-                </Avatar>
-                <h3 className="text-xl font-bold mb-1">Rakkan Abdallah</h3>
+                <h3 className="text-xl font-bold mb-2">Rakkan Abdallah</h3>
                 <p className="text-blue-200 mb-4 font-medium">Product Manager</p>
                 <p className="text-center text-blue-100 text-sm">
                   Shaping our product roadmap and ensuring our solutions deliver maximum value to customers.
@@ -151,18 +142,14 @@ const AboutPage = () => {
               </div>
             </Card>
 
-            {/* Team Member 3 */}
+            {/* Team Member 3 - Tasneem Abdallah with name on one line */}
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
                 <div className="absolute right-0 top-0 bg-amber-700/40 w-32 h-32 rounded-full blur-2xl"></div>
-                <div className="bg-gradient-to-br from-amber-600 to-amber-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
-                  <ChartBar className="h-10 w-10 text-amber-100" />
+                <div className="bg-gradient-to-br from-amber-600 to-amber-800 p-8 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <ChartBar className="h-12 w-12 text-amber-100" />
                 </div>
-                <Avatar className="w-20 h-20 mb-4 border-4 border-amber-700 z-10">
-                  <AvatarFallback className="bg-amber-700 text-white text-xl">TA</AvatarFallback>
-                  <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300" />
-                </Avatar>
-                <h3 className="text-xl font-bold mb-1">Tasneem Abdallah</h3>
+                <h3 className="text-xl font-bold mb-2 whitespace-nowrap">Tasneem Abdallah</h3>
                 <p className="text-blue-200 mb-4 font-medium">Chief Data Analyst</p>
                 <p className="text-center text-blue-100 text-sm">
                   Transforming complex data into actionable insights that drive business decisions.
@@ -170,18 +157,14 @@ const AboutPage = () => {
               </div>
             </Card>
 
-            {/* New Team Member: Ahmed Rok */}
+            {/* Team Member 4 */}
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
                 <div className="absolute right-0 top-0 bg-indigo-700/40 w-32 h-32 rounded-full blur-2xl"></div>
-                <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
-                  <Brain className="h-10 w-10 text-indigo-100" />
+                <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 p-8 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Brain className="h-12 w-12 text-indigo-100" />
                 </div>
-                <Avatar className="w-20 h-20 mb-4 border-4 border-indigo-700 z-10">
-                  <AvatarFallback className="bg-indigo-700 text-white text-xl">AR</AvatarFallback>
-                  <AvatarImage src="https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?auto=format&fit=crop&w=300" />
-                </Avatar>
-                <h3 className="text-xl font-bold mb-1">Ahmed Rok</h3>
+                <h3 className="text-xl font-bold mb-2">Ahmed Rok</h3>
                 <p className="text-indigo-200 mb-4 font-medium">AI Research Lead</p>
                 <p className="text-center text-indigo-100 text-sm">
                   Driving innovative AI research and developing cutting-edge machine learning strategies.

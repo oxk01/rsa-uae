@@ -3,9 +3,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
-  Phone, 
-  Mail, 
-  MapPin, 
   Facebook, 
   Instagram, 
   Twitter, 
@@ -15,8 +12,7 @@ import {
   FileText,
   Users,
   BookOpen,
-  MessageSquare,
-  Cookie
+  MessageSquare
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -28,7 +24,7 @@ const Footer = () => {
   return (
     <footer className={`bg-blue-950 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Product Column */}
           <div>
             <h3 className="font-semibold text-xl mb-4">Product</h3>
@@ -94,25 +90,6 @@ const Footer = () => {
                   <FileText className="h-4 w-4" />
                   <span>Terms of Service</span>
                 </Link>
-              </li>
-            </ul>
-          </div>
-          
-          {/* Contact Us Column */}
-          <div>
-            <h3 className="font-semibold text-xl mb-4">Contact Us</h3>
-            <ul className="space-y-3">
-              <li className="flex items-center">
-                <Mail className="h-4 w-4 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">info@reviewwhisperai.com</span>
-              </li>
-              <li className="flex items-center">
-                <Phone className="h-4 w-4 mr-3 flex-shrink-0" />
-                <span className="text-gray-300">+971 50 5350403</span>
-              </li>
-              <li className="flex items-start">
-                <MapPin className="h-4 w-4 mr-3 mt-1 flex-shrink-0" />
-                <span className="text-gray-300">123 AI Street, Tech City, TC 12345</span>
               </li>
             </ul>
           </div>
