@@ -6,14 +6,7 @@ import {
   Facebook, 
   Instagram, 
   Twitter, 
-  Linkedin,
-  Play, 
-  Tag,
-  FileText,
-  Users,
-  BookOpen,
-  MessageSquare,
-  Mail
+  Linkedin
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -25,25 +18,25 @@ const Footer = () => {
   return (
     <footer className={`bg-blue-950 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
           {/* Product Column */}
           <div>
             <h3 className="font-semibold text-xl mb-4">Product</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Technology</span>
                 </Link>
               </li>
               <li>
-                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <Play className="h-4 w-4" />
                   <span>Demo</span>
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <Tag className="h-4 w-4" />
                   <span>Pricing</span>
                 </Link>
@@ -56,25 +49,25 @@ const Footer = () => {
             <h3 className="font-semibold text-xl mb-4">Company</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <Users className="h-4 w-4" />
                   <span>About Us</span>
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <BookOpen className="h-4 w-4" />
                   <span>Blog</span>
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <MessageSquare className="h-4 w-4" />
                   <span>Contact</span>
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <Mail className="h-4 w-4" />
                   <span>Contact Sales</span>
                 </Link>
@@ -87,13 +80,13 @@ const Footer = () => {
             <h3 className="font-semibold text-xl mb-4">Legal</h3>
             <ul className="space-y-3">
               <li>
-                <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Privacy Policy</span>
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
                   <FileText className="h-4 w-4" />
                   <span>Terms of Service</span>
                 </Link>
@@ -104,44 +97,40 @@ const Footer = () => {
         
         <Separator className="bg-blue-900 my-8" />
         
-        <div className="flex flex-col md:flex-row md:justify-between items-center text-gray-300 text-sm">
-          <div className="mb-4 md:mb-0 flex items-center">
+        <div className="flex flex-col items-center text-center text-gray-300 text-sm space-y-4">
+          <div className="flex items-center">
             <Link to="/" className="text-xl font-semibold text-white hover:text-gray-200 transition-colors">
               RSA
             </Link>
           </div>
-          <div className="flex flex-wrap justify-center gap-4 mb-4 md:mb-0">
-            <Link 
-              to="/privacy" 
-              className="hover:text-white transition-colors"
-            >
-              Privacy Policy
-            </Link>
-            <Link 
-              to="/terms" 
-              className="hover:text-white transition-colors"
-            >
-              Terms of Service
-            </Link>
-          </div>
+          
           <div className="flex space-x-4">
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Facebook className="h-5 w-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">
+            <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Twitter className="h-5 w-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Instagram className="h-5 w-5" />
             </a>
-            <a href="#" className="text-gray-300 hover:text-white transition-colors">
+            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Linkedin className="h-5 w-5" />
             </a>
           </div>
-        </div>
-        
-        <div className="mt-6 text-center text-gray-400 text-sm">
-          © {year} RSA. All rights reserved.
+          
+          <div className="flex space-x-4">
+            <Link to="/privacy" className="hover:text-white transition-colors">
+              Privacy Policy
+            </Link>
+            <Link to="/terms" className="hover:text-white transition-colors">
+              Terms of Service
+            </Link>
+          </div>
+          
+          <div className="mt-4">
+            © {year} RSA. All rights reserved.
+          </div>
         </div>
       </div>
     </footer>
