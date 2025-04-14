@@ -1,8 +1,10 @@
 
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { MessageSquare, AlertCircle, FileSpreadsheet, FileText } from 'lucide-react';
-import DashboardCard from './DashboardCard';
+import { FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 interface Review {
   id: number;
@@ -15,6 +17,13 @@ interface Review {
   };
   reviewCount: number;
   source?: string;
+  rating?: string;
+  reviewText?: string;
+  sentimentLabel?: string;
+  keywords?: Array<{
+    word: string;
+    sentiment: string;
+  }>;
 }
 
 interface RecentReviewsProps {
@@ -24,137 +33,159 @@ interface RecentReviewsProps {
 const RecentReviews = ({ reviews }: RecentReviewsProps) => {
   const hasData = reviews && reviews.length > 0;
   
-  // Convert reviews to chart data format
-  const chartData = hasData ? reviews.slice(0, 5).map(review => ({
-    name: review.title.length > 15 ? review.title.substring(0, 15) + '...' : review.title,
-    positive: review.sentiment.positive,
-    neutral: review.sentiment.neutral,
-    negative: review.sentiment.negative,
-    source: review.source || (review.title.includes('.') ? 'excel' : 'text')
-  })) : [
-    { name: 'Product Review', positive: 65, neutral: 25, negative: 10, source: 'text' },
-    { name: 'Service Review', positive: 45, neutral: 35, negative: 20, source: 'text' },
-    { name: 'Website Review', positive: 55, neutral: 30, negative: 15, source: 'excel' },
+  // Sample data for demonstration
+  const sampleReviews = [
+    {
+      id: 1,
+      title: "AI-powered Sentiment Analysis Tool",
+      date: "2025-04-07",
+      sentiment: { positive: 70, neutral: 20, negative: 10 },
+      reviewCount: 1,
+      source: "text",
+      rating: "5/5",
+      reviewText: "I've been using this AI-powered sentiment analysis tool for a few months to track customer feedback and it's been a game-changer. The tool processes thousands of reviews in a fraction of the time it would take manually. The sentiment analysis is incredibly accurate, and it breaks down emotions related to different aspects like product quality, service, and price. The user interface is intuitive, and the results are displayed in an easy-to-understand format. It has helped me improve my customer service and fine-tune marketing strategies. I highly recommend it for businesses looking to leverage customer feedback.",
+      sentimentLabel: "Negative",
+      keywords: [
+        { word: "quality", sentiment: "negative" },
+        { word: "price", sentiment: "negative" },
+        { word: "service", sentiment: "neutral" }
+      ]
+    },
+    {
+      id: 2,
+      title: "Fitness Tracker Smartwatch",
+      date: "2025-04-07",
+      sentiment: { positive: 60, neutral: 30, negative: 10 },
+      reviewCount: 1,
+      source: "excel",
+      rating: "4/5",
+      reviewText: "I recently purchased this fitness tracker smartwatch to help me track my workouts, sleep patterns, and overall health. The watch is comfortable to wear, and the display is clear even in bright sunlight. The heart rate monitor and step counter are pretty accurate, but the GPS tracking sometimes takes a while to connect, which can be frustrating during runs. Overall, it provides excellent value for the price, and the companion app is very helpful in setting fitness goals and tracking progress. It's definitely helped me stay motivated to exercise regularly.",
+      sentimentLabel: "Neutral",
+      keywords: [
+        { word: "quality", sentiment: "positive" },
+        { word: "price", sentiment: "negative" },
+        { word: "service", sentiment: "neutral" }
+      ]
+    },
+    {
+      id: 3,
+      title: "Online Grocery Delivery Service",
+      date: "2025-04-07",
+      sentiment: { positive: 40, neutral: 20, negative: 40 },
+      reviewCount: 1,
+      source: "text",
+      rating: "3/5",
+      reviewText: "I've been using this online grocery delivery service for a few weeks now, and while it has its benefits, I've encountered a few issues. The convenience of having groceries delivered to my door is fantastic, and the website is easy to navigate. However, some items are often out of stock, and the delivery times can sometimes be delayed. Customer service is responsive, but they don't always have clear solutions to fix issues with missing items. I'm satisfied with the overall convenience, but the service could improve in terms of inventory management and delivery reliability.",
+      sentimentLabel: "Negative",
+      keywords: [
+        { word: "quality", sentiment: "negative" },
+        { word: "price", sentiment: "negative" },
+        { word: "service", sentiment: "neutral" }
+      ]
+    }
   ];
   
-  return (
-    <DashboardCard 
-      title="Recent Reviews" 
-      icon={<MessageSquare className="h-4 w-4" />}
-      className="col-span-1 md:col-span-3"
-    >
-      {!hasData && (
-        <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
-          <AlertCircle className="h-4 w-4" />
-          <span>Using sample data. Analyze reviews to see actual data.</span>
-        </div>
-      )}
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={chartData}
-            margin={{
-              top: 20,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-            barSize={20}
-          >
-            <CartesianGrid strokeDasharray="3 3" opacity={0.2} vertical={false} />
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip content={<CustomTooltip />} />
-            <Bar dataKey="positive" stackId="a" fill="#3b82f6" />
-            <Bar dataKey="neutral" stackId="a" fill="#8E9196" />
-            <Bar dataKey="negative" stackId="a" fill="#F97316" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-      
-      <div className="mt-6">
-        <h3 className="text-sm font-medium mb-2">Review Details</h3>
-        <div className="space-y-3">
-          {hasData ? (
-            reviews.slice(0, 3).map(review => (
-              <div key={review.id} className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-                <div className="flex justify-between items-start">
-                  <div className="flex items-center">
-                    {review.title.includes('.') ? (
-                      <FileSpreadsheet className="h-4 w-4 mr-2 text-emerald-600" />
-                    ) : (
-                      <FileText className="h-4 w-4 mr-2 text-blue-600" />
-                    )}
-                    <span className="font-medium">{review.title}</span>
-                  </div>
-                  <span className="text-xs text-gray-500">{review.date}</span>
-                </div>
-                <div className="mt-1.5 text-sm">
-                  <div className="flex gap-2 text-xs">
-                    <span className="inline-flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-blue-500 mr-1"></span>
-                      Positive: {review.sentiment.positive}%
-                    </span>
-                    <span className="inline-flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-gray-500 mr-1"></span>
-                      Neutral: {review.sentiment.neutral}%
-                    </span>
-                    <span className="inline-flex items-center">
-                      <span className="w-2 h-2 rounded-full bg-orange-500 mr-1"></span>
-                      Negative: {review.sentiment.negative}%
-                    </span>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
-              <p className="text-sm text-gray-500">No review data available yet. Analyze some reviews to see them here.</p>
-            </div>
-          )}
-        </div>
-      </div>
-      
-      <div className="flex justify-center gap-4 mt-4">
-        <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#3b82f6] mr-1"></div>
-          <span className="text-xs">Positive</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#8E9196] mr-1"></div>
-          <span className="text-xs">Neutral</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#F97316] mr-1"></div>
-          <span className="text-xs">Negative</span>
-        </div>
-      </div>
-    </DashboardCard>
-  );
-};
-
-// Custom tooltip that shows values in a more readable format
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
+  const displayReviews = hasData ? reviews.slice(0, 5) : sampleReviews;
+  
+  // Helper function to render star ratings
+  const renderStarRating = (rating: string) => {
+    const ratingValue = parseFloat(rating.split('/')[0]);
+    const maxRating = parseFloat(rating.split('/')[1]);
+    const filledStars = Math.round(ratingValue);
+    const emptyStars = maxRating - filledStars;
+    
     return (
-      <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
-        <p className="font-semibold">{label}</p>
-        <div className="flex items-center mb-1">
-          {payload[0].payload.source === 'excel' ? (
-            <FileSpreadsheet className="h-3 w-3 mr-1 text-emerald-600" />
-          ) : (
-            <FileText className="h-3 w-3 mr-1 text-blue-600" />
-          )}
-          <span className="text-xs">{payload[0].payload.source === 'excel' ? 'Excel Import' : 'Text Input'}</span>
-        </div>
-        <div className="text-[#3b82f6]">Positive: {payload[0].value}%</div>
-        <div className="text-[#8E9196]">Neutral: {payload[1].value}%</div>
-        <div className="text-[#F97316]">Negative: {payload[2].value}%</div>
+      <div className="flex">
+        {[...Array(filledStars)].map((_, i) => (
+          <span key={`filled-${i}`} className="text-yellow-400">★</span>
+        ))}
+        {[...Array(emptyStars)].map((_, i) => (
+          <span key={`empty-${i}`} className="text-gray-300">★</span>
+        ))}
       </div>
     );
-  }
-
-  return null;
+  };
+  
+  // Helper function to determine badge color based on sentiment
+  const getBadgeColor = (sentiment: string) => {
+    switch(sentiment.toLowerCase()) {
+      case 'positive': return 'bg-green-100 text-green-800';
+      case 'negative': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+  
+  return (
+    <div className="bg-white rounded-lg border shadow-sm p-6">
+      <Tabs defaultValue="recent-reviews">
+        <TabsList className="mb-4 bg-gray-100 p-1 rounded-md">
+          <TabsTrigger value="aspect-analysis">Aspect Analysis</TabsTrigger>
+          <TabsTrigger value="sentiment-trends">Sentiment Trends</TabsTrigger>
+          <TabsTrigger value="recent-reviews">Recent Reviews</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="recent-reviews">
+          <div>
+            <div className="flex justify-between items-center mb-4">
+              <div>
+                <h2 className="text-xl font-semibold">Recent Reviews</h2>
+                <p className="text-sm text-gray-500">Latest customer reviews with sentiment analysis</p>
+              </div>
+              <Button variant="outline" size="sm" className="flex items-center gap-1">
+                <Download className="h-4 w-4" />
+                Export to Excel
+              </Button>
+            </div>
+            
+            <div className="space-y-6">
+              {displayReviews.map((review) => (
+                <div key={review.id} className="border rounded-lg p-4">
+                  <div className="flex justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${getBadgeColor(review.sentimentLabel || '')}`}>
+                        {review.sentimentLabel}
+                      </span>
+                      {renderStarRating(review.rating || "0/5")}
+                    </div>
+                    <span className="text-sm text-gray-500">{review.date}</span>
+                  </div>
+                  
+                  <p className="font-medium mb-1">
+                    Review for an {review.title} Rating: {review.rating}
+                  </p>
+                  
+                  <p className="text-sm text-gray-700 mb-4">{review.reviewText}</p>
+                  
+                  <div className="flex flex-wrap gap-2">
+                    {review.keywords?.map((keyword, idx) => (
+                      <span 
+                        key={idx} 
+                        className={`px-2 py-1 rounded-full text-xs ${
+                          keyword.sentiment === 'positive' 
+                            ? 'bg-green-100 text-green-800' 
+                            : keyword.sentiment === 'negative'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {keyword.word}: {keyword.sentiment}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              
+              {!hasData && displayReviews.length === 0 && (
+                <div className="text-center p-8">
+                  <p className="text-gray-500">No reviews available yet.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
 };
 
 export default RecentReviews;

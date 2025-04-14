@@ -26,6 +26,10 @@ interface Analysis {
     negative: number;
   };
   keywords: { word: string; sentiment: string; count: number }[];
+  sentimentLabel?: string;
+  rating?: string;
+  reviewText?: string;
+  source?: string;
 }
 
 const Index = () => {
@@ -130,6 +134,31 @@ const Index = () => {
     return savedAnalyses.reduce((total, analysis) => total + analysis.reviewCount, 0).toString();
   };
   
+  // Enhance savedAnalyses with additional properties for RecentReviews
+  const enhancedAnalyses = savedAnalyses.map(analysis => {
+    // Derive sentiment label from sentiment percentages
+    let sentimentLabel = "Neutral";
+    if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
+      sentimentLabel = "Positive";
+    } else if (analysis.sentiment.negative > Math.max(analysis.sentiment.neutral, analysis.sentiment.positive)) {
+      sentimentLabel = "Negative";
+    }
+    
+    // Calculate rating based on positive sentiment (1-5 scale)
+    const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
+    
+    // Add placeholder review text if not present
+    const reviewText = analysis.reviewText || `This is a sample review for ${analysis.title}.`;
+    
+    return {
+      ...analysis,
+      sentimentLabel,
+      rating,
+      reviewText,
+      source: analysis.source || (analysis.title.includes('.') ? 'excel' : 'text')
+    };
+  });
+  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -182,7 +211,7 @@ const Index = () => {
             </div>
 
             <div className="mt-8">
-              <RecentReviews reviews={savedAnalyses} />
+              <RecentReviews reviews={enhancedAnalyses} />
             </div>
           </>
         ) : (
