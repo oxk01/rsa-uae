@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn } from 'lucide-react';
+import { LogIn, LockOpen } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ const Login = () => {
 
   // Get the intended destination if the user was redirected here
   const from = location.state?.from?.pathname || '/';
+  const wasRedirected = location.state?.from !== undefined;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +29,7 @@ const Login = () => {
       await login(email, password);
       toast({
         title: "Login successful",
-        description: "Welcome back to RSA!",
+        description: "Welcome back to RSA! You now have full access to all features.",
       });
       // Navigate to the page they were trying to access, or home by default
       navigate(from, { replace: true });
@@ -56,6 +58,16 @@ const Login = () => {
             </Link>
           </p>
         </div>
+        
+        {wasRedirected && (
+          <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
+            <LockOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            <AlertTitle>Authentication required</AlertTitle>
+            <AlertDescription>
+              Log in or create an account to access all features and pages of RSA.
+            </AlertDescription>
+          </Alert>
+        )}
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">

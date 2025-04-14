@@ -46,36 +46,15 @@ const App = () => {
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
-                    <Route path="/terms" element={<TermsAndConditions />} />
-                    <Route path="/privacy" element={<PrivacyPolicy />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route path="/pricing" element={<Pricing />} />
                     
                     {/* Protected routes - only accessible when logged in */}
-                    <Route 
-                      path="/dashboard" 
-                      element={
-                        <ProtectedRoute>
-                          <Dashboard />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/demo" 
-                      element={
-                        <ProtectedRoute>
-                          <Demo />
-                        </ProtectedRoute>
-                      } 
-                    />
-                    <Route 
-                      path="/blog" 
-                      element={
-                        <ProtectedRoute>
-                          <Blog />
-                        </ProtectedRoute>
-                      } 
-                    />
+                    <Route path="/terms" element={<ProtectedRoute><TermsAndConditions /></ProtectedRoute>} />
+                    <Route path="/privacy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
+                    <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+                    <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                    <Route path="/demo" element={<ProtectedRoute><Demo /></ProtectedRoute>} />
+                    <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
                     
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />

@@ -4,7 +4,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ShieldAlert } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -38,8 +40,26 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   }
   
   if (!isAuthenticated) {
-    // Redirect to login if not authenticated and store the location they were trying to access
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    // Display a more informative page instead of immediately redirecting
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[70vh] bg-white dark:bg-gray-900 px-4">
+        <div className="max-w-md w-full text-center space-y-6">
+          <ShieldAlert className="h-16 w-16 text-amber-500 mx-auto" />
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Authentication Required</h1>
+          <p className="text-gray-600 dark:text-gray-300 mb-8">
+            This page is only accessible to authenticated users. Please log in or create an account to view this content.
+          </p>
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Button asChild variant="default" className="bg-blue-600 hover:bg-blue-700">
+              <Link to="/login" state={{ from: location }}>Log In</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/signup" state={{ from: location }}>Create Account</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
   
   // Apply RTL class for Arabic
