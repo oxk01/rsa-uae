@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { CalendarDays, User, ChevronDown, ChevronRight, Download, FileText, ExternalLink } from 'lucide-react';
+import { CalendarDays, User, ChevronDown, ChevronRight, FileText, ExternalLink, BookOpen, FileSearch, Book } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { toast } from '@/components/ui/use-toast';
@@ -26,7 +26,7 @@ const blogPosts = [
     date: '2025-03-20',
     author: 'Dr. James Wilson',
     category: 'research',
-    image: 'https://www.kdnuggets.com/wp-content/uploads/transformer-model-3.jpg',
+    icon: BookOpen,
     featured: true,
     pdfUrl: 'https://arxiv.org/pdf/1810.04805.pdf',
     paperTitle: 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'
@@ -38,7 +38,7 @@ const blogPosts = [
     date: '2025-01-22',
     author: 'Dr. Lisa Wang',
     category: 'aiethics',
-    image: 'https://www.mdpi.com/sustainability/sustainability-12-01470/article_deploy/html/images/sustainability-12-01470-g001.png',
+    icon: Book,
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1912.10389.pdf',
     paperTitle: 'The Ethics of AI Ethics: An Evaluation of Guidelines'
@@ -50,10 +50,10 @@ const blogPosts = [
     date: '2025-01-15',
     author: 'Miguel Rodriguez',
     category: 'casestudies',
-    image: 'https://cdn.analyticsvidhya.com/wp-content/uploads/2023/02/Netflix-Data-Science-Case-Study.png',
+    icon: FileSearch,
     featured: false,
-    pdfUrl: 'https://arxiv.org/pdf/2104.12463.pdf',
-    paperTitle: 'Recommendation Systems in the Media Industry: Applications and Impacts on Viewing Experience'
+    pdfUrl: 'https://dl.acm.org/doi/pdf/10.1145/3240323.3240338',
+    paperTitle: 'A Case Study of Netflix Recommendations: Exploring the Recommendation Process'
   },
   {
     id: 4,
@@ -62,7 +62,7 @@ const blogPosts = [
     date: '2024-12-12',
     author: 'Emma Chen',
     category: 'tutorials',
-    image: 'https://www.datacamp.com/blog/images/sentiment-analysis.fb456785.png',
+    icon: FileText,
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1910.03771.pdf',
     paperTitle: 'A Practical Tutorial on Building Transformers-Based NLP Applications'
@@ -74,10 +74,10 @@ const blogPosts = [
     date: '2025-01-05',
     author: 'Sarah Johnson',
     category: 'bigdata',
-    image: 'https://dmm2njo0ugzmw.cloudfront.net/wp-content/uploads/2020/02/BI-Process.png',
+    icon: FileSearch,
     featured: false,
-    pdfUrl: 'https://arxiv.org/pdf/1709.01254.pdf',
-    paperTitle: 'Natural Language Processing for Business Intelligence Analytics'
+    pdfUrl: 'https://ieeexplore.ieee.org/document/8258137',
+    paperTitle: 'Natural Language Processing for Business Intelligence Analytics: A Systematic Literature Review'
   },
   {
     id: 6,
@@ -86,7 +86,7 @@ const blogPosts = [
     date: '2025-02-18',
     author: 'Prof. Ahmed Hassan',
     category: 'technology',
-    image: 'https://miro.medium.com/max/1400/0*74CJ_75Vjk5Vzx0R.png',
+    icon: Book,
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/1911.06708.pdf',
     paperTitle: 'A Survey of Cross-lingual Word Embedding Models for Multilingual Sentiment Analysis'
@@ -98,10 +98,10 @@ const blogPosts = [
     date: '2025-02-02',
     author: 'Dr. Maria Gonzalez',
     category: 'technology',
-    image: 'https://d3i71xaburhd42.cloudfront.net/fdf98d3a619d8f0b2fbfbebd09583a5c82cfbd12/5-Figure1-1.png',
+    icon: BookOpen,
     featured: false,
-    pdfUrl: 'https://arxiv.org/pdf/1911.11863.pdf',
-    paperTitle: 'Target-oriented Opinion Words Extraction with Target-fused Neural Sequence Labeling'
+    pdfUrl: 'https://aclanthology.org/C16-1146.pdf',
+    paperTitle: 'Aspect Based Sentiment Analysis with Gated Convolutional Networks'
   },
   {
     id: 8,
@@ -110,7 +110,7 @@ const blogPosts = [
     date: '2025-02-28',
     author: 'Prof. John Smith',
     category: 'research',
-    image: 'https://miro.medium.com/max/1400/0*1zi9FUhP96mqbU8Y.png',
+    icon: FileText,
     featured: false,
     pdfUrl: 'https://arxiv.org/pdf/2009.07896.pdf',
     paperTitle: 'Deep Learning for Sentiment Analysis: A Survey'
@@ -164,7 +164,7 @@ const BlogPage = () => {
       </section>
       
       {/* Category filter tabs */}
-      <section className="bg-white py-8 border-b">
+      <section className="bg-white dark:bg-gray-900 py-8 border-b dark:border-gray-800">
         <div className="container mx-auto max-w-6xl px-4">
           <div className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => (
@@ -172,7 +172,7 @@ const BlogPage = () => {
                 key={category.id}
                 onClick={() => handleCategoryChange(category.id)}
                 variant={activeCategory === category.id ? "default" : "outline"}
-                className={`${activeCategory === category.id ? 'bg-blue-600' : 'bg-white text-gray-700'} rounded-md`}
+                className={`${activeCategory === category.id ? 'bg-blue-600' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300'} rounded-md`}
               >
                 {category.name}
               </Button>
@@ -181,17 +181,15 @@ const BlogPage = () => {
         </div>
       </section>
       
-      <div className="container mx-auto max-w-6xl px-4 py-12">
+      <div className="container mx-auto max-w-6xl px-4 py-12 bg-white dark:bg-gray-900">
         {/* Featured article */}
         {featuredPost && activeCategory === 'all' && currentPage === 1 && (
           <div className="mb-16">
-            <div className="relative h-96 rounded-xl overflow-hidden mb-6">
+            <div className="relative h-96 rounded-xl overflow-hidden mb-6 bg-blue-100 dark:bg-blue-900">
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent z-10"></div>
-              <img 
-                src={featuredPost.image} 
-                alt={featuredPost.title} 
-                className="w-full h-full object-cover"
-              />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <featuredPost.icon className="h-48 w-48 text-blue-500/30 dark:text-blue-300/30" />
+              </div>
               <div className="absolute bottom-0 left-0 right-0 p-8 z-20">
                 <div className="inline-block bg-blue-600 text-white px-3 py-1 rounded-md text-sm font-medium mb-3">
                   Featured
@@ -220,18 +218,14 @@ const BlogPage = () => {
         {/* Articles grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {currentPosts.map((post) => (
-            <div key={post.id} className="bg-white rounded-lg shadow-md overflow-hidden border border-gray-100 hover:shadow-lg transition-shadow">
-              <div className="h-48 overflow-hidden">
-                <img 
-                  src={post.image} 
-                  alt={post.title} 
-                  className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-                />
+            <div key={post.id} className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-gray-700 hover:shadow-lg transition-shadow">
+              <div className="h-48 overflow-hidden bg-blue-50 dark:bg-gray-700 flex items-center justify-center">
+                <post.icon className="h-24 w-24 text-blue-500/50 dark:text-blue-400/50" />
               </div>
               
               <div className="p-5">
-                <div className="flex items-center text-sm text-gray-500 mb-3">
-                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded capitalize">
+                <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mb-3">
+                  <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300 text-xs px-2 py-1 rounded capitalize">
                     {post.category === 'aiethics' ? 'AI Ethics' : post.category === 'bigdata' ? 'Big Data' : post.category === 'casestudies' ? 'Case Studies' : post.category}
                   </span>
                   <span className="mx-2">•</span>
@@ -241,11 +235,11 @@ const BlogPage = () => {
                   </div>
                 </div>
                 
-                <h2 className="text-lg font-semibold mb-2 line-clamp-2">{post.title}</h2>
-                <p className="text-gray-600 text-sm mb-4 line-clamp-3">{post.excerpt}</p>
+                <h2 className="text-lg font-semibold mb-2 line-clamp-2 text-gray-900 dark:text-white">{post.title}</h2>
+                <p className="text-gray-600 dark:text-gray-300 text-sm mb-4 line-clamp-3">{post.excerpt}</p>
                 
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center text-sm text-gray-600">
+                  <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
                     <User className="h-4 w-4 mr-1" />
                     <span>{post.author}</span>
                   </div>
@@ -254,7 +248,7 @@ const BlogPage = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => handleDownloadPdf(post.pdfUrl, post.paperTitle)}
-                    className="text-blue-600 border-blue-600 hover:bg-blue-50"
+                    className="text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/50"
                   >
                     <ExternalLink className="mr-1 h-3 w-3" /> Read Paper
                   </Button>
@@ -299,7 +293,7 @@ const BlogPage = () => {
             <Button
               onClick={() => setCurrentPage(currentPage + 1)}
               variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              className="border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/50"
             >
               Load More Articles <ChevronDown className="ml-2 h-4 w-4" />
             </Button>

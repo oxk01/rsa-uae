@@ -39,14 +39,14 @@ const Navigation = () => {
   };
   
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-10">
+    <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="bg-blue-600 rounded p-1">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
-            <Link to="/" className="text-xl font-semibold text-blue-900">
+            <Link to="/" className="text-xl font-semibold text-blue-900 dark:text-blue-300">
               RSA
             </Link>
           </div>
@@ -73,11 +73,24 @@ const Navigation = () => {
                 <NavigationMenuTrigger>{t('solutions')}</NavigationMenuTrigger>
                 <NavigationMenuContent>
                   <div className="w-[200px] p-2">
-                    <Link to="/blog" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                    <Link to="/blog" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
                       {t('blog')}
                     </Link>
-                    <Link to="/contact" className="block px-2 py-1 hover:bg-gray-100 rounded-md">
+                    <Link to="/contact" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
                       {t('contact')}
+                    </Link>
+                    {isAuthenticated && (
+                      <>
+                        <Link to="/dashboard" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+                          {t('dashboard')}
+                        </Link>
+                        <Link to="/demo" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+                          {t('demo')}
+                        </Link>
+                      </>
+                    )}
+                    <Link to="/pricing" className="block px-2 py-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+                      {t('pricing')}
                     </Link>
                   </div>
                 </NavigationMenuContent>
@@ -105,20 +118,20 @@ const Navigation = () => {
             <div className="flex items-center space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className="rounded-full p-1.5 hover:bg-gray-100">
-                    <Globe className="h-5 w-5 text-gray-600" />
+                  <button className="rounded-full p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800">
+                    <Globe className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem 
                     onClick={() => handleLanguageChange('en')}
-                    className={language === 'en' ? 'bg-gray-100' : ''}
+                    className={language === 'en' ? 'bg-gray-100 dark:bg-gray-800' : ''}
                   >
                     English
                   </DropdownMenuItem>
                   <DropdownMenuItem 
                     onClick={() => handleLanguageChange('ar')}
-                    className={language === 'ar' ? 'bg-gray-100' : ''}
+                    className={language === 'ar' ? 'bg-gray-100 dark:bg-gray-800' : ''}
                   >
                     العربية
                   </DropdownMenuItem>
@@ -126,7 +139,7 @@ const Navigation = () => {
               </DropdownMenu>
               
               <div className="flex h-6 items-center space-x-1">
-                <Sun className="h-4 w-4 text-gray-500" />
+                <Sun className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                 <button
                   onClick={toggleTheme}
                   className={`
@@ -144,13 +157,13 @@ const Navigation = () => {
                     `}
                   />
                 </button>
-                <Moon className="h-4 w-4 text-gray-500" />
+                <Moon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
               </div>
             </div>
             
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="text-sm font-medium hidden md:block">
+                <div className="text-sm font-medium hidden md:block text-gray-700 dark:text-gray-300">
                   {user?.name || user?.email}
                 </div>
                 <Button variant="outline" size="sm" onClick={logout}>

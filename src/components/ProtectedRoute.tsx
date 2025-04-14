@@ -28,10 +28,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
         <div className="flex flex-col items-center">
-          <Loader2 className="h-12 w-12 text-blue-600 animate-spin mb-3" />
-          <div className="text-lg font-medium text-gray-700">Loading...</div>
+          <Loader2 className="h-12 w-12 text-blue-600 dark:text-blue-400 animate-spin mb-3" />
+          <div className="text-lg font-medium text-gray-700 dark:text-gray-300">Loading...</div>
         </div>
       </div>
     );
@@ -45,7 +45,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   // Apply RTL class for Arabic
   const rtlClass = language === 'ar' ? 'rtl' : '';
   
-  return <div className={rtlClass}>{children}</div>;
+  return <div className={`${rtlClass}`}>{children}</div>;
 };
 
 export default ProtectedRoute;

@@ -89,7 +89,7 @@
   }
 }
 
-/* Specific dark mode overrides for better readability */
+/* Specific dark mode improvements for better readability */
 .dark .text-gray-600,
 .dark .text-gray-700,
 .dark .text-gray-800 {
@@ -124,8 +124,59 @@
   @apply text-white;
 }
 
+.dark a:not(.no-dark-styling) {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+.dark .text-blue-900 {
+  @apply text-blue-400;
+}
+
 /* Better shadows for dark mode */
 .dark .shadow-md,
 .dark .shadow-sm {
   @apply shadow-gray-900;
+}
+
+/* Better button visibility in dark mode */
+.dark .btn,
+.dark button:not(.no-dark-styling) {
+  @apply border-gray-700 bg-gray-800 hover:bg-gray-700;
+}
+
+/* More readable paragraphs in dark mode */
+.dark p {
+  @apply text-gray-300;
+}
+
+/* Ensure form elements are readable */
+.dark input, 
+.dark textarea, 
+.dark select {
+  @apply bg-gray-800 border-gray-700 text-gray-200;
+}
+
+/* Fix background colors for cards and sections */
+.dark .bg-gray-100 {
+  @apply bg-gray-800;
+}
+
+/* Better code blocks and pre elements */
+.dark pre, 
+.dark code {
+  @apply bg-gray-900 text-gray-300;
+}
+
+/* General utility for enforcing dark text in light mode / light text in dark mode */
+.text-adaptive {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+/* Fix for all buttons to ensure they're visible */
+.dark button[class*="bg-blue"] {
+  @apply bg-blue-600 hover:bg-blue-700 text-white;
+}
+
+.dark button[class*="bg-gray"] {
+  @apply bg-gray-700 hover:bg-gray-600 text-white;
 }
