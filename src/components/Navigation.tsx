@@ -89,33 +89,39 @@ const Navigation = () => {
                   <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180 ml-1" />
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <div className="w-[240px] p-3 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+                  <ul className="w-[240px] p-3 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                     {isAuthenticated && (
-                      <Link 
-                        to="/dashboard"
-                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                      >
-                        <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('dashboard')}</span>
-                      </Link>
+                      <li>
+                        <Link 
+                          to="/dashboard"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{t('dashboard')}</span>
+                        </Link>
+                      </li>
                     )}
                     {isAuthenticated && (
+                      <li>
+                        <Link 
+                          to="/demo" 
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+                        >
+                          <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{t('demo')}</span>
+                        </Link>
+                      </li>
+                    )}
+                    <li>
                       <Link 
-                        to="/demo" 
+                        to="/pricing" 
                         className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                       >
-                        <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('demo')}</span>
+                        <Tag className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('pricing')}</span>
                       </Link>
-                    )}
-                    <Link 
-                      to="/pricing" 
-                      className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                    >
-                      <Tag className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                      <span className="font-medium text-gray-700 dark:text-gray-300">{t('pricing')}</span>
-                    </Link>
-                  </div>
+                    </li>
+                  </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
               
