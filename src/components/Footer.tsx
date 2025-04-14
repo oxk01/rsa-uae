@@ -6,7 +6,14 @@ import {
   Facebook, 
   Instagram, 
   Twitter, 
-  Linkedin
+  Linkedin,
+  FileText,
+  Play,
+  Tag,
+  Users,
+  BookOpen,
+  MessageSquare,
+  Mail
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -97,14 +104,14 @@ const Footer = () => {
         
         <Separator className="bg-blue-900 my-8" />
         
-        <div className="flex flex-col items-center text-center text-gray-300 text-sm space-y-4">
-          <div className="flex items-center">
+        <div className="flex flex-col items-center text-center text-gray-300 text-sm">
+          <div className="flex items-center mb-4">
             <Link to="/" className="text-xl font-semibold text-white hover:text-gray-200 transition-colors">
               RSA
             </Link>
           </div>
           
-          <div className="flex space-x-4">
+          <div className="flex space-x-6 mb-4">
             <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Facebook className="h-5 w-5" />
             </a>
@@ -117,15 +124,6 @@ const Footer = () => {
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="text-gray-300 hover:text-white transition-colors">
               <Linkedin className="h-5 w-5" />
             </a>
-          </div>
-          
-          <div className="flex space-x-4">
-            <Link to="/privacy" className="hover:text-white transition-colors">
-              Privacy Policy
-            </Link>
-            <Link to="/terms" className="hover:text-white transition-colors">
-              Terms of Service
-            </Link>
           </div>
           
           <div className="mt-4">
