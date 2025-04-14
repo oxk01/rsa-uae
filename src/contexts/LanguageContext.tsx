@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 // Define available languages
@@ -23,6 +24,13 @@ export const translations: Translations = {
   login: { en: 'Log in', ar: 'تسجيل الدخول' },
   signup: { en: 'Sign Up', ar: 'إنشاء حساب' },
   logout: { en: 'Logout', ar: 'تسجيل الخروج' },
+  pricing: { en: 'Pricing', ar: 'التسعير' },
+  
+  // Dashboard Charts
+  sentimentTrend: { en: 'Sentiment Trend', ar: 'اتجاه المشاعر' },
+  sentimentDistribution: { en: 'Sentiment Distribution', ar: 'توزيع المشاعر' },
+  reviewSources: { en: 'Review Sources', ar: 'مصادر التقييمات' },
+  sentimentOverTime: { en: 'Sentiment Over Time', ar: 'المشاعر عبر الزمن' },
   
   // Demo page
   inputReview: { en: 'Input Review', ar: 'إدخال التقييم' },
@@ -59,6 +67,18 @@ export const translations: Translations = {
   pricingPlans: { en: 'Pricing Plans', ar: 'خطط التسعير' },
   termsAndConditions: { en: 'Terms & Conditions', ar: 'الشروط والأحكام' },
   privacyPolicy: { en: 'Privacy Policy', ar: 'سياسة الخصوصية' },
+  
+  // Technology section
+  nlpTechnology: { en: 'NLP Technology', ar: 'تقنية معالجة اللغة الطبيعية' },
+  absaTechnology: { en: 'ABSA Technology', ar: 'تقنية تحليل المشاعر القائم على الجوانب' },
+  bertTechnology: { en: 'BERT Technology', ar: 'تقنية نموذج BERT' },
+  bigDataTechnology: { en: 'Big Data Technology', ar: 'تقنية البيانات الضخمة' },
+  
+  // Future improvements
+  futureImprovements: { en: 'Future Improvements', ar: 'التحسينات المستقبلية' },
+  aiModels: { en: 'Advanced AI Models', ar: 'نماذج الذكاء الاصطناعي المتقدمة' },
+  enterpriseIntegration: { en: 'Enterprise Integration', ar: 'تكامل المؤسسات' },
+  customModels: { en: 'Custom Industry Models', ar: 'نماذج صناعية مخصصة' },
 };
 
 interface LanguageContextType {
@@ -82,6 +102,12 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
     localStorage.setItem('rsa_language', lang);
     // If we switch to Arabic, change the dir attribute to rtl
     document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    // Also add a class to the html element for additional styling
+    if (lang === 'ar') {
+      document.documentElement.classList.add('rtl');
+    } else {
+      document.documentElement.classList.remove('rtl');
+    }
   };
 
   // Translation function
@@ -96,6 +122,12 @@ export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   // Set RTL direction for Arabic on mount
   useEffect(() => {
     document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+    // Also add a class to the html element for additional styling
+    if (language === 'ar') {
+      document.documentElement.classList.add('rtl');
+    } else {
+      document.documentElement.classList.remove('rtl');
+    }
   }, [language]);
 
   return (

@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navigation from "@/components/Navigation";
@@ -26,6 +26,21 @@ import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
+// Component to handle route guarding
+const RouteGuard = ({ component: Component, requiresAuth = false }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  }
+
+  if (requiresAuth && !isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+
+  return <Component />;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -45,23 +60,48 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/pricing" element={<Pricing />} />
                   
-                  {/* Semi-protected routes - redirect to login if not authenticated */}
-                  <Route path="/blog" element={<Blog />} />
-                  <Route path="/contact" element={<Contact />} />
-                  
-                  {/* Protected routes */}
-                  <Route path="/dashboard" element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/demo" element={
-                    <ProtectedRoute>
-                      <Demo />
-                    </ProtectedRoute>
-                  } />
+                  {/* Protected routes - only accessible when logged in */}
+                  <Route 
+                    path="/dashboard" 
+                    element={
+                      <ProtectedRoute>
+                        <Dashboard />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/demo" 
+                    element={
+                      <ProtectedRoute>
+                        <Demo />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/pricing" 
+                    element={
+                      <ProtectedRoute>
+                        <Pricing />
+                      </ProtectedRoute>
+                    } 
+                  />
+                  <Route 
+                    path="/blog" 
+                    element={
+                      <ProtectedRoute>
+                        <Blog />
+                      </ProtectedRoute>
+                    }
+                  />
+                  <Route 
+                    path="/contact" 
+                    element={
+                      <ProtectedRoute>
+                        <Contact />
+                      </ProtectedRoute>
+                    }
+                  />
                   
                   {/* Catch-all route */}
                   <Route path="*" element={<NotFound />} />
