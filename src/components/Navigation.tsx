@@ -78,10 +78,24 @@ const Navigation = () => {
                 </Link>
               </NavigationMenuItem>
               
-              {/* Solutions dropdown menu - always visible */}
+              {/* Pricing - moved from dropdown to main navigation */}
+              <NavigationMenuItem>
+                <Link 
+                  to="/pricing" 
+                  className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
+                    location.pathname === '/pricing' 
+                      ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                  }`}
+                >
+                  {t('pricing')}
+                </Link>
+              </NavigationMenuItem>
+              
+              {/* Solutions dropdown menu - always visible, but now without pricing */}
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={`px-4 py-2 text-base font-medium rounded-md transition-colors group ${
-                  location.pathname === '/dashboard' || location.pathname === '/demo' || location.pathname === '/pricing'
+                  location.pathname === '/dashboard' || location.pathname === '/demo'
                     ? 'text-blue-700 dark:text-blue-300' 
                     : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
                 } bg-transparent hover:bg-transparent focus:bg-transparent`}>
@@ -112,15 +126,6 @@ const Navigation = () => {
                         </Link>
                       </li>
                     )}
-                    <li>
-                      <Link 
-                        to="/pricing" 
-                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
-                      >
-                        <Tag className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium text-gray-700 dark:text-gray-300">{t('pricing')}</span>
-                      </Link>
-                    </li>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
