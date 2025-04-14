@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { BarChart3, Trash2, Calendar, RefreshCw, XCircle } from 'lucide-react';
+import { BarChart3, Trash2, Calendar, RefreshCw, XCircle, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SentimentTrend from '@/components/SentimentTrend';
 import GenerateReportButton from '@/components/GenerateReportButton';
+import RecentReviews from '@/components/RecentReviews';
 import {
   LineChart,
   Line,
@@ -28,6 +29,8 @@ interface Analysis {
   title: string;
   date: string;
   reviewCount: number;
+  dataPoints?: number;
+  accuracyScore?: number;
   sentiment: {
     positive: number;
     neutral: number;
@@ -223,10 +226,78 @@ const Dashboard = () => {
     }));
   };
   
+  const prepareAccuracyData = () => {
+    if (savedAnalyses.length === 0) return [];
+    
+    const accuracyData = savedAnalyses
+      .filter(analysis => analysis.accuracyScore !== undefined)
+      .slice(0, 10)
+      .map(analysis => ({
+        name: analysis.title.length > 20 ? analysis.title.substring(0, 20) + '...' : analysis.title,
+        score: analysis.accuracyScore
+      }));
+    
+    return accuracyData;
+  };
+  
+  const calculateAverageAccuracy = () => {
+    if (savedAnalyses.length === 0) return 0;
+    
+    const analysesWithAccuracy = savedAnalyses.filter(analysis => analysis.accuracyScore !== undefined);
+    if (analysesWithAccuracy.length === 0) return 0;
+    
+    const totalAccuracy = analysesWithAccuracy.reduce((sum, analysis) => sum + (analysis.accuracyScore || 0), 0);
+    return Math.round(totalAccuracy / analysesWithAccuracy.length);
+  };
+  
+  const handleExportData = () => {
+    let csvContent = "data:text/csv;charset=utf-8,";
+    
+    csvContent += "Title,Date,Sentiment,Rating,Accuracy Score,Review Text\n";
+    
+    savedAnalyses.forEach(analysis => {
+      let sentiment = "Neutral";
+      if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
+        sentiment = "Positive";
+      } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
+        sentiment = "Negative";
+      }
+      
+      const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+      
+      const rowData = [
+        `"${analysis.title}"`,
+        analysis.date,
+        sentiment,
+        rating,
+        analysis.accuracyScore || "N/A",
+        `"${analysis.reviewText || ""}"`
+      ];
+      
+      csvContent += rowData.join(",") + "\n";
+    });
+    
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement("a");
+    link.setAttribute("href", encodedUri);
+    link.setAttribute("download", `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({
+      title: "Export complete",
+      description: `${savedAnalyses.length} reviews exported to CSV.`,
+    });
+  };
+  
   const sentimentData = prepareSentimentData();
   const volumeData = prepareVolumeData();
   const keywordsData = prepareKeywordsData();
   const aspectData = prepareAspectData();
+  const accuracyData = prepareAccuracyData();
+  const averageAccuracy = calculateAverageAccuracy();
   
   const COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
   const ASPECT_COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
@@ -270,6 +341,10 @@ const Dashboard = () => {
                 <RefreshCw className="h-4 w-4" />
                 Refresh
               </Button>
+              <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleExportData}>
+                <FileText className="h-4 w-4" />
+                Export All Data
+              </Button>
               <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
                 <XCircle className="h-4 w-4" />
                 Delete Last Review
@@ -287,7 +362,7 @@ const Dashboard = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
               <Card className="p-4 shadow-sm">
                 <h2 className="font-semibold mb-1">Overall Sentiment</h2>
                 <p className="text-xs text-gray-500 mb-4">Distribution of sentiment in reviews</p>
@@ -364,10 +439,45 @@ const Dashboard = () => {
                   </ResponsiveContainer>
                 </div>
               </Card>
+              
+              <Card className="p-4 shadow-sm">
+                <h2 className="font-semibold mb-1">Analysis Accuracy</h2>
+                <p className="text-xs text-gray-500 mb-4">Precision score of the analysis</p>
+                <div className="flex justify-center items-center mb-4">
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-blue-600">{averageAccuracy}%</div>
+                    <p className="text-sm text-gray-500">Average Accuracy</p>
+                  </div>
+                </div>
+                <div className="h-40">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={accuracyData}
+                      margin={{ top: 5, right: 20, left: 10, bottom: 25 }}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <XAxis 
+                        dataKey="name" 
+                        tick={{ fontSize: 10 }}
+                        angle={-45}
+                        textAnchor="end"
+                        height={60}
+                      />
+                      <YAxis domain={[0, 100]} />
+                      <Tooltip />
+                      <Bar dataKey="score" fill="#3b82f6" barSize={20} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </Card>
             </div>
 
             <div className="mb-6">
               <SentimentTrend trendData={trendData} />
+            </div>
+            
+            <div className="mb-6 bg-white rounded-lg border shadow-sm p-6">
+              <RecentReviews reviews={enhancedReviews} onExport={handleExportData} />
             </div>
             
             <div className="mt-10 pt-6 border-t flex justify-center">

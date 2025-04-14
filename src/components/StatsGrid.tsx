@@ -1,7 +1,7 @@
 
 import React from 'react';
 import StatCard from './StatCard';
-import { MessageSquare, Star, Clock, TrendingUp } from 'lucide-react';
+import { MessageSquare, Star, Clock, TrendingUp, BarChart3 } from 'lucide-react';
 
 interface StatsGridProps {
   // Making the component accept actual data rather than using hardcoded values
@@ -9,16 +9,19 @@ interface StatsGridProps {
   averageRating?: string;
   responseTime?: string;
   sentimentScore?: string;
+  accuracyScore?: string;
   // Change data for each stat
   reviewsChange?: string;
   ratingChange?: string;
   responseChange?: string;
   sentimentChange?: string;
+  accuracyChange?: string;
   // Whether changes are positive or negative
   reviewsPositive?: boolean;
   ratingPositive?: boolean;
   responsePositive?: boolean;
   sentimentPositive?: boolean;
+  accuracyPositive?: boolean;
 }
 
 const StatsGrid = ({
@@ -26,17 +29,20 @@ const StatsGrid = ({
   averageRating = "N/A",
   responseTime = "N/A",
   sentimentScore = "N/A",
+  accuracyScore = "N/A",
   reviewsChange = "No previous data",
   ratingChange = "No previous data",
   responseChange = "No previous data",
   sentimentChange = "No previous data",
+  accuracyChange = "No previous data",
   reviewsPositive = true,
   ratingPositive = true,
   responsePositive = true,
-  sentimentPositive = true
+  sentimentPositive = true,
+  accuracyPositive = true
 }: StatsGridProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
       <StatCard 
         title="Total Reviews" 
         value={totalReviews} 
@@ -64,6 +70,13 @@ const StatsGrid = ({
         change={sentimentChange} 
         positive={sentimentPositive}
         icon={<TrendingUp className="h-5 w-5 text-brand-blue" />}
+      />
+      <StatCard 
+        title="Accuracy Score" 
+        value={accuracyScore} 
+        change={accuracyChange} 
+        positive={accuracyPositive}
+        icon={<BarChart3 className="h-5 w-5 text-brand-purple" />}
       />
     </div>
   );

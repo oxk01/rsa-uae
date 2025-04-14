@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { FileSpreadsheet, FileText, Download } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, BarChart3 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ interface Review {
   rating?: string;
   reviewText?: string;
   sentimentLabel?: string;
+  accuracyScore?: number;
   keywords?: Array<{
     word: string;
     sentiment: string;
@@ -27,9 +28,10 @@ interface Review {
 
 interface RecentReviewsProps {
   reviews?: Review[];
+  onExport?: () => void;
 }
 
-const RecentReviews = ({ reviews }: RecentReviewsProps) => {
+const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
   const hasData = reviews && reviews.length > 0;
   
   // Sample data for demonstration
@@ -42,6 +44,7 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
       reviewCount: 1,
       source: "text",
       rating: "5/5",
+      accuracyScore: 92,
       reviewText: "I've been using this AI-powered sentiment analysis tool for a few months to track customer feedback and it's been a game-changer. The tool processes thousands of reviews in a fraction of the time it would take manually. The sentiment analysis is incredibly accurate, and it breaks down emotions related to different aspects like product quality, service, and price. The user interface is intuitive, and the results are displayed in an easy-to-understand format. It has helped me improve my customer service and fine-tune marketing strategies. I highly recommend it for businesses looking to leverage customer feedback.",
       sentimentLabel: "Negative",
       keywords: [
@@ -58,6 +61,7 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
       reviewCount: 1,
       source: "excel",
       rating: "4/5",
+      accuracyScore: 88,
       reviewText: "I recently purchased this fitness tracker smartwatch to help me track my workouts, sleep patterns, and overall health. The watch is comfortable to wear, and the display is clear even in bright sunlight. The heart rate monitor and step counter are pretty accurate, but the GPS tracking sometimes takes a while to connect, which can be frustrating during runs. Overall, it provides excellent value for the price, and the companion app is very helpful in setting fitness goals and tracking progress. It's definitely helped me stay motivated to exercise regularly.",
       sentimentLabel: "Neutral",
       keywords: [
@@ -74,6 +78,7 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
       reviewCount: 1,
       source: "text",
       rating: "3/5",
+      accuracyScore: 95,
       reviewText: "I've been using this online grocery delivery service for a few weeks now, and while it has its benefits, I've encountered a few issues. The convenience of having groceries delivered to my door is fantastic, and the website is easy to navigate. However, some items are often out of stock, and the delivery times can sometimes be delayed. Customer service is responsive, but they don't always have clear solutions to fix issues with missing items. I'm satisfied with the overall convenience, but the service could improve in terms of inventory management and delivery reliability.",
       sentimentLabel: "Negative",
       keywords: [
@@ -122,8 +127,31 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
     return <FileText className="h-4 w-4 text-blue-600 mr-1" />;
   };
   
+  // Helper function to determine accuracy badge color
+  const getAccuracyBadgeColor = (score: number) => {
+    if (score >= 90) return 'bg-green-100 text-green-800';
+    if (score >= 80) return 'bg-blue-100 text-blue-800';
+    if (score >= 70) return 'bg-yellow-100 text-yellow-800';
+    return 'bg-red-100 text-red-800';
+  };
+  
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium">Recent Reviews</h3>
+        {hasData && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onExport}
+            className="flex items-center gap-1"
+          >
+            <Download className="h-4 w-4" />
+            Export Reviews
+          </Button>
+        )}
+      </div>
+      
       {displayReviews.map((review) => (
         <div key={review.id} className="border rounded-lg p-4">
           <div className="flex justify-between mb-2">
@@ -140,8 +168,14 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
             <span className="text-sm text-gray-500">{review.date}</span>
           </div>
           
-          <p className="font-medium mb-1">
-            Review for {review.title} Rating: {review.rating}
+          <p className="font-medium mb-1 flex justify-between items-center">
+            <span>Review for {review.title} Rating: {review.rating}</span>
+            {review.accuracyScore && (
+              <span className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getAccuracyBadgeColor(review.accuracyScore)}`}>
+                <BarChart3 className="h-3 w-3" />
+                Accuracy: {review.accuracyScore}%
+              </span>
+            )}
           </p>
           
           <p className="text-sm text-gray-700 mb-4">{review.reviewText}</p>
