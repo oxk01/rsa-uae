@@ -28,8 +28,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
           <AlertCircle className="h-12 w-12 text-amber-500 mb-4" />
           <h3 className="text-lg font-medium text-gray-700 mb-2">No Trend Data Available</h3>
           <p className="text-gray-500 max-w-md">
-            Analyze multiple files over time in the Demo section to generate sentiment trends. 
-            Each analysis will be recorded and used to build this chart.
+            Analyze files to generate trends. 
           </p>
         </div>
       ) : (
@@ -47,7 +46,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
               <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
               <XAxis dataKey="date" />
               <YAxis />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               <Line type="monotone" dataKey="positive" stroke="#2c7a7b" strokeWidth={2} activeDot={{ r: 8 }} />
               <Line type="monotone" dataKey="neutral" stroke="#4a5568" strokeWidth={2} />
@@ -58,6 +57,24 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
       )}
     </DashboardCard>
   );
+};
+
+// Simple tooltip that only shows the values
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
+        <p className="font-semibold">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={`item-${index}`} style={{ color: entry.color }}>
+            {entry.dataKey}: {entry.value}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  return null;
 };
 
 export default SentimentTrend;

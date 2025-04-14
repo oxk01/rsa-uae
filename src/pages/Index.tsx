@@ -6,6 +6,7 @@ import SentimentOverview from '@/components/SentimentOverview';
 import TopKeywords from '@/components/TopKeywords';
 import SentimentTrend from '@/components/SentimentTrend';
 import ReviewSample from '@/components/ReviewSample';
+import ReviewSources from '@/components/ReviewSources';
 import GenerateReportButton from '@/components/GenerateReportButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
@@ -172,15 +173,12 @@ const Index = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
               <SentimentOverview data={sentimentOverviewData} />
+              <ReviewSources />
               <TopKeywords />
             </div>
             
             <div className="mt-8">
               <SentimentTrend trendData={trendData} />
-            </div>
-            
-            <div className="mt-8">
-              <ReviewSample />
             </div>
           </>
         ) : (
