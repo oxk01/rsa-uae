@@ -4,16 +4,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { TrendingUp, AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
-// This would be replaced by actual data from user analyses
-const data = [
-  { date: 'Jan', positive: 65, neutral: 25, negative: 10 },
-  { date: 'Feb', positive: 59, neutral: 22, negative: 19 },
-  { date: 'Mar', positive: 70, neutral: 20, negative: 10 },
-  { date: 'Apr', positive: 58, neutral: 27, negative: 15 },
-  { date: 'May', positive: 63, neutral: 22, negative: 15 },
-  { date: 'Jun', positive: 75, neutral: 15, negative: 10 },
-];
-
 interface SentimentTrendProps {
   trendData?: Array<{
     date: string;
@@ -24,9 +14,8 @@ interface SentimentTrendProps {
 }
 
 const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
-  // Use provided data if available, otherwise show empty state
+  // Check if we have actual data
   const hasData = trendData && trendData.length > 0;
-  const chartData = hasData ? trendData : data;
   
   return (
     <DashboardCard 
@@ -34,34 +23,39 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
       icon={<TrendingUp className="h-4 w-4" />}
       className="col-span-1 md:col-span-3"
     >
-      {!hasData && (
-        <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
-          <AlertCircle className="h-4 w-4" />
-          <span>Showing sample data. Analyze reviews in the Demo section to see your actual data.</span>
+      {!hasData ? (
+        <div className="flex flex-col items-center justify-center h-64 text-center">
+          <AlertCircle className="h-12 w-12 text-amber-500 mb-4" />
+          <h3 className="text-lg font-medium text-gray-700 mb-2">No Trend Data Available</h3>
+          <p className="text-gray-500 max-w-md">
+            Analyze multiple files over time in the Demo section to generate sentiment trends. 
+            Each analysis will be recorded and used to build this chart.
+          </p>
+        </div>
+      ) : (
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={trendData}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="positive" stroke="#2c7a7b" strokeWidth={2} activeDot={{ r: 8 }} />
+              <Line type="monotone" dataKey="neutral" stroke="#4a5568" strokeWidth={2} />
+              <Line type="monotone" dataKey="negative" stroke="#e53e3e" strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
         </div>
       )}
-      <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart
-            data={chartData}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-            <XAxis dataKey="date" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Line type="monotone" dataKey="positive" stroke="#2c7a7b" strokeWidth={2} activeDot={{ r: 8 }} />
-            <Line type="monotone" dataKey="neutral" stroke="#4a5568" strokeWidth={2} />
-            <Line type="monotone" dataKey="negative" stroke="#e53e3e" strokeWidth={2} />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
     </DashboardCard>
   );
 };

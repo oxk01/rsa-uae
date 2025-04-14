@@ -12,7 +12,8 @@ import {
   FileText,
   Users,
   BookOpen,
-  MessageSquare
+  MessageSquare,
+  Mail
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 
@@ -70,6 +71,12 @@ const Footer = () => {
                 <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
                   <MessageSquare className="h-4 w-4" />
                   <span>Contact</span>
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-2">
+                  <Mail className="h-4 w-4" />
+                  <span>Contact Sales</span>
                 </Link>
               </li>
             </ul>

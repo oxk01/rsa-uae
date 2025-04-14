@@ -30,6 +30,8 @@ interface Analysis {
 const Index = () => {
   const [savedAnalyses, setSavedAnalyses] = useState<Analysis[]>([]);
   const [hasData, setHasData] = useState(false);
+  const [sentimentOverviewData, setSentimentOverviewData] = useState<any[]>([]);
+  const [trendData, setTrendData] = useState<any[]>([]);
   const { t } = useLanguage();
   
   // Load saved analyses from localStorage on component mount
@@ -39,8 +41,51 @@ const Index = () => {
       const analyses = JSON.parse(savedAnalysesStr);
       setSavedAnalyses(analyses);
       setHasData(analyses.length > 0);
+      
+      if (analyses.length > 0) {
+        // Process data for charts
+        processDataForCharts(analyses);
+      }
     }
   }, []);
+  
+  // Process the saved analyses data for chart components
+  const processDataForCharts = (analyses: Analysis[]) => {
+    // Calculate overall sentiment for pie chart
+    let totalPositive = 0;
+    let totalNeutral = 0;
+    let totalNegative = 0;
+    
+    analyses.forEach(analysis => {
+      totalPositive += analysis.sentiment.positive;
+      totalNeutral += analysis.sentiment.neutral;
+      totalNegative += analysis.sentiment.negative;
+    });
+    
+    setSentimentOverviewData([
+      { name: 'Positive', value: totalPositive },
+      { name: 'Neutral', value: totalNeutral },
+      { name: 'Negative', value: totalNegative }
+    ]);
+    
+    // Generate trend data if we have multiple analyses
+    if (analyses.length > 1) {
+      // Sort analyses by date
+      const sortedAnalyses = [...analyses].sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      
+      // Map to trend data format
+      const trend = sortedAnalyses.map(analysis => ({
+        date: analysis.date,
+        positive: analysis.sentiment.positive,
+        neutral: analysis.sentiment.neutral,
+        negative: analysis.sentiment.negative
+      }));
+      
+      setTrendData(trend);
+    }
+  };
   
   // Calculate metrics based on actual data
   const calculateAverageRating = () => {
@@ -126,12 +171,12 @@ const Index = () => {
         {hasData ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <SentimentOverview />
+              <SentimentOverview data={sentimentOverviewData} />
               <TopKeywords />
             </div>
             
             <div className="mt-8">
-              <SentimentTrend />
+              <SentimentTrend trendData={trendData} />
             </div>
             
             <div className="mt-8">

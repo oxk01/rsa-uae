@@ -4,6 +4,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { ThumbsUp, Minus, ThumbsDown, AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
+// Sample data only used when no real data is available
 const sampleData = [
   { name: 'Positive', value: 65 },
   { name: 'Neutral', value: 20 },
@@ -42,7 +43,7 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
       {!hasData && (
         <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
           <AlertCircle className="h-4 w-4" />
-          <span>Showing sample data. Analyze reviews in the Demo section to see your actual data.</span>
+          <span>No data available. Analyze reviews in the Demo section to see your actual data.</span>
         </div>
       )}
       <div className="flex flex-col md:flex-row">
