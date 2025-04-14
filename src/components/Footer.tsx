@@ -25,25 +25,25 @@ const Footer = () => {
   return (
     <footer className={`bg-blue-950 text-white py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
           {/* Product Column */}
-          <div>
-            <h3 className="font-semibold text-xl mb-4">Product</h3>
-            <ul className="space-y-3">
+          <div className="flex flex-col items-start">
+            <h3 className="font-semibold text-xl mb-6">Product</h3>
+            <ul className="space-y-4">
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <FileText className="h-4 w-4" />
                   <span>Technology</span>
                 </Link>
               </li>
               <li>
-                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/demo" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <Play className="h-4 w-4" />
                   <span>Demo</span>
                 </Link>
               </li>
               <li>
-                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/pricing" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <Tag className="h-4 w-4" />
                   <span>Pricing</span>
                 </Link>
@@ -52,29 +52,29 @@ const Footer = () => {
           </div>
           
           {/* Company Column */}
-          <div>
-            <h3 className="font-semibold text-xl mb-4">Company</h3>
-            <ul className="space-y-3">
+          <div className="flex flex-col items-start">
+            <h3 className="font-semibold text-xl mb-6">Company</h3>
+            <ul className="space-y-4">
               <li>
-                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/about" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <Users className="h-4 w-4" />
                   <span>About Us</span>
                 </Link>
               </li>
               <li>
-                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/blog" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <BookOpen className="h-4 w-4" />
                   <span>Blog</span>
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <MessageSquare className="h-4 w-4" />
                   <span>Contact</span>
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/contact" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <Mail className="h-4 w-4" />
                   <span>Contact Sales</span>
                 </Link>
@@ -83,17 +83,17 @@ const Footer = () => {
           </div>
           
           {/* Legal Column */}
-          <div>
-            <h3 className="font-semibold text-xl mb-4">Legal</h3>
-            <ul className="space-y-3">
+          <div className="flex flex-col items-start">
+            <h3 className="font-semibold text-xl mb-6">Legal</h3>
+            <ul className="space-y-4">
               <li>
-                <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/privacy" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <FileText className="h-4 w-4" />
                   <span>Privacy Policy</span>
                 </Link>
               </li>
               <li>
-                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors flex items-center justify-center gap-2">
+                <Link to="/terms" className="text-gray-300 hover:text-white transition-colors flex items-center gap-3">
                   <FileText className="h-4 w-4" />
                   <span>Terms of Service</span>
                 </Link>
