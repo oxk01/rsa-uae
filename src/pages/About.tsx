@@ -142,7 +142,7 @@ const AboutPage = () => {
               </div>
             </Card>
 
-            {/* Team Member 3 - Tasneem Abdallah with name on one line */}
+            {/* Tasneem Abdallah - Updated role */}
             <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
               <div className="relative p-6 flex flex-col items-center">
                 <div className="absolute right-0 top-0 bg-amber-700/40 w-32 h-32 rounded-full blur-2xl"></div>
@@ -150,7 +150,7 @@ const AboutPage = () => {
                   <ChartBar className="h-12 w-12 text-amber-100" />
                 </div>
                 <h3 className="text-xl font-bold mb-2 whitespace-nowrap">Tasneem Abdallah</h3>
-                <p className="text-blue-200 mb-4 font-medium">Chief Data Analyst</p>
+                <p className="text-blue-200 mb-4 font-medium">Data Analyst</p>
                 <p className="text-center text-blue-100 text-sm">
                   Transforming complex data into actionable insights that drive business decisions.
                 </p>
