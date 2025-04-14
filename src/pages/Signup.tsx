@@ -1,8 +1,9 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import { UserPlus } from 'lucide-react';
@@ -12,6 +13,7 @@ const Signup = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { signup } = useAuth();
   const { toast } = useToast();
@@ -28,6 +30,15 @@ const Signup = () => {
       toast({
         title: "Passwords don't match",
         description: "Please make sure your passwords match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!agreedToTerms) {
+      toast({
+        title: "Terms of Service",
+        description: "Please agree to the Terms of Service and Privacy Policy.",
         variant: "destructive",
       });
       return;
@@ -135,6 +146,35 @@ const Signup = () => {
                 className="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-blue-500 rounded-md focus:ring-1"
                 placeholder="••••••••"
               />
+            </div>
+
+            <div className="flex items-center space-x-2 mt-4">
+              <Checkbox 
+                id="terms" 
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(!!checked)}
+              />
+              <Label 
+                htmlFor="terms" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I agree to the{' '}
+                <Link 
+                  to="/terms" 
+                  className="text-blue-600 hover:underline"
+                  target="_blank"
+                >
+                  Terms of Service
+                </Link>{' '}
+                and{' '}
+                <Link 
+                  to="/privacy" 
+                  className="text-blue-600 hover:underline"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </Link>
+              </Label>
             </div>
           </div>
 
