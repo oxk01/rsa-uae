@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FileSpreadsheet, FileText, Download, BarChart3 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
@@ -38,53 +37,55 @@ const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
   const sampleReviews = [
     {
       id: 1,
-      title: "AI-powered Sentiment Analysis Tool",
+      title: "Smart Home Assistant",
       date: "2025-04-07",
       sentiment: { positive: 70, neutral: 20, negative: 10 },
       reviewCount: 1,
-      source: "text",
-      rating: "5/5",
-      accuracyScore: 92,
-      reviewText: "I've been using this AI-powered sentiment analysis tool for a few months to track customer feedback and it's been a game-changer. The tool processes thousands of reviews in a fraction of the time it would take manually. The sentiment analysis is incredibly accurate, and it breaks down emotions related to different aspects like product quality, service, and price. The user interface is intuitive, and the results are displayed in an easy-to-understand format. It has helped me improve my customer service and fine-tune marketing strategies. I highly recommend it for businesses looking to leverage customer feedback.",
-      sentimentLabel: "Negative",
+      source: "excel",
+      rating: "4/5",
+      accuracyScore: 91,
+      reviewText: "This Smart Home Assistant exceeds expectations in many ways. The voice recognition is incredibly accurate even in noisy environments, and it integrates seamlessly with my existing smart home devices. Setup was straightforward and took less than 10 minutes. The only minor issue is that it occasionally has trouble with complex commands that involve multiple actions. Overall, great value for the price point.",
+      sentimentLabel: "positive",
       keywords: [
-        { word: "quality", sentiment: "negative" },
-        { word: "price", sentiment: "negative" },
-        { word: "service", sentiment: "neutral" }
+        { word: "voice recognition", sentiment: "positive" },
+        { word: "integration", sentiment: "positive" },
+        { word: "setup", sentiment: "positive" }
       ]
     },
     {
       id: 2,
-      title: "Fitness Tracker Smartwatch",
-      date: "2025-04-07",
-      sentiment: { positive: 60, neutral: 30, negative: 10 },
+      title: "Wireless Earbuds Pro",
+      date: "2025-04-09",
+      sentiment: { positive: 50, neutral: 30, negative: 20 },
       reviewCount: 1,
       source: "excel",
-      rating: "4/5",
-      accuracyScore: 88,
-      reviewText: "I recently purchased this fitness tracker smartwatch to help me track my workouts, sleep patterns, and overall health. The watch is comfortable to wear, and the display is clear even in bright sunlight. The heart rate monitor and step counter are pretty accurate, but the GPS tracking sometimes takes a while to connect, which can be frustrating during runs. Overall, it provides excellent value for the price, and the companion app is very helpful in setting fitness goals and tracking progress. It's definitely helped me stay motivated to exercise regularly.",
-      sentimentLabel: "Neutral",
+      rating: "3/5",
+      accuracyScore: 91,
+      reviewText: "The Wireless Earbuds Pro have decent sound quality and the battery life is acceptable at about 5 hours per charge. The case provides an additional 15 hours which is standard for this price range. Comfort is average - they stay in during light activities but tend to slip during intense workouts. Noise cancellation is mediocre at best. They're good enough for casual listening but audiophiles will want to look elsewhere.",
+      sentimentLabel: "neutral",
       keywords: [
-        { word: "quality", sentiment: "positive" },
-        { word: "price", sentiment: "negative" },
-        { word: "service", sentiment: "neutral" }
+        { word: "sound quality", sentiment: "neutral" },
+        { word: "battery life", sentiment: "neutral" },
+        { word: "comfort", sentiment: "neutral" },
+        { word: "noise cancellation", sentiment: "negative" }
       ]
     },
     {
       id: 3,
-      title: "Online Grocery Delivery Service",
-      date: "2025-04-07",
-      sentiment: { positive: 40, neutral: 20, negative: 40 },
+      title: "Ultra HD Gaming Monitor",
+      date: "2025-04-11",
+      sentiment: { positive: 20, neutral: 10, negative: 70 },
       reviewCount: 1,
-      source: "text",
-      rating: "3/5",
-      accuracyScore: 95,
-      reviewText: "I've been using this online grocery delivery service for a few weeks now, and while it has its benefits, I've encountered a few issues. The convenience of having groceries delivered to my door is fantastic, and the website is easy to navigate. However, some items are often out of stock, and the delivery times can sometimes be delayed. Customer service is responsive, but they don't always have clear solutions to fix issues with missing items. I'm satisfied with the overall convenience, but the service could improve in terms of inventory management and delivery reliability.",
-      sentimentLabel: "Negative",
+      source: "excel",
+      rating: "1/5",
+      accuracyScore: 91,
+      reviewText: "Extremely disappointed with this Ultra HD Gaming Monitor. The display arrived with dead pixels in the corner, and customer support has been unhelpful in resolving the issue. Despite the advertised 1ms response time, there's noticeable ghosting during fast-paced games. The color accuracy is also way off compared to what was promised in the specifications. Save your money and look for alternatives from more reliable brands.",
+      sentimentLabel: "negative",
       keywords: [
-        { word: "quality", sentiment: "negative" },
-        { word: "price", sentiment: "negative" },
-        { word: "service", sentiment: "neutral" }
+        { word: "dead pixels", sentiment: "negative" },
+        { word: "customer support", sentiment: "negative" },
+        { word: "response time", sentiment: "negative" },
+        { word: "color accuracy", sentiment: "negative" }
       ]
     }
   ];
@@ -169,7 +170,7 @@ const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
           </div>
           
           <p className="font-medium mb-1 flex justify-between items-center">
-            <span>Review for {review.title} Rating: {review.rating}</span>
+            <span>Review for {review.title}</span>
             {review.accuracyScore && (
               <span className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getAccuracyBadgeColor(review.accuracyScore)}`}>
                 <BarChart3 className="h-3 w-3" />
@@ -192,7 +193,7 @@ const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
                       : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {keyword.word}: {keyword.sentiment}
+                {keyword.word}
               </span>
             ))}
           </div>
