@@ -1,6 +1,6 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { Check, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 import { 
   Accordion,
@@ -279,8 +279,11 @@ const PricingPlan = () => {
           <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-lg mx-auto">
             Our team is ready to help you choose the right plan for your needs.
           </p>
-          <Button className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600">
-            Contact Sales
+          <Button 
+            className="bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600" 
+            asChild
+          >
+            <Link to="/contact">Contact Sales</Link>
           </Button>
         </div>
       </div>
