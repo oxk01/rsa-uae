@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -39,7 +40,7 @@ const Navigation = () => {
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2 mx-auto">
+          <div className="flex items-center space-x-2">
             <div className="bg-blue-600 rounded p-1">
               <BarChart3 className="h-6 w-6 text-white" />
             </div>
@@ -48,8 +49,8 @@ const Navigation = () => {
             </Link>
           </div>
           
-          <NavigationMenu className="mx-auto">
-            <NavigationMenuList className="flex space-x-1 justify-center">
+          <NavigationMenu>
+            <NavigationMenuList className="flex space-x-1 justify-center mx-auto">
               {/* Home and About are always visible */}
               <NavigationMenuItem>
                 <Link 
