@@ -4,11 +4,18 @@ import ResearchPaperCard from '@/components/ResearchPaperCard';
 import { TechnologyCards } from '@/components/TechnologyCards';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
+import { Send } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 const Blog = () => {
   const { currentLanguage, t } = useLanguage();
+  const { toast } = useToast();
   const isRtl = currentLanguage === 'ar';
+
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = [
     'All Categories',
@@ -100,6 +107,31 @@ const Blog = () => {
     ? researchPapers 
     : researchPapers.filter(paper => paper.category === activeCategory);
 
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !email.includes('@')) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    // Simulate subscription process
+    setTimeout(() => {
+      toast({
+        title: t('subscribeSuccess'),
+        description: email,
+      });
+      setEmail('');
+      setIsSubmitting(false);
+    }, 1000);
+  };
+
   return (
     <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 py-10 ${isRtl ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
@@ -145,13 +177,29 @@ const Blog = () => {
           </div>
         </div>
         
-        <div className="max-w-4xl mx-auto my-12">
+        <div className="max-w-4xl mx-auto my-12 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm">
           <h2 className="text-2xl font-semibold mb-6">{t('latestDevelopments')}</h2>
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Our team actively participates in research and development in the field of natural language processing and sentiment analysis. We collaborate with academic institutions and industry partners to advance the state of the art in these areas.
-          </p>
-          <p className="text-gray-600 dark:text-gray-300">
-            Stay tuned for our upcoming publications and research collaborations. We also regularly present our work at industry conferences and academic workshops.
+          
+          <form onSubmit={handleSubscribe} className="flex flex-col md:flex-row gap-3">
+            <Input
+              type="email"
+              placeholder={t('enterEmail')}
+              className="flex-1"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="gap-2"
+            >
+              <Send className="h-4 w-4" />
+              {t('subscribe')}
+            </Button>
+          </form>
+          <p className="text-sm text-muted-foreground mt-3">
+            Subscribe to receive updates on our latest research and technology developments.
           </p>
         </div>
       </div>

@@ -1,3 +1,4 @@
+
 import React, { createContext, useState, useContext, useEffect } from 'react';
 
 type Language = 'en' | 'ar';
@@ -190,6 +191,93 @@ const initialTranslations: TranslationStrings = {
   allCategories: {
     en: 'All Categories',
     ar: 'جميع الفئات',
+  },
+  
+  // Fixed spacing in translations
+  futureImprovements: {
+    en: 'Future Improvements',
+    ar: 'التحسينات المستقبلية',
+  },
+  aiModels: {
+    en: 'AI Models',
+    ar: 'نماذج الذكاء الاصطناعي',
+  },
+  enterpriseIntegration: {
+    en: 'Enterprise Integration',
+    ar: 'تكامل المؤسسات',
+  },
+  customModels: {
+    en: 'Custom Models',
+    ar: 'نماذج مخصصة',
+  },
+  
+  // Report related translations
+  generateDetailedReport: {
+    en: 'Generate Detailed Report',
+    ar: 'إنشاء تقرير مفصل',
+  },
+  reportGenerated: {
+    en: 'Report Generated',
+    ar: 'تم إنشاء التقرير',
+  },
+  reportDownloaded: {
+    en: 'Your detailed report has been downloaded.',
+    ar: 'تم تنزيل تقريرك المفصل.',
+  },
+  noDataAvailable: {
+    en: 'No data available',
+    ar: 'لا توجد بيانات متاحة',
+  },
+  analyzeReviews: {
+    en: 'Please analyze some reviews in the demo section first.',
+    ar: 'الرجاء تحليل بعض المراجعات في قسم العرض التوضيحي أولاً.',
+  },
+  
+  // Email subscription
+  subscribeToUpdates: {
+    en: 'Subscribe to updates',
+    ar: 'اشترك للحصول على التحديثات',
+  },
+  enterEmail: {
+    en: 'Enter your email',
+    ar: 'أدخل بريدك الإلكتروني',
+  },
+  subscribe: {
+    en: 'Subscribe',
+    ar: 'اشترك',
+  },
+  subscribeSuccess: {
+    en: 'Thank you for subscribing!',
+    ar: 'شكرا لاشتراكك!',
+  },
+  
+  savedAnalyses: {
+    en: 'Saved Analyses',
+    ar: 'التحليلات المحفوظة',
+  },
+  analyzeNewReviews: {
+    en: 'Analyze New Reviews',
+    ar: 'تحليل مراجعات جديدة',
+  },
+  viewFullReport: {
+    en: 'View Full Report',
+    ar: 'عرض التقرير الكامل',
+  },
+  positive: {
+    en: 'Positive',
+    ar: 'إيجابي',
+  },
+  neutral: {
+    en: 'Neutral',
+    ar: 'محايد',
+  },
+  negative: {
+    en: 'Negative',
+    ar: 'سلبي',
+  },
+  totalReviews: {
+    en: 'Total Reviews',
+    ar: 'إجمالي المراجعات',
   },
 };
 

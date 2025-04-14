@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { BarChart3, Code, BrainCircuit, Globe, Sparkles, ArrowRight, Book, CheckCircle, FileText, Network, Database, Cpu, Cloud } from 'lucide-react';
@@ -321,7 +320,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Future improvements - Updated */}
+      {/* Future improvements - Updated with better spacing */}
       <section className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">{t('futureImprovements')}</h2>

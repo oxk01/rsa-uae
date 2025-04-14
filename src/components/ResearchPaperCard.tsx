@@ -30,7 +30,7 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
   const isRtl = currentLanguage === 'ar';
   
   return (
-    <Card className="h-full flex flex-col overflow-hidden">
+    <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div className="h-48 overflow-hidden">
         <img 
           src={imageUrl} 
@@ -61,7 +61,7 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
       </CardContent>
       <CardFooter className={`pt-2 ${isRtl ? 'justify-start' : 'justify-end'}`}>
         <a href={paperUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="sm" className="flex items-center gap-2">
+          <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950">
             <span>{t('readPaper')}</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </Button>

@@ -1,26 +1,34 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FileText, Loader2 } from 'lucide-react';
+import { FileText, Loader2, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface GenerateReportButtonProps {
   hasData: boolean;
   onGenerate?: () => void;
+  variant?: "default" | "outline" | "secondary" | "destructive" | "ghost" | "link";
+  size?: "default" | "sm" | "lg" | "icon";
+  className?: string;
 }
 
 const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({ 
   hasData = false,
-  onGenerate 
+  onGenerate,
+  variant = "default",
+  size = "default",
+  className = ""
 }) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
+  const { t } = useLanguage();
 
   const handleGenerateReport = async () => {
     if (!hasData) {
       toast({
-        title: "No data available",
-        description: "Please analyze some reviews in the demo section first.",
+        title: t('noDataAvailable'),
+        description: t('analyzeReviews'),
         variant: "destructive"
       });
       return;
@@ -47,8 +55,8 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
       document.body.removeChild(link);
       
       toast({
-        title: "Report Generated",
-        description: "Your detailed report has been downloaded.",
+        title: t('reportGenerated'),
+        description: t('reportDownloaded'),
       });
     } catch (error) {
       toast({
@@ -65,14 +73,17 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
     <Button 
       onClick={handleGenerateReport}
       disabled={isGenerating}
-      className="gap-2"
+      variant={variant}
+      size={size}
+      className={`gap-2 transition-all duration-300 hover:shadow-md ${className}`}
     >
       {isGenerating ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
         <FileText className="h-4 w-4" />
       )}
-      Generate Detailed Report
+      {t('generateDetailedReport')}
+      {!isGenerating && <Download className="h-3 w-3 ml-1 opacity-70" />}
     </Button>
   );
 };
