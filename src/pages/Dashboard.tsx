@@ -6,7 +6,6 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart3, Trash2, Calendar, RefreshCw, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SentimentTrend from '@/components/SentimentTrend';
-import RecentReviews from '@/components/RecentReviews';
 import GenerateReportButton from '@/components/GenerateReportButton';
 import {
   LineChart,
@@ -369,10 +368,6 @@ const Dashboard = () => {
 
             <div className="mb-6">
               <SentimentTrend trendData={trendData} />
-            </div>
-
-            <div className="mb-6">
-              <RecentReviews reviews={enhancedReviews} />
             </div>
             
             <div className="mt-10 pt-6 border-t flex justify-center">
