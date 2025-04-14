@@ -6,7 +6,7 @@ import ReviewInput from '@/components/ReviewDemo/ReviewInput';
 import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
-import { KeywordItem } from '@/components/RecentReviews/types';
+import { KeywordItem, Review } from '@/components/RecentReviews/types';
 
 // Analysis for single text reviews
 const analyzeSentimentForText = async (text: string) => {
@@ -203,7 +203,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     // Get top keywords
     const topKeywords = Object.entries(allKeywords)
-      .sort(([, a], [, b]) => b.count - a.count)
+      .sort(([, a], [, b]) => (b.count || 0) - (a.count || 0))
       .slice(0, 5)
       .map(([word]) => word);
     
@@ -327,7 +327,9 @@ const Demo = () => {
       let savedAnalyses = savedAnalysesStr ? JSON.parse(savedAnalysesStr) : [];
       
       if (file && analysisResult.fileAnalysis.reviews) {
-        const newAnalyses = analysisResult.fileAnalysis.reviews.map((review: any) => ({
+        const fileReviews = analysisResult.fileAnalysis.reviews as Review[];
+        
+        const newAnalyses = fileReviews.map((review: any) => ({
           id: Date.now() + Math.random(),
           title: review.title || file.name,
           date: review.date || new Date().toISOString().split('T')[0],
@@ -342,7 +344,7 @@ const Demo = () => {
         }));
         
         // Compile all keywords and find the most frequent ones
-        const allKeywords = processedReviews
+        const allKeywords = fileReviews
           .flatMap((r: any) => r.keywords || [])
           .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
             if (!curr) return acc;
@@ -357,6 +359,12 @@ const Demo = () => {
             acc[word].count += 1;
             return acc;
           }, {});
+        
+        // Get top keywords
+        const topKeywords = Object.entries(allKeywords)
+          .sort(([, a], [, b]) => (b.count || 0) - (a.count || 0))
+          .slice(0, 5)
+          .map(([word]) => word);
         
         const overallAnalysis = {
           id: Date.now(),
