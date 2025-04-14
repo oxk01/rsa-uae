@@ -57,7 +57,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
             <Line 
               type="monotone" 
               dataKey="positive" 
-              stroke="#2c7a7b" 
+              stroke="#3b82f6" 
               strokeWidth={2} 
               activeDot={{ r: 8 }} 
               dot={false}
@@ -65,14 +65,14 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
             <Line 
               type="monotone" 
               dataKey="neutral" 
-              stroke="#4a5568" 
+              stroke="#8E9196" 
               strokeWidth={2} 
               dot={false}
             />
             <Line 
               type="monotone" 
               dataKey="negative" 
-              stroke="#e53e3e" 
+              stroke="#F97316" 
               strokeWidth={2} 
               dot={false}
             />
@@ -81,15 +81,15 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
       </div>
       <div className="flex justify-center gap-4 mt-2">
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#2c7a7b] mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-[#3b82f6] mr-1"></div>
           <span className="text-xs">Positive</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#4a5568] mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-[#8E9196] mr-1"></div>
           <span className="text-xs">Neutral</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#e53e3e] mr-1"></div>
+          <div className="w-3 h-3 rounded-full bg-[#F97316] mr-1"></div>
           <span className="text-xs">Negative</span>
         </div>
       </div>
@@ -97,17 +97,15 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
   );
 };
 
-// Simple tooltip that only shows the values
+// Custom tooltip that shows values in a more readable format
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-white p-2 border border-gray-200 rounded shadow-sm">
         <p className="font-semibold">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <div key={`item-${index}`} style={{ color: entry.color }}>
-            {entry.dataKey}: {entry.value}
-          </div>
-        ))}
+        <div className="text-[#3b82f6]">Positive: {payload[0].value}%</div>
+        <div className="text-[#8E9196]">Neutral: {payload[1].value}%</div>
+        <div className="text-[#F97316]">Negative: {payload[2].value}%</div>
       </div>
     );
   }
