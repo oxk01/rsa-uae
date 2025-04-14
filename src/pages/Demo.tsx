@@ -203,7 +203,11 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     // Get top keywords
     const topKeywords = Object.entries(allKeywords)
-      .sort(([, a], [, b]) => (b.count || 0) - (a.count || 0))
+      .sort(([, a], [, b]) => {
+        const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
+        const countB = b && typeof b === 'object' && 'count' in b ? (b.count as number) : 0;
+        return countB - countA;
+      })
       .slice(0, 5)
       .map(([word]) => word);
     
@@ -362,7 +366,11 @@ const Demo = () => {
         
         // Get top keywords
         const topKeywords = Object.entries(allKeywords)
-          .sort(([, a], [, b]) => (b.count || 0) - (a.count || 0))
+          .sort(([, a], [, b]) => {
+            const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
+            const countB = b && typeof b === 'object' && 'count' in b ? (b.count as number) : 0;
+            return countB - countA;
+          })
           .slice(0, 5)
           .map(([word]) => word);
         
