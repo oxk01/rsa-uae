@@ -45,7 +45,6 @@ interface Analysis {
 
 const Dashboard = () => {
   const [savedAnalyses, setSavedAnalyses] = useState<Analysis[]>([]);
-  const [selectedTab, setSelectedTab] = useState<string>('sentiment');
   const { toast } = useToast();
   const { t } = useLanguage();
   const currentDate = new Date().toLocaleDateString('en-US', {
@@ -374,100 +373,6 @@ const Dashboard = () => {
 
             <div className="mb-6">
               <RecentReviews reviews={enhancedReviews} />
-            </div>
-
-            <div className="mb-6">
-              <div className="border-b mb-4">
-                <div className="flex gap-4">
-                  <button
-                    className={`pb-2 px-1 ${selectedTab === 'sentiment' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
-                    onClick={() => setSelectedTab('sentiment')}
-                  >
-                    Aspect Analysis
-                  </button>
-                  <button
-                    className={`pb-2 px-1 ${selectedTab === 'trends' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
-                    onClick={() => setSelectedTab('trends')}
-                  >
-                    Sentiment Trends
-                  </button>
-                  <button
-                    className={`pb-2 px-1 ${selectedTab === 'reviews' ? 'border-b-2 border-blue-500 font-medium' : 'text-gray-500'}`}
-                    onClick={() => setSelectedTab('reviews')}
-                  >
-                    Recent Reviews
-                  </button>
-                </div>
-              </div>
-
-              {selectedTab === 'sentiment' && (
-                <Card className="p-6 shadow-sm">
-                  <h2 className="font-semibold mb-1">Aspect-Based Sentiment Analysis</h2>
-                  <p className="text-xs text-gray-500 mb-6">Sentiment breakdown by different aspects of the product or service</p>
-                  
-                  <div className="h-96">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart
-                        data={aspectData}
-                        margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                        layout="vertical"
-                      >
-                        <CartesianGrid strokeDasharray="3 3" opacity={0.2} horizontal={false} />
-                        <XAxis type="number" />
-                        <YAxis dataKey="aspect" type="category" />
-                        <Tooltip />
-                        <Legend />
-                        <Bar dataKey="positive" stackId="a" fill={ASPECT_COLORS[0]} name="Positive" />
-                        <Bar dataKey="neutral" stackId="a" fill={ASPECT_COLORS[1]} name="Neutral" />
-                        <Bar dataKey="negative" stackId="a" fill={ASPECT_COLORS[2]} name="Negative" />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                  
-                  <div className="flex justify-center gap-4 mt-4">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-                      <span className="text-xs">Positive</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-gray-500 mr-1"></div>
-                      <span className="text-xs">Neutral</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                      <span className="text-xs">Negative</span>
-                    </div>
-                  </div>
-                </Card>
-              )}
-
-              {selectedTab === 'trends' && (
-                <Card className="p-6 shadow-sm">
-                  <h2 className="text-lg font-medium mb-4">Sentiment Trends Over Time</h2>
-                  <p>Trend analysis will be shown here.</p>
-                </Card>
-              )}
-
-              {selectedTab === 'reviews' && (
-                <Card className="p-6 shadow-sm">
-                  <h2 className="text-lg font-medium mb-4">Recent Reviews</h2>
-                  <div className="space-y-4">
-                    {savedAnalyses.slice(0, 3).map((analysis) => (
-                      <div key={analysis.id} className="p-4 border rounded-lg">
-                        <div className="flex justify-between">
-                          <h3 className="font-medium">{analysis.title}</h3>
-                          <span className="text-sm text-gray-500">{analysis.date}</span>
-                        </div>
-                        <p className="text-sm mt-2">
-                          Reviews: {analysis.reviewCount} | 
-                          Positive: {analysis.sentiment.positive} | 
-                          Negative: {analysis.sentiment.negative}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </Card>
-              )}
             </div>
             
             <div className="mt-10 pt-6 border-t flex justify-center">
