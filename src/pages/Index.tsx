@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import StatsGrid from '@/components/StatsGrid';
@@ -143,60 +142,81 @@ const Index = () => {
   };
   
   const handleExportData = () => {
-    // In a real app, this would generate a CSV or Excel file
-    // For this demo, we'll create a simple CSV string
-    
-    if (!hasData) {
+    import('xlsx').then(XLSX => {
+      const worksheet = XLSX.utils.json_to_sheet(
+        savedAnalyses.map(analysis => {
+          let sentiment = "Neutral";
+          if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
+            sentiment = "Positive";
+          } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
+            sentiment = "Negative";
+          }
+          
+          const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+          
+          return {
+            Title: analysis.title,
+            Date: analysis.date,
+            Sentiment: sentiment,
+            Rating: rating,
+            'Accuracy Score': analysis.accuracyScore || "N/A",
+            Keywords: analysis.keywords?.map(k => k.word).join(", ") || "",
+            'Review Text': analysis.reviewText || "",
+            'Data Points': analysis.dataPoints || analysis.reviewCount || 0
+          };
+        })
+      );
+      
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Analysis Results");
+      
+      XLSX.writeFile(workbook, `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.xlsx`);
+      
       toast({
-        title: "No data to export",
-        description: "Please run some analyses first to generate data for export.",
-        variant: "destructive"
+        title: "Export complete",
+        description: `${savedAnalyses.length} reviews exported to Excel.`,
       });
-      return;
-    }
-    
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    // Add headers
-    csvContent += "Title,Date,Sentiment,Rating,Accuracy Score,Review Text\n";
-    
-    // Add data
-    savedAnalyses.forEach(analysis => {
-      let sentiment = "Neutral";
-      if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
-        sentiment = "Positive";
-      } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
-        sentiment = "Negative";
-      }
+    }).catch(error => {
+      console.error("Error generating Excel file:", error);
       
-      const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Title,Date,Sentiment,Rating,Accuracy Score,Review Text\n";
       
-      const rowData = [
-        `"${analysis.title}"`,
-        analysis.date,
-        sentiment,
-        rating,
-        analysis.accuracyScore || "N/A",
-        `"${analysis.reviewText || ""}"`
-      ];
+      savedAnalyses.forEach(analysis => {
+        let sentiment = "Neutral";
+        if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
+          sentiment = "Positive";
+        } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
+          sentiment = "Negative";
+        }
+        
+        const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+        
+        const rowData = [
+          `"${analysis.title}"`,
+          analysis.date,
+          sentiment,
+          rating,
+          analysis.accuracyScore || "N/A",
+          `"${analysis.reviewText || ""}"`
+        ];
+        
+        csvContent += rowData.join(",") + "\n";
+      });
       
-      csvContent += rowData.join(",") + "\n";
-    });
-    
-    // Create download link
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    
-    // Trigger download
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Export complete",
-      description: `${savedAnalyses.length} reviews exported to CSV.`,
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export complete",
+        description: `${savedAnalyses.length} reviews exported to CSV.`,
+      });
     });
   };
   
@@ -238,7 +258,7 @@ const Index = () => {
               className="flex items-center gap-1"
             >
               <Download className="h-4 w-4" />
-              Export All Data
+              Export to Excel
             </Button>
           )}
         </div>

@@ -251,44 +251,82 @@ const Dashboard = () => {
   };
   
   const handleExportData = () => {
-    let csvContent = "data:text/csv;charset=utf-8,";
-    
-    csvContent += "Title,Date,Sentiment,Rating,Accuracy Score,Review Text\n";
-    
-    savedAnalyses.forEach(analysis => {
-      let sentiment = "Neutral";
-      if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
-        sentiment = "Positive";
-      } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
-        sentiment = "Negative";
-      }
+    import('xlsx').then(XLSX => {
+      const worksheet = XLSX.utils.json_to_sheet(
+        savedAnalyses.map(analysis => {
+          let sentiment = "Neutral";
+          if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
+            sentiment = "Positive";
+          } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
+            sentiment = "Negative";
+          }
+          
+          const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+          
+          return {
+            Title: analysis.title,
+            Date: analysis.date,
+            Sentiment: sentiment,
+            Rating: rating,
+            'Accuracy Score': analysis.accuracyScore || "N/A",
+            Keywords: analysis.keywords?.map(k => k.word).join(", ") || "",
+            'Review Text': analysis.reviewText || "",
+            'Data Points': analysis.dataPoints || analysis.reviewCount || 0
+          };
+        })
+      );
       
-      const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Analysis Results");
       
-      const rowData = [
-        `"${analysis.title}"`,
-        analysis.date,
-        sentiment,
-        rating,
-        analysis.accuracyScore || "N/A",
-        `"${analysis.reviewText || ""}"`
-      ];
+      XLSX.writeFile(workbook, `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.xlsx`);
       
-      csvContent += rowData.join(",") + "\n";
-    });
-    
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
-    link.setAttribute("download", `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Export complete",
-      description: `${savedAnalyses.length} reviews exported to CSV.`,
+      toast({
+        title: "Export complete",
+        description: `${savedAnalyses.length} reviews exported to Excel.`,
+      });
+    }).catch(error => {
+      console.error("Error generating Excel file:", error);
+      
+      let csvContent = "data:text/csv;charset=utf-8,";
+      
+      csvContent += "Title,Date,Sentiment,Rating,Accuracy Score,Review Text\n";
+      
+      savedAnalyses.forEach(analysis => {
+        let sentiment = "Neutral";
+        if (analysis.sentiment.positive > analysis.sentiment.negative && analysis.sentiment.positive > analysis.sentiment.neutral) {
+          sentiment = "Positive";
+        } else if (analysis.sentiment.negative > analysis.sentiment.positive && analysis.sentiment.negative > analysis.sentiment.neutral) {
+          sentiment = "Negative";
+        }
+        
+        const rating = `${Math.round((analysis.sentiment.positive / 100) * 5)}/5`;
+        
+        const rowData = [
+          `"${analysis.title}"`,
+          analysis.date,
+          sentiment,
+          rating,
+          analysis.accuracyScore || "N/A",
+          `"${analysis.reviewText || ""}"`
+        ];
+        
+        csvContent += rowData.join(",") + "\n";
+      });
+      
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `sentiment_analysis_export_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: "Export complete",
+        description: `${savedAnalyses.length} reviews exported to CSV.`,
+      });
     });
   };
   
@@ -343,7 +381,7 @@ const Dashboard = () => {
               </Button>
               <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleExportData}>
                 <FileText className="h-4 w-4" />
-                Export All Data
+                Export to Excel
               </Button>
               <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
                 <XCircle className="h-4 w-4" />
@@ -477,7 +515,7 @@ const Dashboard = () => {
             </div>
             
             <div className="mb-6 bg-white rounded-lg border shadow-sm p-6">
-              <RecentReviews reviews={enhancedReviews} onExport={handleExportData} />
+              <RecentReviews reviews={savedAnalyses} onExport={handleExportData} />
             </div>
             
             <div className="mt-10 pt-6 border-t flex justify-center">

@@ -147,7 +147,7 @@ const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
             className="flex items-center gap-1"
           >
             <Download className="h-4 w-4" />
-            Export Reviews
+            Export to Excel
           </Button>
         )}
       </div>
