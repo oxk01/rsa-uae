@@ -35,69 +35,12 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
     { aspect: 'Service', positive: 55, neutral: 30, negative: 15 }
   ];
   
-  // Sample reviews data
-  const reviewsData = [
-    {
-      id: 1,
-      date: '2025-04-10',
-      rating: '4/5',
-      sentiment: 'Positive',
-      text: 'Great product with excellent features. Very satisfied with my purchase.',
-      keywords: ['quality', 'features', 'satisfied']
-    },
-    {
-      id: 2,
-      date: '2025-04-08',
-      rating: '3/5',
-      sentiment: 'Neutral',
-      text: 'Product is okay but could use some improvements in certain areas.',
-      keywords: ['improvements', 'okay']
-    },
-    {
-      id: 3,
-      date: '2025-04-05',
-      rating: '2/5',
-      sentiment: 'Negative',
-      text: 'Disappointed with the quality. Not worth the price paid.',
-      keywords: ['disappointed', 'quality', 'price']
-    }
-  ];
-  
-  // Helper function to render star ratings
-  const renderStarRating = (rating: string) => {
-    const ratingValue = parseFloat(rating.split('/')[0]);
-    const maxRating = parseFloat(rating.split('/')[1]);
-    const filledStars = Math.round(ratingValue);
-    const emptyStars = maxRating - filledStars;
-    
-    return (
-      <div className="flex">
-        {[...Array(filledStars)].map((_, i) => (
-          <span key={`filled-${i}`} className="text-yellow-400">★</span>
-        ))}
-        {[...Array(emptyStars)].map((_, i) => (
-          <span key={`empty-${i}`} className="text-gray-300">★</span>
-        ))}
-      </div>
-    );
-  };
-  
-  // Helper function to determine badge color based on sentiment
-  const getBadgeColor = (sentiment: string) => {
-    switch(sentiment.toLowerCase()) {
-      case 'positive': return 'bg-green-100 text-green-800';
-      case 'negative': return 'bg-red-100 text-red-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-  
   return (
     <div className="bg-white rounded-lg border shadow-sm p-6">
       <Tabs defaultValue="sentiment-trends">
         <TabsList className="mb-4 bg-gray-100 p-1 rounded-md w-full">
           <TabsTrigger value="aspect-analysis" className="flex-1">Aspect Analysis</TabsTrigger>
           <TabsTrigger value="sentiment-trends" className="flex-1">Sentiment Trends</TabsTrigger>
-          <TabsTrigger value="recent-reviews" className="flex-1">Recent Reviews</TabsTrigger>
         </TabsList>
 
         <TabsContent value="sentiment-trends">
@@ -226,47 +169,6 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                 <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
                 <span className="text-xs">Negative</span>
               </div>
-            </div>
-          </div>
-        </TabsContent>
-
-        <TabsContent value="recent-reviews">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-1">Recent Reviews</h2>
-                <p className="text-sm text-gray-500">Latest customer reviews with sentiment analysis</p>
-              </div>
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
-            </div>
-            
-            <div className="space-y-4 mt-4">
-              {reviewsData.map(review => (
-                <div key={review.id} className="border rounded-lg p-4">
-                  <div className="flex justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${getBadgeColor(review.sentiment)}`}>
-                        {review.sentiment}
-                      </span>
-                      {renderStarRating(review.rating)}
-                    </div>
-                    <span className="text-sm text-gray-500">{review.date}</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-700 mb-4">{review.text}</p>
-                  
-                  <div className="flex flex-wrap gap-2">
-                    {review.keywords.map((keyword, idx) => (
-                      <span key={idx} className="bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-full">
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </TabsContent>
