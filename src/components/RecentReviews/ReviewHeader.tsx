@@ -37,35 +37,15 @@ const ReviewHeader = ({
       </div>
       <div className="flex flex-wrap gap-2">
         {hasData && (
-          <>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => onExport?.()}
-              className="flex items-center gap-1"
-            >
-              <Download className="h-4 w-4" />
-              Export to Excel
-            </Button>
-            {totalReviews > 5 && (
-              <div className="flex items-center gap-2">
-                <Button 
-                  variant={displayMode === 'cards' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => displayMode !== 'cards' && window.location.reload()}
-                >
-                  Cards
-                </Button>
-                <Button 
-                  variant={displayMode === 'table' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => displayMode !== 'table' && window.location.reload()}
-                >
-                  Table
-                </Button>
-              </div>
-            )}
-          </>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => onExport?.()}
+            className="flex items-center gap-1"
+          >
+            <Download className="h-4 w-4" />
+            Export to Excel
+          </Button>
         )}
       </div>
     </div>

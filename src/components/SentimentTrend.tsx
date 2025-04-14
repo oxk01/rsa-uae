@@ -1,6 +1,6 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts';
-import { TrendingUp, AlertCircle, Download } from 'lucide-react';
+import { TrendingUp, AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 
@@ -77,10 +77,6 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                 <h2 className="text-xl font-semibold mb-1">Sentiment Trends Over Time</h2>
                 <p className="text-sm text-gray-500">How sentiment has changed over the selected time period</p>
               </div>
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
             </div>
             
             {!hasData && (
@@ -159,10 +155,6 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
                 <h2 className="text-xl font-semibold mb-1">Aspect-Based Analysis</h2>
                 <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
               </div>
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Download className="h-4 w-4" />
-                Export
-              </Button>
             </div>
             
             <div className="h-64 mt-8">

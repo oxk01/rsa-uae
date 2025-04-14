@@ -142,14 +142,12 @@ const Dashboard = () => {
 
   const deleteLastReview = () => {
     if (savedAnalyses.length > 0) {
-      const updatedAnalyses = [...savedAnalyses];
-      updatedAnalyses.pop();
-      setSavedAnalyses(updatedAnalyses);
-      localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
-      generateTrendData(updatedAnalyses);
+      setSavedAnalyses([]);
+      localStorage.setItem('rsa_saved_analyses', JSON.stringify([]));
+      setTrendData([]);
       toast({
-        title: "Last review deleted",
-        description: "The most recent analysis has been removed.",
+        title: "All reviews deleted",
+        description: "All analyses have been removed from the dashboard.",
       });
     }
   };
@@ -409,7 +407,7 @@ const Dashboard = () => {
               </Button>
               <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
                 <XCircle className="h-4 w-4" />
-                Delete Last Review
+                Delete All Reviews
               </Button>
             </div>
           </div>
