@@ -13,6 +13,7 @@ interface ResearchPaperCardProps {
   abstract: string;
   imageUrl: string;
   paperUrl: string;
+  category?: string;
 }
 
 const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
@@ -22,10 +23,11 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
   year,
   abstract,
   imageUrl,
-  paperUrl
+  paperUrl,
+  category
 }) => {
-  const { language } = useLanguage();
-  const isRtl = language === 'ar';
+  const { currentLanguage, t } = useLanguage();
+  const isRtl = currentLanguage === 'ar';
   
   return (
     <Card className="h-full flex flex-col overflow-hidden">
@@ -36,6 +38,13 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
           className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
         />
       </div>
+      {category && (
+        <div className={`px-6 pt-4 ${isRtl ? 'text-right' : ''}`}>
+          <span className="inline-block bg-blue-100 dark:bg-blue-900 rounded-full px-3 py-1 text-sm font-semibold text-blue-700 dark:text-blue-300">
+            {category}
+          </span>
+        </div>
+      )}
       <CardHeader className={`${isRtl ? 'text-right' : ''}`}>
         <CardTitle className="text-lg font-semibold line-clamp-2">{title}</CardTitle>
         <CardDescription>
@@ -52,8 +61,8 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
       </CardContent>
       <CardFooter className={`pt-2 ${isRtl ? 'justify-start' : 'justify-end'}`}>
         <a href={paperUrl} target="_blank" rel="noopener noreferrer">
-          <Button variant="outline" size="sm" className="flex items-center gap-1">
-            <span>Read Paper</span>
+          <Button variant="outline" size="sm" className="flex items-center gap-2">
+            <span>{t('readPaper')}</span>
             <ExternalLink className="h-3.5 w-3.5" />
           </Button>
         </a>

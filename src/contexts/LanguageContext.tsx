@@ -1,5 +1,4 @@
-
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useState, useContext, useEffect } from 'react';
 
 type Language = 'en' | 'ar';
 
@@ -13,8 +12,8 @@ interface TranslationStrings {
 interface LanguageContextProps {
   currentLanguage: Language;
   setCurrentLanguage: (language: Language) => void;
-  language: Language;  // Added this property
-  setLanguage: (language: Language) => void;  // Added this property
+  language: Language;
+  setLanguage: (language: Language) => void;
   t: (key: string) => string;
 }
 
@@ -77,7 +76,7 @@ const initialTranslations: TranslationStrings = {
     en: 'Page Not Found',
     ar: 'الصفحة غير موجودة',
   },
-  // Technologies
+  
   nlpTechnology: {
     en: 'Natural Language Processing',
     ar: 'معالجة اللغة الطبيعية',
@@ -94,12 +93,12 @@ const initialTranslations: TranslationStrings = {
     en: 'Big Data Processing',
     ar: 'معالجة البيانات الضخمة',
   },
-  // Footer
+  
   copyright: {
     en: '© {year} All rights reserved.',
     ar: '© {year} جميع الحقوق محفوظة.',
   },
-  // Navigation
+  
   features: {
     en: 'Features',
     ar: 'الميزات',
@@ -108,7 +107,7 @@ const initialTranslations: TranslationStrings = {
     en: 'Company',
     ar: 'الشركة',
   },
-  // Home Page
+  
   heroTitle: {
     en: 'Unlock the Power of Sentiment Analysis',
     ar: 'أطلق العنان لقوة تحليل المشاعر',
@@ -125,7 +124,7 @@ const initialTranslations: TranslationStrings = {
     en: 'Learn More',
     ar: 'اعرف المزيد',
   },
-  // Stats Grid
+  
   reviewsAnalyzed: {
     en: 'Reviews Analyzed',
     ar: 'المراجعات التي تم تحليلها',
@@ -142,6 +141,56 @@ const initialTranslations: TranslationStrings = {
     en: 'Neutral Sentiment',
     ar: 'المشاعر المحايدة',
   },
+  
+  sentimentAnalysis: {
+    en: 'Sentiment Analysis',
+    ar: 'تحليل المشاعر',
+  },
+  aiEthics: {
+    en: 'AI Ethics',
+    ar: 'أخلاقيات الذكاء الاصطناعي',
+  },
+  machineLearning: {
+    en: 'Machine Learning',
+    ar: 'التعلم الآلي',
+  },
+  nlp: {
+    en: 'Natural Language Processing',
+    ar: 'معالجة اللغة الطبيعية',
+  },
+  bigData: {
+    en: 'Big Data',
+    ar: 'البيانات الضخمة',
+  },
+  
+  readPaper: {
+    en: 'Read Paper',
+    ar: 'قراءة البحث',
+  },
+  researchInsights: {
+    en: 'Research & Insights',
+    ar: 'البحوث والرؤى',
+  },
+  latestDevelopments: {
+    en: 'Latest Developments',
+    ar: 'أحدث التطورات',
+  },
+  ourTechnology: {
+    en: 'Our Technology',
+    ar: 'تقنيتنا',
+  },
+  researchPapers: {
+    en: 'Research Papers',
+    ar: 'الأوراق البحثية',
+  },
+  filterBy: {
+    en: 'Filter by category',
+    ar: 'تصفية حسب الفئة',
+  },
+  allCategories: {
+    en: 'All Categories',
+    ar: 'جميع الفئات',
+  },
 };
 
 export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) => {
@@ -149,7 +198,6 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
   const [translations, setTranslations] = useState<TranslationStrings>({
     ...initialTranslations,
     
-    // Add new translations for the chat assistant
     openChat: {
       en: 'Open Chat',
       ar: 'فتح المحادثة'
@@ -176,15 +224,19 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
     return translations[key]?.[currentLanguage] || key;
   };
 
-  // Create alias functions for backward compatibility
   const language = currentLanguage;
   const setLanguage = setCurrentLanguage;
+
+  useEffect(() => {
+    document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+    document.documentElement.lang = currentLanguage;
+  }, [currentLanguage]);
 
   const value: LanguageContextProps = {
     currentLanguage,
     setCurrentLanguage,
-    language,  // Add the language property
-    setLanguage,  // Add the setLanguage property
+    language,
+    setLanguage,
     t,
   };
 
