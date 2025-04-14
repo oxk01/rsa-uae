@@ -6,6 +6,8 @@ import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { BarChart3, Trash2, Calendar, RefreshCw, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import SentimentTrend from '@/components/SentimentTrend';
+import RecentReviews from '@/components/RecentReviews';
 import {
   LineChart,
   Line,
@@ -49,14 +51,48 @@ const Dashboard = () => {
     day: 'numeric', 
     year: 'numeric'
   });
+  const [trendData, setTrendData] = useState<any[]>([]);
 
   useEffect(() => {
     const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
     if (savedAnalysesStr) {
       const analyses = JSON.parse(savedAnalysesStr);
       setSavedAnalyses(analyses);
+      
+      // Generate trend data for SentimentTrend component
+      if (analyses.length > 0) {
+        generateTrendData(analyses);
+      }
     }
   }, []);
+  
+  // Generate trend data from saved analyses
+  const generateTrendData = (analyses: Analysis[]) => {
+    if (analyses.length > 1) {
+      // Sort analyses by date
+      const sortedAnalyses = [...analyses].sort((a, b) => 
+        new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
+      
+      // Map to trend data format
+      const trend = sortedAnalyses.map(analysis => ({
+        date: new Date(analysis.date).toLocaleDateString('en-US', { month: 'short' }),
+        positive: analysis.sentiment.positive,
+        neutral: analysis.sentiment.neutral,
+        negative: analysis.sentiment.negative
+      }));
+      
+      setTrendData(trend);
+    } else if (analyses.length === 1) {
+      // If only one analysis, create a single point
+      setTrendData([{
+        date: new Date(analyses[0].date).toLocaleDateString('en-US', { month: 'short' }),
+        positive: analyses[0].sentiment.positive,
+        neutral: analyses[0].sentiment.neutral,
+        negative: analyses[0].sentiment.negative
+      }]);
+    }
+  };
   
   const deleteAnalysis = (id: number) => {
     const updatedAnalyses = savedAnalyses.filter(analysis => analysis.id !== id);
@@ -66,6 +102,8 @@ const Dashboard = () => {
       title: "Analysis deleted",
       description: "The analysis has been removed from your dashboard.",
     });
+    // Update trend data after deletion
+    generateTrendData(updatedAnalyses);
   };
 
   const refreshData = () => {
@@ -73,6 +111,7 @@ const Dashboard = () => {
     if (savedAnalysesStr) {
       const analyses = JSON.parse(savedAnalysesStr);
       setSavedAnalyses(analyses);
+      generateTrendData(analyses);
       toast({
         title: "Data refreshed",
         description: "Dashboard data has been updated.",
@@ -86,6 +125,7 @@ const Dashboard = () => {
       updatedAnalyses.pop();
       setSavedAnalyses(updatedAnalyses);
       localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+      generateTrendData(updatedAnalyses);
       toast({
         title: "Last review deleted",
         description: "The most recent analysis has been removed.",
@@ -201,6 +241,31 @@ const Dashboard = () => {
   const COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
   const ASPECT_COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
   
+  // Add enhanced reviews for RecentReviews component
+  const enhancedReviews = savedAnalyses.map(analysis => {
+    // Derive sentiment label from sentiment percentages
+    let sentimentLabel = "Neutral";
+    if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
+      sentimentLabel = "Positive";
+    } else if (analysis.sentiment.negative > Math.max(analysis.sentiment.neutral, analysis.sentiment.positive)) {
+      sentimentLabel = "Negative";
+    }
+    
+    // Calculate rating based on positive sentiment (1-5 scale)
+    const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
+    
+    // Add placeholder review text if not present
+    const reviewText = analysis.reviewText || `Analysis for ${analysis.title} with ${analysis.reviewCount} reviews.`;
+    
+    return {
+      ...analysis,
+      sentimentLabel,
+      rating,
+      reviewText,
+      source: analysis.source || (analysis.title.includes('.') ? 'excel' : 'text')
+    };
+  });
+  
   return (
     <div className="min-h-screen bg-white p-6">
       <div className="max-w-7xl mx-auto">
@@ -314,6 +379,16 @@ const Dashboard = () => {
                   </ResponsiveContainer>
                 </div>
               </Card>
+            </div>
+
+            {/* Add Sentiment Trend component */}
+            <div className="mb-6">
+              <SentimentTrend trendData={trendData} />
+            </div>
+
+            {/* Add Recent Reviews component */}
+            <div className="mb-6">
+              <RecentReviews reviews={enhancedReviews} />
             </div>
 
             <div className="mb-6">
