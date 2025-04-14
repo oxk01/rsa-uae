@@ -1,13 +1,22 @@
 import React from 'react';
+import { Book, FileText, ListCheck } from 'lucide-react';
 
 const TermsAndConditions = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="container mx-auto px-4 max-w-4xl space-y-8">
-        <h1 className="text-4xl font-bold mb-12 text-center text-gray-800">Terms and Conditions</h1>
+        <div className="flex items-center justify-center mb-12">
+          <Book className="h-12 w-12 mr-4 text-gray-600" />
+          <h1 className="text-4xl font-bold text-center text-gray-800">
+            Terms <span className="text-gray-500">and</span> Conditions
+          </h1>
+        </div>
         
         <div className="bg-white rounded-lg shadow-md p-8 mb-8 space-y-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-700">1. Introduction</h2>
+          <div className="flex items-center mb-6">
+            <FileText className="h-6 w-6 mr-3 text-gray-600" />
+            <h2 className="text-2xl font-semibold text-gray-700">1. Introduction</h2>
+          </div>
           <p className="text-gray-600 leading-relaxed mb-4">
             Welcome to RSA (Review Sentiment Analysis). These terms and conditions outline the rules and regulations for the use of our website and services.
           </p>
@@ -17,7 +26,10 @@ const TermsAndConditions = () => {
         </div>
         
         <div className="bg-white rounded-lg shadow-md p-8 mb-8 space-y-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-700">2. License to Use</h2>
+          <div className="flex items-center mb-6">
+            <ListCheck className="h-6 w-6 mr-3 text-gray-600" />
+            <h2 className="text-2xl font-semibold text-gray-700">2. License to Use</h2>
+          </div>
           <p className="text-gray-600 leading-relaxed mb-4">
             Unless otherwise stated, RSA and/or its licensors own the intellectual property rights for all material on this site. All intellectual property rights are reserved.
           </p>

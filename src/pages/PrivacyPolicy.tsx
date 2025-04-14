@@ -1,13 +1,22 @@
 import React from 'react';
+import { FileText2, Shield, BookText } from 'lucide-react';
 
 const PrivacyPolicy = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="container mx-auto px-4 max-w-4xl space-y-8">
-        <h1 className="text-4xl font-bold mb-12 text-center text-gray-800">Privacy Policy</h1>
+        <div className="flex items-center justify-center mb-12">
+          <Shield className="h-12 w-12 mr-4 text-gray-600" />
+          <h1 className="text-4xl font-bold text-center text-gray-800">
+            Privacy <span className="text-gray-500">Policy</span>
+          </h1>
+        </div>
         
         <div className="bg-white rounded-lg shadow-md p-8 mb-8 space-y-6">
-          <h2 className="text-2xl font-semibold mb-6 text-gray-700">1. Information We Collect</h2>
+          <div className="flex items-center mb-6">
+            <BookText className="h-6 w-6 mr-3 text-gray-600" />
+            <h2 className="text-2xl font-semibold text-gray-700">1. Information We Collect</h2>
+          </div>
           <p className="text-gray-600 leading-relaxed mb-4">
             We collect information that you provide directly to us when you register for an account, create or modify your profile, set preferences, or upload content to our service.
           </p>
