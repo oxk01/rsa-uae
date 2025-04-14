@@ -27,27 +27,33 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Mission section with updated image */}
+      {/* Mission section */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row items-center gap-12">
-            <div className="md:w-1/2">
-              <img 
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80" 
-                alt="Our Mission" 
-                className="rounded-lg shadow-md w-full"
-              />
-            </div>
-            <div className="md:w-1/2">
+          <div className="grid md:grid-cols-2 gap-12">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700">
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
               <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                At RSA, we believe that understanding customer sentiment is key to building better products and services. 
-                Our mission is to provide businesses with powerful, accessible tools to analyze and extract meaningful insights 
-                from customer feedback.
+                At RSA, our mission is to help businesses understand their customers better through advanced sentiment analysis. 
+                We believe that every customer review contains valuable insights that can drive business growth and improvement.
               </p>
               <p className="text-lg text-gray-700 dark:text-gray-300">
-                We combine state-of-the-art natural language processing technologies with intuitive visualizations 
-                to help you make data-driven decisions that improve customer satisfaction and drive business growth.
+                By leveraging cutting-edge AI technologies like BERT and Aspect-Based Sentiment Analysis, we provide businesses 
+                with a deeper understanding of customer sentiment, allowing them to make data-driven decisions that enhance 
+                customer satisfaction and loyalty.
+              </p>
+            </div>
+            
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700">
+              <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
+              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                We envision a world where businesses can instantly understand the voice of their customers, identifying 
+                trends and patterns that would otherwise remain hidden in vast amounts of textual feedback.
+              </p>
+              <p className="text-lg text-gray-700 dark:text-gray-300">
+                Our goal is to democratize access to advanced sentiment analysis tools, making them accessible to 
+                businesses of all sizes. We believe that by bridging the gap between customer feedback and business 
+                strategy, we can help create better products, services, and customer experiences.
               </p>
             </div>
           </div>
