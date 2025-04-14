@@ -107,11 +107,19 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
   
   // Helper function to determine badge color based on sentiment
   const getBadgeColor = (sentiment: string) => {
-    switch(sentiment.toLowerCase()) {
+    switch(sentiment?.toLowerCase()) {
       case 'positive': return 'bg-green-100 text-green-800';
       case 'negative': return 'bg-red-100 text-red-800';
       default: return 'bg-gray-100 text-gray-800';
     }
+  };
+
+  // Function to get source icon
+  const getSourceIcon = (source?: string) => {
+    if (source === 'excel') {
+      return <FileSpreadsheet className="h-4 w-4 text-green-600 mr-1" />;
+    }
+    return <FileText className="h-4 w-4 text-blue-600 mr-1" />;
   };
   
   return (
@@ -124,12 +132,16 @@ const RecentReviews = ({ reviews }: RecentReviewsProps) => {
                 {review.sentimentLabel}
               </span>
               {renderStarRating(review.rating || "0/5")}
+              <div className="flex items-center ml-2 text-xs text-gray-500">
+                {getSourceIcon(review.source)}
+                <span>{review.source === 'excel' ? 'From Excel' : 'From Text'}</span>
+              </div>
             </div>
             <span className="text-sm text-gray-500">{review.date}</span>
           </div>
           
           <p className="font-medium mb-1">
-            Review for an {review.title} Rating: {review.rating}
+            Review for {review.title} Rating: {review.rating}
           </p>
           
           <p className="text-sm text-gray-700 mb-4">{review.reviewText}</p>
