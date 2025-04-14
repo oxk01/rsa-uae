@@ -25,68 +25,71 @@ import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Pricing from "./pages/Pricing";
 
-const queryClient = new QueryClient();
+const App = () => {
+  // Create a new QueryClient instance inside the component
+  const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <LanguageProvider>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="flex flex-col min-h-screen">
-              <Navigation />
-              <div className="flex-grow">
-                <Routes>
-                  {/* Public routes - always accessible */}
-                  <Route path="/" element={<Home />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/terms" element={<TermsAndConditions />} />
-                  <Route path="/privacy" element={<PrivacyPolicy />} />
-                  <Route path="/contact" element={<Contact />} />
-                  <Route path="/pricing" element={<Pricing />} />
-                  
-                  {/* Protected routes - only accessible when logged in */}
-                  <Route 
-                    path="/dashboard" 
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/demo" 
-                    element={
-                      <ProtectedRoute>
-                        <Demo />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/blog" 
-                    element={
-                      <ProtectedRoute>
-                        <Blog />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  
-                  {/* Catch-all route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <div className="flex flex-col min-h-screen">
+                <Navigation />
+                <div className="flex-grow">
+                  <Routes>
+                    {/* Public routes - always accessible */}
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+                    <Route path="/terms" element={<TermsAndConditions />} />
+                    <Route path="/privacy" element={<PrivacyPolicy />} />
+                    <Route path="/contact" element={<Contact />} />
+                    <Route path="/pricing" element={<Pricing />} />
+                    
+                    {/* Protected routes - only accessible when logged in */}
+                    <Route 
+                      path="/dashboard" 
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/demo" 
+                      element={
+                        <ProtectedRoute>
+                          <Demo />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    <Route 
+                      path="/blog" 
+                      element={
+                        <ProtectedRoute>
+                          <Blog />
+                        </ProtectedRoute>
+                      } 
+                    />
+                    
+                    {/* Catch-all route */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </div>
+                <Footer />
+                <ChatAssistant />
               </div>
-              <Footer />
-              <ChatAssistant />
-            </div>
-          </BrowserRouter>
-        </AuthProvider>
-      </LanguageProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+            </BrowserRouter>
+          </AuthProvider>
+        </LanguageProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;
