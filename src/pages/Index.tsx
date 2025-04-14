@@ -169,12 +169,22 @@ const Index = () => {
             <p className="text-gray-500 mt-1">Analyze customer reviews with AI-powered contextual sentiment analysis</p>
           </div>
           
-          <GenerateReportButton 
-            hasData={hasData} 
-            variant="default"
-            size="default"
-            className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-          />
+          <div className="flex gap-2">
+            <GenerateReportButton 
+              hasData={hasData} 
+              variant="default"
+              size="default"
+              className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+            />
+            
+            <GenerateReportButton 
+              hasData={hasData} 
+              variant="outline"
+              size="default"
+              showReport={true}
+              className="border-blue-600 text-blue-700 hover:bg-blue-50"
+            />
+          </div>
         </div>
         
         {!hasData && (

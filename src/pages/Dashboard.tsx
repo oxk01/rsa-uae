@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -8,6 +7,7 @@ import { BarChart3, Trash2, Calendar, RefreshCw, XCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SentimentTrend from '@/components/SentimentTrend';
 import RecentReviews from '@/components/RecentReviews';
+import GenerateReportButton from '@/components/GenerateReportButton';
 import {
   LineChart,
   Line,
@@ -277,7 +277,13 @@ const Dashboard = () => {
             <h1 className="text-2xl font-bold text-blue-900">Sentiment Analysis Dashboard</h1>
             <p className="text-gray-600">Analyze and visualize customer sentiment data</p>
           </div>
-          <div className="flex space-x-2 mt-4 md:mt-0">
+          <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
+            <GenerateReportButton 
+              hasData={savedAnalyses.length > 0}
+              variant="default" 
+              showReport={true}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
+            />
             <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={refreshData}>
               <Calendar className="h-4 w-4" />
               {currentDate}

@@ -1,7 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Save, RotateCcw } from 'lucide-react';
+import { Save, RotateCcw, FileChart } from 'lucide-react';
+import GenerateReportButton from '@/components/GenerateReportButton';
 
 interface ResultProps {
   result: {
@@ -62,21 +62,36 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
     }
   };
   
+  const hasSavedAnalyses = () => {
+    const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
+    return savedAnalysesStr ? JSON.parse(savedAnalysesStr).length > 0 : false;
+  };
+  
   return (
     <div className="p-6">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between mb-6 gap-2">
         <h2 className="text-xl font-semibold text-gray-800">Analysis Results</h2>
-        <Button
-          onClick={onSave}
-          className="bg-blue-600 hover:bg-blue-700"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          Save to Dashboard
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          <Button
+            onClick={onSave}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save to Dashboard
+          </Button>
+          
+          {hasSavedAnalyses() && (
+            <GenerateReportButton
+              hasData={true}
+              showReport={true}
+              variant="outline"
+              className="border-blue-600 text-blue-700 hover:bg-blue-50"
+            />
+          )}
+        </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        {/* Overall Sentiment */}
         <div className="bg-white rounded-lg border p-6">
           <h3 className="text-sm font-medium text-gray-500 mb-4">Overall Sentiment</h3>
           <div className={`py-3 px-4 rounded-md flex items-center mb-2 ${getSentimentColor(result.overallSentiment.sentiment)}`}>
@@ -101,7 +116,6 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
           </div>
         </div>
         
-        {/* Aspect Analysis */}
         <div className="bg-white rounded-lg border p-6">
           <h3 className="text-sm font-medium text-gray-500 mb-4">Aspect Analysis</h3>
           <div className="space-y-3">
@@ -122,7 +136,6 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
           </div>
         </div>
         
-        {/* Key Phrases */}
         <div className="bg-white rounded-lg border p-6">
           <h3 className="text-sm font-medium text-gray-500 mb-4">Key Phrases</h3>
           <div className="flex flex-wrap gap-2">
@@ -138,7 +151,6 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
         </div>
       </div>
       
-      {/* ABSA Breakdown */}
       <div className="bg-white rounded-lg border p-6 mb-6">
         <h3 className="text-lg font-medium mb-2">ABSA Breakdown</h3>
         <p className="text-sm text-gray-500 mb-4">
