@@ -50,23 +50,32 @@
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
+    
     --card: 222.2 84% 4.9%;
     --card-foreground: 210 40% 98%;
+    
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
+    
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
+    
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
+    
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
+    
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
+    
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
+    
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
+    
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -89,10 +98,14 @@
   }
 }
 
-/* Specific dark mode improvements for better readability */
+/* Improved dark mode styles for better visibility */
 .dark .text-gray-600,
 .dark .text-gray-700,
 .dark .text-gray-800 {
+  @apply text-gray-200;
+}
+
+.dark .text-gray-500 {
   @apply text-gray-300;
 }
 
@@ -110,9 +123,26 @@
   @apply border-gray-700;
 }
 
-/* High contrast buttons in dark mode - Fix circular dependency */
+/* High contrast buttons in dark mode */
 .dark .bg-blue-600 {
-  background-color: rgb(59, 130, 246); /* Using direct color instead of @apply */
+  background-color: rgb(59, 130, 246);
+}
+
+.dark .bg-blue-700 {
+  background-color: rgb(29, 78, 216);
+}
+
+.dark .bg-blue-800,
+.dark .bg-blue-900 {
+  background-color: rgb(30, 64, 175);
+}
+
+.dark .hover\:bg-blue-700:hover {
+  background-color: rgb(29, 78, 216);
+}
+
+.dark .hover\:bg-blue-800:hover {
+  background-color: rgb(30, 64, 175);
 }
 
 .dark .text-blue-600 {
@@ -134,7 +164,8 @@
 
 /* Better shadows for dark mode */
 .dark .shadow-md,
-.dark .shadow-sm {
+.dark .shadow-sm,
+.dark .shadow-lg {
   @apply shadow-gray-900;
 }
 
@@ -174,12 +205,12 @@
 
 /* Fix for all buttons to ensure they're visible */
 .dark button[class*="bg-blue"] {
-  background-color: rgb(37, 99, 235); /* Using direct color instead of @apply */
+  background-color: rgb(37, 99, 235);
   color: white;
 }
 
 .dark button[class*="bg-blue"]:hover {
-  background-color: rgb(29, 78, 216); /* Using direct color for hover state */
+  background-color: rgb(29, 78, 216);
 }
 
 .dark button[class*="bg-gray"] {
@@ -188,4 +219,37 @@
 
 .dark button[class*="bg-gray"]:hover {
   @apply bg-gray-600;
+}
+
+/* Improved form fields visibility in dark mode */
+.dark label {
+  @apply text-gray-200;
+}
+
+.dark .placeholder-slate-400::placeholder {
+  @apply text-gray-500;
+}
+
+/* Enhanced chat button visibility */
+.fixed.bottom-6.right-6 {
+  @apply z-50 shadow-xl;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 
+              0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Alerts and notifications better visibility in dark mode */
+.dark [role="alert"] {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .bg-blue-50 {
+  @apply bg-blue-900/30 border-blue-800;
+}
+
+/* Login/Signup form improvements */
+.dark .auth-form-container {
+  @apply bg-gray-800 shadow-xl border border-gray-700;
 }

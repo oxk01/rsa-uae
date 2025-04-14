@@ -56,15 +56,15 @@ const Login = () => {
   };
   
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-white dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white">
             Sign in to RSA
           </h2>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
             Or{' '}
-            <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
+            <Link to="/signup" className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300">
               create an account
             </Link>
           </p>
@@ -73,20 +73,20 @@ const Login = () => {
         {wasRedirected && (
           <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
             <LockOpen className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <AlertTitle>Authentication required</AlertTitle>
-            <AlertDescription>
+            <AlertTitle className="dark:text-white">Authentication required</AlertTitle>
+            <AlertDescription className="dark:text-gray-300">
               Log in or create an account to access all features and pages of RSA.
             </AlertDescription>
           </Alert>
         )}
         
         {userNotFound && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="dark:bg-red-900/30 dark:border-red-800">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Account not found</AlertTitle>
             <AlertDescription>
               This email is not registered. Please{' '}
-              <Link to="/signup" state={{ email }} className="font-medium underline">
+              <Link to="/signup" state={{ email }} className="font-medium underline dark:text-white">
                 create an account
               </Link>{' '}
               first.
@@ -94,10 +94,10 @@ const Login = () => {
           </Alert>
         )}
         
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+        <form className="mt-8 space-y-6 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-xl border border-gray-200 dark:border-gray-700" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Email address
               </label>
               <Input
@@ -108,13 +108,13 @@ const Login = () => {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-blue-500 rounded-md focus:ring-1"
+                className="mt-1 px-3 py-2 bg-white dark:bg-gray-700 border shadow-sm border-slate-300 dark:border-gray-600 placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-blue-500 rounded-md focus:ring-1 dark:text-white"
                 placeholder="you@example.com"
               />
             </div>
             
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                 Password
               </label>
               <Input
@@ -125,7 +125,7 @@ const Login = () => {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-blue-500 focus:ring-blue-500 rounded-md focus:ring-1"
+                className="mt-1 px-3 py-2 bg-white dark:bg-gray-700 border shadow-sm border-slate-300 dark:border-gray-600 placeholder-slate-400 dark:placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-blue-500 rounded-md focus:ring-1 dark:text-white"
                 placeholder="••••••••"
               />
             </div>
@@ -135,7 +135,7 @@ const Login = () => {
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-900 hover:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-800"
             >
               <LogIn className="mr-2 h-4 w-4" />
               {isLoading ? 'Signing in...' : 'Sign in'}
