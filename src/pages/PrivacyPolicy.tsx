@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText2, Shield, BookText } from 'lucide-react';
+import { FileText, Shield, BookText } from 'lucide-react';
 
 const PrivacyPolicy = () => {
   return (
