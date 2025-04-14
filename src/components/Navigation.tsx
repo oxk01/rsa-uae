@@ -104,28 +104,24 @@ const Navigation = () => {
                 </NavigationMenuTrigger>
                 <NavigationMenuContent className="absolute left-0 top-full w-[240px] mt-1 p-0 origin-top-left">
                   <ul className="py-2 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
-                    {isAuthenticated && (
-                      <li>
-                        <Link 
-                          to="/dashboard"
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
-                        >
-                          <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                          <span className="font-medium">{t('dashboard')}</span>
-                        </Link>
-                      </li>
-                    )}
-                    {isAuthenticated && (
-                      <li>
-                        <Link 
-                          to="/demo" 
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
-                        >
-                          <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                          <span className="font-medium">{t('demo')}</span>
-                        </Link>
-                      </li>
-                    )}
+                    <li>
+                      <Link 
+                        to="/dashboard"
+                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                      >
+                        <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        <span className="font-medium">{t('dashboard')}</span>
+                      </Link>
+                    </li>
+                    <li>
+                      <Link 
+                        to="/demo" 
+                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                      >
+                        <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                        <span className="font-medium">{t('demo')}</span>
+                      </Link>
+                    </li>
                   </ul>
                 </NavigationMenuContent>
               </NavigationMenuItem>
