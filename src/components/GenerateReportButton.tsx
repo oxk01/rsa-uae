@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button"; // Correct import path
-import { FileText, Loader2, Download, FileChart } from 'lucide-react';
+import { FileText, Loader2, Download, BarChart3 } from 'lucide-react'; // Replace FileChart with BarChart3
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
@@ -167,32 +167,44 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
     
     try {
       // Generate the Word document content with actual data
-      const { docContent, analyses } = generateReportDocContent();
-      setReportData(analyses);
+      const result = generateReportDocContent();
+      
+      // Fix TypeScript errors by proper type checking
+      if (typeof result === 'string') {
+        // Handle empty result case
+        setReportData(null);
+      } else {
+        // Handle proper result object
+        const { docContent, analyses } = result;
+        setReportData(analyses);
+      }
       
       if (showReport) {
         setIsOpen(true);
       } else {
-        // Convert HTML to a Blob for download
-        const blob = new Blob([docContent], { type: 'application/msword;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        
-        // Create a link and trigger the download
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = 'sentiment-analysis-report.doc';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        
-        if (onGenerate) {
-          onGenerate();
+        // Only proceed with download if we have content
+        if (typeof result !== 'string' && result.docContent) {
+          // Convert HTML to a Blob for download
+          const blob = new Blob([result.docContent], { type: 'application/msword;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          
+          // Create a link and trigger the download
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'sentiment-analysis-report.doc';
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          
+          if (onGenerate) {
+            onGenerate();
+          }
+          
+          toast({
+            title: t('reportGenerated'),
+            description: t('reportDownloaded'),
+          });
         }
-        
-        toast({
-          title: t('reportGenerated'),
-          description: t('reportDownloaded'),
-        });
       }
     } catch (error) {
       toast({
@@ -236,7 +248,7 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
               {isGenerating ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <FileChart className="h-4 w-4" />
+                <BarChart3 className="h-4 w-4" />
               )}
               View Detailed Report
             </Button>

@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Save, RotateCcw, FileChart } from 'lucide-react';
+import { Save, RotateCcw, BarChart3 } from 'lucide-react'; // Replace FileChart with BarChart3
 import GenerateReportButton from '@/components/GenerateReportButton';
 
 interface ResultProps {
