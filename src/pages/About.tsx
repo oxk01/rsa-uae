@@ -1,13 +1,14 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TechnologyTabs } from '@/components/TechnologyTabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
 
 const AboutPage = () => {
   const { isAuthenticated } = useAuth();
@@ -103,6 +104,72 @@ const AboutPage = () => {
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
           <TechnologyTabs />
+        </div>
+      </section>
+      
+      {/* Team members section - NEW */}
+      <section className="py-16 bg-gradient-to-r from-blue-800 to-blue-900 text-white">
+        <div className="container mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12">Our Expert Team</h2>
+          
+          <div className="grid md:grid-cols-3 gap-8">
+            {/* Team Member 1 */}
+            <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
+              <div className="relative p-6 flex flex-col items-center">
+                <div className="absolute right-0 top-0 bg-blue-700/40 w-32 h-32 rounded-full blur-2xl"></div>
+                <div className="bg-gradient-to-br from-blue-600 to-blue-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Brain className="h-10 w-10 text-blue-100" />
+                </div>
+                <Avatar className="w-20 h-20 mb-4 border-4 border-blue-700 z-10">
+                  <AvatarFallback className="bg-blue-700 text-white text-xl">AR</AvatarFallback>
+                  <AvatarImage src="https://images.unsplash.com/photo-1649972904349-6e44c42644a7?auto=format&fit=crop&w=300" />
+                </Avatar>
+                <h3 className="text-xl font-bold mb-1">Abdallah Rok</h3>
+                <p className="text-blue-200 mb-4 font-medium">Chief Machine Learning and Data Scientist</p>
+                <p className="text-center text-blue-100 text-sm">
+                  Leading our AI research initiatives and developing cutting-edge sentiment analysis algorithms.
+                </p>
+              </div>
+            </Card>
+
+            {/* Team Member 2 */}
+            <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
+              <div className="relative p-6 flex flex-col items-center">
+                <div className="absolute right-0 top-0 bg-teal-700/40 w-32 h-32 rounded-full blur-2xl"></div>
+                <div className="bg-gradient-to-br from-teal-600 to-teal-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <Package className="h-10 w-10 text-teal-100" />
+                </div>
+                <Avatar className="w-20 h-20 mb-4 border-4 border-teal-700 z-10">
+                  <AvatarFallback className="bg-teal-700 text-white text-xl">RA</AvatarFallback>
+                  <AvatarImage src="https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?auto=format&fit=crop&w=300" />
+                </Avatar>
+                <h3 className="text-xl font-bold mb-1">Rakkan Abdallah</h3>
+                <p className="text-blue-200 mb-4 font-medium">Product Manager</p>
+                <p className="text-center text-blue-100 text-sm">
+                  Shaping our product roadmap and ensuring our solutions deliver maximum value to customers.
+                </p>
+              </div>
+            </Card>
+
+            {/* Team Member 3 */}
+            <Card className="bg-white/10 backdrop-blur border-none shadow-xl hover:bg-white/15 transition-all duration-300 text-white overflow-hidden">
+              <div className="relative p-6 flex flex-col items-center">
+                <div className="absolute right-0 top-0 bg-amber-700/40 w-32 h-32 rounded-full blur-2xl"></div>
+                <div className="bg-gradient-to-br from-amber-600 to-amber-800 p-4 rounded-full mb-5 z-10 ring-4 ring-white/10">
+                  <ChartBar className="h-10 w-10 text-amber-100" />
+                </div>
+                <Avatar className="w-20 h-20 mb-4 border-4 border-amber-700 z-10">
+                  <AvatarFallback className="bg-amber-700 text-white text-xl">TA</AvatarFallback>
+                  <AvatarImage src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&w=300" />
+                </Avatar>
+                <h3 className="text-xl font-bold mb-1">Tasneem Abdallah</h3>
+                <p className="text-blue-200 mb-4 font-medium">Chief Data Analyst</p>
+                <p className="text-center text-blue-100 text-sm">
+                  Transforming complex data into actionable insights that drive business decisions.
+                </p>
+              </div>
+            </Card>
+          </div>
         </div>
       </section>
       
