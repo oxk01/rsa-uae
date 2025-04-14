@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Button } from '@/components/ui/card';
+import { Button } from "@/components/ui/button"; // Fixed import
 import { FileText, Loader2, Download } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
