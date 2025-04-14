@@ -46,6 +46,7 @@ const App = () => (
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/contact" element={<Contact />} />
                   
                   {/* Protected routes - only accessible when logged in */}
                   <Route 
@@ -78,15 +79,7 @@ const App = () => (
                       <ProtectedRoute>
                         <Blog />
                       </ProtectedRoute>
-                    }
-                  />
-                  <Route 
-                    path="/contact" 
-                    element={
-                      <ProtectedRoute>
-                        <Contact />
-                      </ProtectedRoute>
-                    }
+                    } 
                   />
                   
                   {/* Catch-all route */}
