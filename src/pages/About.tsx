@@ -107,7 +107,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Team members section - NEW */}
+      {/* Team members section */}
       <section className="py-16 bg-gradient-to-r from-blue-800 to-blue-900 text-white">
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Our Expert Team</h2>
