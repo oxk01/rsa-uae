@@ -22,7 +22,7 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     if (!isLoading && !isAuthenticated) {
       toast({
         title: "Authentication required",
-        description: "Please log in or sign up to access this page.",
+        description: "Please log in or create an account to access this page.",
         variant: "destructive",
       });
     }
@@ -51,10 +51,10 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild variant="default" className="bg-blue-600 hover:bg-blue-700">
-              <Link to="/login" state={{ from: location }}>Log In</Link>
+              <Link to="/signup" state={{ from: location }}>Create Account</Link>
             </Button>
             <Button asChild variant="outline">
-              <Link to="/signup" state={{ from: location }}>Create Account</Link>
+              <Link to="/login" state={{ from: location }}>Already have an account? Log In</Link>
             </Button>
           </div>
         </div>

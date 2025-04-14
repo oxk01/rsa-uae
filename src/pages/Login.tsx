@@ -5,14 +5,15 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { LogIn, LockOpen } from 'lucide-react';
+import { LogIn, LockOpen, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const [userNotFound, setUserNotFound] = useState(false);
+  const { login, checkUserExists } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -24,8 +25,18 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setUserNotFound(false);
     
     try {
+      // First check if the user exists
+      const exists = await checkUserExists(email);
+      
+      if (!exists) {
+        setUserNotFound(true);
+        setIsLoading(false);
+        return;
+      }
+      
       await login(email, password);
       toast({
         title: "Login successful",
@@ -65,6 +76,20 @@ const Login = () => {
             <AlertTitle>Authentication required</AlertTitle>
             <AlertDescription>
               Log in or create an account to access all features and pages of RSA.
+            </AlertDescription>
+          </Alert>
+        )}
+        
+        {userNotFound && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Account not found</AlertTitle>
+            <AlertDescription>
+              This email is not registered. Please{' '}
+              <Link to="/signup" state={{ email }} className="font-medium underline">
+                create an account
+              </Link>{' '}
+              first.
             </AlertDescription>
           </Alert>
         )}

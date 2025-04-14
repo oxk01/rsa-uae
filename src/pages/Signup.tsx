@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -6,7 +7,8 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -14,36 +16,46 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState<string[]>([]);
   const { signup } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
   const location = useLocation();
+
+  // Get email from state if redirected from login
+  React.useEffect(() => {
+    if (location.state?.email) {
+      setEmail(location.state.email);
+    }
+  }, [location.state]);
 
   // Get the intended destination if the user was redirected here
   const from = location.state?.from?.pathname || '/';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const errors: string[] = [];
     
     if (password !== confirmPassword) {
-      toast({
-        title: "Passwords don't match",
-        description: "Please make sure your passwords match.",
-        variant: "destructive",
-      });
-      return;
+      errors.push("Passwords don't match");
     }
 
     if (!agreedToTerms) {
-      toast({
-        title: "Terms of Service",
-        description: "Please agree to the Terms of Service and Privacy Policy.",
-        variant: "destructive",
-      });
+      errors.push("You must agree to the Terms of Service");
+    }
+
+    if (!agreedToPrivacy) {
+      errors.push("You must agree to the Privacy Policy");
+    }
+
+    if (errors.length > 0) {
+      setFormErrors(errors);
       return;
     }
 
+    setFormErrors([]);
     setIsLoading(true);
     
     try {
@@ -79,6 +91,20 @@ const Signup = () => {
             </Link>
           </p>
         </div>
+        
+        {formErrors.length > 0 && (
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>
+              <ul className="list-disc pl-5 space-y-1">
+                {formErrors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
         
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm space-y-4">
@@ -165,8 +191,21 @@ const Signup = () => {
                   target="_blank"
                 >
                   Terms of Service
-                </Link>{' '}
-                and{' '}
+                </Link>
+              </Label>
+            </div>
+
+            <div className="flex items-center space-x-2 mt-4">
+              <Checkbox 
+                id="privacy" 
+                checked={agreedToPrivacy}
+                onCheckedChange={(checked) => setAgreedToPrivacy(!!checked)}
+              />
+              <Label 
+                htmlFor="privacy" 
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                I agree to the{' '}
                 <Link 
                   to="/privacy" 
                   className="text-blue-600 hover:underline"
