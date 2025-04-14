@@ -92,39 +92,57 @@ const Navigation = () => {
                 </Link>
               </NavigationMenuItem>
               
-              {/* Solutions dropdown menu - now with proper positioning */}
-              <NavigationMenuItem className="relative">
-                <NavigationMenuTrigger className={`px-4 py-2 text-base font-medium rounded-md transition-colors group ${
-                  location.pathname === '/dashboard' || location.pathname === '/demo'
-                    ? 'text-blue-700 dark:text-blue-300' 
-                    : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
-                } bg-transparent hover:bg-transparent focus:bg-transparent`}>
+              {/* Solutions dropdown using DropdownMenu instead of NavigationMenu */}
+              <div className="relative inline-block">
+                <button 
+                  className={`px-4 py-2 text-base font-medium rounded-md transition-colors flex items-center ${
+                    location.pathname === '/dashboard' || location.pathname === '/demo'
+                      ? 'text-blue-700 dark:text-blue-300' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                  }`}
+                  onClick={(e) => {
+                    const dropdown = document.getElementById('solutions-dropdown');
+                    if (dropdown) {
+                      dropdown.classList.toggle('hidden');
+                    }
+                    e.stopPropagation();
+                  }}
+                >
                   <span>{t('solutions')}</span>
-                  <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180 ml-1" />
-                </NavigationMenuTrigger>
-                <NavigationMenuContent className="absolute left-0 top-full w-[240px] mt-1 p-0 origin-top-left">
-                  <ul className="py-2 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
-                    <li>
-                      <Link 
-                        to="/dashboard"
-                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
-                      >
-                        <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium">{t('dashboard')}</span>
-                      </Link>
-                    </li>
-                    <li>
-                      <Link 
-                        to="/demo" 
-                        className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
-                      >
-                        <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                        <span className="font-medium">{t('demo')}</span>
-                      </Link>
-                    </li>
-                  </ul>
-                </NavigationMenuContent>
-              </NavigationMenuItem>
+                  <ChevronDown className="h-4 w-4 ml-1" />
+                </button>
+                <div 
+                  id="solutions-dropdown" 
+                  className="absolute left-0 w-[240px] mt-1 py-2 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 hidden z-50"
+                >
+                  <Link 
+                    to="/dashboard"
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      const dropdown = document.getElementById('solutions-dropdown');
+                      if (dropdown) {
+                        dropdown.classList.add('hidden');
+                      }
+                    }}
+                  >
+                    <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                    <span className="font-medium">{t('dashboard')}</span>
+                  </Link>
+                  <Link 
+                    to="/demo" 
+                    className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                    onClick={() => {
+                      const dropdown = document.getElementById('solutions-dropdown');
+                      if (dropdown) {
+                        dropdown.classList.add('hidden');
+                      }
+                    }}
+                  >
+                    <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                    <span className="font-medium">{t('demo')}</span>
+                  </Link>
+                </div>
+              </div>
               
               {isAuthenticated && (
                 <NavigationMenuItem>
@@ -204,6 +222,20 @@ const Navigation = () => {
           </div>
         </div>
       </div>
+      
+      {/* Close dropdown when clicking outside */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `
+            document.addEventListener('click', function(event) {
+              const dropdown = document.getElementById('solutions-dropdown');
+              if (dropdown && !dropdown.contains(event.target)) {
+                dropdown.classList.add('hidden');
+              }
+            });
+          `
+        }}
+      />
     </header>
   );
 };
