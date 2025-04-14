@@ -162,7 +162,7 @@ export const analyzeSentiment = (text: string): {
   const totalMatches = positiveCount + negativeCount;
   
   // Calculate accuracy based on review quality and length
-  const accuracy = calculateAccuracy(text);
+  let accuracy = calculateAccuracy(text);
   
   // Context awareness - check for negations
   let negationAdjustment = 0;

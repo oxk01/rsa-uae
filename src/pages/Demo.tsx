@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -391,6 +390,7 @@ const Demo = () => {
         description: "There was an error saving your analysis. Please try again.",
         variant: "destructive",
       });
+      
     }
   };
   
