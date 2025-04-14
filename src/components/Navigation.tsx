@@ -9,7 +9,6 @@ import {
   BarChart3,
   Sun,
   Moon,
-  Globe,
   ChevronDown,
 } from 'lucide-react';
 import {
@@ -30,13 +29,9 @@ import {
 
 const Navigation = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const { language, setLanguage, t } = useLanguage();
+  const { t } = useLanguage();
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
-  
-  const handleLanguageChange = (lang: 'en' | 'ar') => {
-    setLanguage(lang);
-  };
   
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-10">
@@ -112,28 +107,6 @@ const Navigation = () => {
           
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="rounded-full p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800">
-                    <Globe className="h-5 w-5 text-gray-600 dark:text-gray-400" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem 
-                    onClick={() => handleLanguageChange('en')}
-                    className={language === 'en' ? 'bg-gray-100 dark:bg-gray-800' : ''}
-                  >
-                    English
-                  </DropdownMenuItem>
-                  <DropdownMenuItem 
-                    onClick={() => handleLanguageChange('ar')}
-                    className={language === 'ar' ? 'bg-gray-100 dark:bg-gray-800' : ''}
-                  >
-                    العربية
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
               <div className="flex h-6 items-center space-x-1">
                 <Sun className="h-4 w-4 text-gray-500 dark:text-gray-400" />
                 <button

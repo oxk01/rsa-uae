@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TechnologyTabs } from '@/components/TechnologyTabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 
 const AboutPage = () => {
   const { isAuthenticated } = useAuth();
@@ -105,7 +106,7 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Solutions section with accordion style */}
+      {/* Solutions section with enhanced styling */}
       <section className="py-16 bg-gray-50 dark:bg-gray-900">
         <div className="container mx-auto px-6">
           <div className="text-center mb-10">
@@ -116,75 +117,85 @@ const AboutPage = () => {
           </div>
           
           <div className="max-w-3xl mx-auto">
-            <Accordion type="single" collapsible className="w-full">
-              <AccordionItem value="sentiment-analysis">
-                <AccordionTrigger className="text-lg font-medium hover:text-blue-600">
-                  Sentiment Analysis Dashboard
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 dark:text-gray-300 space-y-3 p-4">
-                  <p>
-                    Our flagship sentiment analysis dashboard provides real-time insights into customer feedback from multiple sources. 
-                    Track sentiment trends, identify key discussion topics, and monitor changes over time.
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                      <Link to="/demo">Try Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="competitor-analysis">
-                <AccordionTrigger className="text-lg font-medium hover:text-blue-600">
-                  Competitor Sentiment Benchmarking
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 dark:text-gray-300 space-y-3 p-4">
-                  <p>
-                    Compare your product's sentiment against competitors across key aspects and features. 
-                    Identify competitive advantages and areas for improvement with detailed side-by-side analysis.
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                      <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="alert-system">
-                <AccordionTrigger className="text-lg font-medium hover:text-blue-600">
-                  Sentiment Alert System
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 dark:text-gray-300 space-y-3 p-4">
-                  <p>
-                    Receive real-time alerts when sentiment shifts significantly or when specific topics gain traction in customer feedback. 
-                    Our alert system helps you address issues before they escalate and capitalize on positive trends.
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                      <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              
-              <AccordionItem value="custom-integration">
-                <AccordionTrigger className="text-lg font-medium hover:text-blue-600">
-                  Enterprise API Integration
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 dark:text-gray-300 space-y-3 p-4">
-                  <p>
-                    Integrate our sentiment analysis capabilities directly into your existing systems via our comprehensive API. 
-                    Build custom applications and workflows powered by our advanced NLP technology.
-                  </p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                      <Link to="/contact">Contact Sales <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                    </Button>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            </Accordion>
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="sentiment-analysis" className="border-0">
+                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
+                    Sentiment Analysis Dashboard
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
+                    <div className="space-y-3">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Our flagship sentiment analysis dashboard provides real-time insights into customer feedback from multiple sources. 
+                        Track sentiment trends, identify key discussion topics, and monitor changes over time.
+                      </p>
+                      <div className="flex items-center mt-3">
+                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          <Link to="/demo">Try Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="competitor-analysis" className="border-0">
+                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
+                    Competitor Sentiment Benchmarking
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
+                    <div className="space-y-3">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Compare your product's sentiment against competitors across key aspects and features. 
+                        Identify competitive advantages and areas for improvement with detailed side-by-side analysis.
+                      </p>
+                      <div className="flex items-center mt-3">
+                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="alert-system" className="border-0">
+                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
+                    Sentiment Alert System
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
+                    <div className="space-y-3">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Receive real-time alerts when sentiment shifts significantly or when specific topics gain traction in customer feedback. 
+                        Our alert system helps you address issues before they escalate and capitalize on positive trends.
+                      </p>
+                      <div className="flex items-center mt-3">
+                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+                
+                <AccordionItem value="custom-integration" className="border-0">
+                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
+                    Enterprise API Integration
+                  </AccordionTrigger>
+                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
+                    <div className="space-y-3">
+                      <p className="text-gray-600 dark:text-gray-300">
+                        Integrate our sentiment analysis capabilities directly into your existing systems via our comprehensive API. 
+                        Build custom applications and workflows powered by our advanced NLP technology.
+                      </p>
+                      <div className="flex items-center mt-3">
+                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
+                          <Link to="/contact">Contact Sales <ArrowRight className="ml-1 h-4 w-4" /></Link>
+                        </Button>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+            </div>
           </div>
         </div>
       </section>

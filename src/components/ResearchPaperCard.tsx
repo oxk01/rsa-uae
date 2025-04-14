@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ExternalLink, Calendar, User } from 'lucide-react';
@@ -9,7 +9,7 @@ interface ResearchPaperCardProps {
   title: string;
   authors: string;
   publication?: string;
-  year?: string; // Make year optional
+  year?: string; // Optional year
   abstract?: string;
   imageUrl: string;
   paperUrl: string;
@@ -32,17 +32,29 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
 }) => {
   const { currentLanguage, t } = useLanguage();
   const isRtl = currentLanguage === 'ar';
+  const [imageError, setImageError] = useState(false);
+  
+  const handleImageError = () => {
+    setImageError(true);
+  };
   
   // Standard card for grid layout
   if (!featured) {
     return (
       <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <div className="h-48 overflow-hidden relative">
-          <img 
-            src={imageUrl} 
-            alt={title} 
-            className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-          />
+          {imageError ? (
+            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+              <span className="text-gray-500 dark:text-gray-400">{t('imageNotAvailable')}</span>
+            </div>
+          ) : (
+            <img 
+              src={imageUrl} 
+              alt={title} 
+              className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+              onError={handleImageError}
+            />
+          )}
           {category && (
             <div className="absolute top-3 left-3">
               <span className="inline-block bg-blue-600 text-white rounded-md px-3 py-1 text-xs font-medium">
@@ -77,7 +89,7 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
             
             <a href={paperUrl} target="_blank" rel="noopener noreferrer" className="w-full">
               <Button variant="outline" size="sm" className="flex items-center gap-2 hover:bg-blue-50 dark:hover:bg-blue-950 w-full">
-                <span>{t('readPaper')}</span>
+                <span>Read Paper</span>
                 <ExternalLink className="h-3.5 w-3.5" />
               </Button>
             </a>
@@ -91,11 +103,18 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
   return (
     <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
       <div className="relative h-80 w-full">
-        <img 
-          src={imageUrl} 
-          alt={title} 
-          className="w-full h-full object-cover brightness-50"
-        />
+        {imageError ? (
+          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+            <span className="text-gray-500 dark:text-gray-400 text-lg">{t('imageNotAvailable')}</span>
+          </div>
+        ) : (
+          <img 
+            src={imageUrl} 
+            alt={title} 
+            className="w-full h-full object-cover brightness-50"
+            onError={handleImageError}
+          />
+        )}
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-end p-6 text-white">
           {category && (
             <div className="mb-3">
