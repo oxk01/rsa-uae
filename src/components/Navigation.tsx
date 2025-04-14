@@ -20,7 +20,6 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
   NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { useTheme } from '@/hooks/use-theme';
 import {
@@ -50,73 +49,97 @@ const Navigation = () => {
           </div>
           
           <NavigationMenu>
-            <NavigationMenuList>
+            <NavigationMenuList className="flex space-x-1">
               {/* Home and About are always visible */}
               <NavigationMenuItem>
-                <div className={navigationMenuTriggerStyle()}>
-                  <Link to="/">
-                    {t('home')}
-                  </Link>
-                </div>
+                <Link 
+                  to="/" 
+                  className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
+                    location.pathname === '/' 
+                      ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                  }`}
+                >
+                  {t('home')}
+                </Link>
               </NavigationMenuItem>
 
               <NavigationMenuItem>
-                <div className={navigationMenuTriggerStyle()}>
-                  <Link to="/about">
-                    {t('about')}
-                  </Link>
-                </div>
+                <Link 
+                  to="/about" 
+                  className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
+                    location.pathname === '/about' 
+                      ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
+                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                  }`}
+                >
+                  {t('about')}
+                </Link>
               </NavigationMenuItem>
               
               {/* Only show the following menu items when authenticated */}
               {isAuthenticated && (
                 <>
                   <NavigationMenuItem>
-                    <NavigationMenuTrigger className="bg-white text-gray-800 hover:bg-gray-100 focus:ring-gray-300 group">
+                    <NavigationMenuTrigger className={`px-4 py-2 text-base font-medium rounded-md transition-colors group ${
+                      location.pathname === '/dashboard' || location.pathname === '/demo' || location.pathname === '/pricing'
+                        ? 'text-blue-700 dark:text-blue-300' 
+                        : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                    } bg-transparent hover:bg-transparent focus:bg-transparent`}>
                       <span>{t('solutions')}</span>
-                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180 text-gray-500" />
+                      <ChevronDown className="h-4 w-4 transition-transform duration-300 group-data-[state=open]:rotate-180 ml-1" />
                     </NavigationMenuTrigger>
                     <NavigationMenuContent>
-                      <div className="w-[240px] p-3 bg-white rounded-lg shadow-lg border border-gray-100">
+                      <div className="w-[240px] p-3 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                         <Link 
                           to="/dashboard"
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                         >
-                          <LayoutDashboard className="h-5 w-5 text-gray-600" />
-                          <span className="font-medium text-gray-700">{t('dashboard')}</span>
+                          <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{t('dashboard')}</span>
                         </Link>
                         <Link 
                           to="/demo" 
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                         >
-                          <PlayCircle className="h-5 w-5 text-gray-600" />
-                          <span className="font-medium text-gray-700">{t('demo')}</span>
+                          <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{t('demo')}</span>
                         </Link>
                         <Link 
                           to="/pricing" 
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 transition-colors duration-200"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
                         >
-                          <Tag className="h-5 w-5 text-gray-600" />
-                          <span className="font-medium text-gray-700">{t('pricing')}</span>
+                          <Tag className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <span className="font-medium text-gray-700 dark:text-gray-300">{t('pricing')}</span>
                         </Link>
                       </div>
                     </NavigationMenuContent>
                   </NavigationMenuItem>
                   
                   <NavigationMenuItem>
-                    <div className={navigationMenuTriggerStyle()}>
-                      <Link to="/blog">
-                        {t('blog')}
-                      </Link>
-                    </div>
+                    <Link 
+                      to="/blog" 
+                      className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
+                        location.pathname === '/blog' 
+                          ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
+                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                      }`}
+                    >
+                      {t('blog')}
+                    </Link>
                   </NavigationMenuItem>
                   
                   <NavigationMenuItem>
-                    <div className={navigationMenuTriggerStyle()}>
-                      <Link to="/contact">
-                        {t('contact')}
-                      </Link>
-                    </div>
+                    <Link 
+                      to="/contact" 
+                      className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
+                        location.pathname === '/contact' 
+                          ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
+                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                      }`}
+                    >
+                      {t('contact')}
+                    </Link>
                   </NavigationMenuItem>
                 </>
               )}
