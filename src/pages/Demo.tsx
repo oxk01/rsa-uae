@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -327,12 +328,15 @@ const Demo = () => {
   
   const handleSaveToDashboard = () => {
     try {
+      // Get existing analyses from localStorage
       const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
       let savedAnalyses = savedAnalysesStr ? JSON.parse(savedAnalysesStr) : [];
       
+      // Handle file analysis with multiple reviews
       if (file && analysisResult.fileAnalysis.reviews) {
         const fileReviews = analysisResult.fileAnalysis.reviews as Review[];
         
+        // Create a new analysis entry for each review in the file
         const newAnalyses = fileReviews.map((review: any) => ({
           id: Date.now() + Math.random(),
           title: review.title || file.name,
@@ -347,7 +351,7 @@ const Demo = () => {
           accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore
         }));
         
-        // Compile all keywords and find the most frequent ones
+        // Compile all keywords to find the most frequent ones
         const allKeywords = fileReviews
           .flatMap((r: any) => r.keywords || [])
           .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
@@ -364,7 +368,7 @@ const Demo = () => {
             return acc;
           }, {});
         
-        // Get top keywords
+        // Get top keywords with proper type checking
         const topKeywords = Object.entries(allKeywords)
           .sort(([, a], [, b]) => {
             const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
@@ -374,6 +378,7 @@ const Demo = () => {
           .slice(0, 5)
           .map(([word]) => word);
         
+        // Create an overall analysis summary for the file
         const overallAnalysis = {
           id: Date.now(),
           title: file.name,
@@ -389,8 +394,10 @@ const Demo = () => {
           accuracyScore: analysisResult.fileAnalysis.accuracyScore
         };
         
+        // Combine new analyses with existing ones
         savedAnalyses = [...newAnalyses, overallAnalysis, ...savedAnalyses];
       } else {
+        // Handle single review analysis
         const newAnalysis = {
           id: Date.now(),
           title: file ? file.name : `Review Analysis ${new Date().toLocaleDateString()}`,
@@ -407,11 +414,14 @@ const Demo = () => {
           accuracyScore: analysisResult.fileAnalysis.accuracyScore
         };
         
+        // Add new analysis to the beginning of the array
         savedAnalyses.unshift(newAnalysis);
       }
       
+      // Save updated analyses to localStorage
       localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
       
+      // Show success toast
       toast({
         title: "Analysis saved",
         description: file ? 
@@ -419,11 +429,15 @@ const Demo = () => {
           "Your analysis has been saved to your dashboard.",
       });
       
+      // Navigate to dashboard after a short delay
       setTimeout(() => {
         navigate('/dashboard');
       }, 1500);
     } catch (error) {
+      // Log the error to help with debugging
       console.error("Error saving to dashboard:", error);
+      
+      // Show error toast
       toast({
         title: "Save failed",
         description: "There was an error saving your analysis. Please try again.",
