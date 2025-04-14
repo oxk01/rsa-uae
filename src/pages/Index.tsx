@@ -10,9 +10,25 @@ import GenerateReportButton from '@/components/GenerateReportButton';
 import { Card, CardContent } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { Link } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+
+// Interface for saved analyses
+interface Analysis {
+  id: number;
+  title: string;
+  date: string;
+  reviewCount: number;
+  sentiment: {
+    positive: number;
+    neutral: number; 
+    negative: number;
+  };
+  keywords: { word: string; sentiment: string; count: number }[];
+}
 
 const Index = () => {
-  const [savedAnalyses, setSavedAnalyses] = useState<any[]>([]);
+  const [savedAnalyses, setSavedAnalyses] = useState<Analysis[]>([]);
   const [hasData, setHasData] = useState(false);
   const { t } = useLanguage();
   
@@ -25,6 +41,48 @@ const Index = () => {
       setHasData(analyses.length > 0);
     }
   }, []);
+  
+  // Calculate metrics based on actual data
+  const calculateAverageRating = () => {
+    if (!hasData) return "N/A";
+    
+    let totalPositive = 0;
+    let totalReviews = 0;
+    
+    savedAnalyses.forEach(analysis => {
+      totalPositive += analysis.sentiment.positive;
+      totalReviews += analysis.reviewCount;
+    });
+    
+    if (totalReviews === 0) return "N/A";
+    const score = (totalPositive / totalReviews) * 5; // Scale to 5-star rating
+    return `${score.toFixed(1)}/5`;
+  };
+  
+  // Calculate sentiment score from 0-100
+  const calculateSentimentScore = () => {
+    if (!hasData) return "N/A";
+    
+    let totalPositive = 0;
+    let totalNegative = 0;
+    let totalReviews = 0;
+    
+    savedAnalyses.forEach(analysis => {
+      totalPositive += analysis.sentiment.positive;
+      totalNegative += analysis.sentiment.negative;
+      totalReviews += analysis.reviewCount;
+    });
+    
+    if (totalReviews === 0) return "N/A";
+    const score = Math.round(((totalPositive - totalNegative) / totalReviews + 1) * 50); // Scale to 0-100
+    return `${score}/100`;
+  };
+  
+  // Calculate total review count
+  const getTotalReviews = () => {
+    if (!hasData) return "0";
+    return savedAnalyses.reduce((total, analysis) => total + analysis.reviewCount, 0).toString();
+  };
   
   return (
     <div className="min-h-screen bg-gray-50">
@@ -46,35 +104,46 @@ const Index = () => {
         
         {!hasData && (
           <Card className="mb-6 border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800">
-            <CardContent className="p-4 flex items-center gap-3">
+            <CardContent className="p-4 flex flex-col items-center gap-3">
               <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500" />
-              <p className="text-amber-700 dark:text-amber-300">
-                No analysis data available yet. Please run some analyses in the demo section to see your actual data here.
+              <p className="text-amber-700 dark:text-amber-300 mb-4">
+                You haven't saved any analyses yet. Please run some analyses in the demo section to see your actual data here.
               </p>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700">
+                <Link to="/demo">Analyze New Reviews</Link>
+              </Button>
             </CardContent>
           </Card>
         )}
         
         <StatsGrid 
-          // We'd use real data here based on user's analyses
-          totalReviews={hasData ? savedAnalyses.length.toString() : "0"}
-          averageRating={hasData ? "4.2/5" : "N/A"}
+          totalReviews={getTotalReviews()}
+          averageRating={calculateAverageRating()}
           responseTime={hasData ? "2.4 hrs" : "N/A"}
-          sentimentScore={hasData ? "72/100" : "N/A"}
+          sentimentScore={calculateSentimentScore()}
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <SentimentOverview />
-          <TopKeywords />
-        </div>
-        
-        <div className="mt-8">
-          <SentimentTrend />
-        </div>
-        
-        <div className="mt-8">
-          <ReviewSample />
-        </div>
+        {hasData ? (
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+              <SentimentOverview />
+              <TopKeywords />
+            </div>
+            
+            <div className="mt-8">
+              <SentimentTrend />
+            </div>
+            
+            <div className="mt-8">
+              <ReviewSample />
+            </div>
+          </>
+        ) : (
+          <div className="mt-8 bg-white p-8 rounded-lg shadow-sm text-center">
+            <p className="text-gray-500 mb-4">No analysis data available yet.</p>
+            <p className="text-gray-500 mb-6">Complete an analysis in the demo section to populate this dashboard with your data.</p>
+          </div>
+        )}
       </main>
     </div>
   );

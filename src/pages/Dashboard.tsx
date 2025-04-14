@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import DashboardCard from '@/components/DashboardCard';
@@ -67,6 +66,16 @@ const Dashboard = () => {
   // Calculate total reviews count across all analyses
   const totalReviewsCount = savedAnalyses.reduce((acc, analysis) => acc + analysis.reviewCount, 0);
 
+  // Calculate average sentiment score if we have data
+  const calculateAvgSentiment = () => {
+    if (savedAnalyses.length === 0) return "0%";
+    
+    const totalPositive = savedAnalyses.reduce((sum, a) => sum + a.sentiment.positive, 0);
+    const totalReviews = savedAnalyses.reduce((sum, a) => sum + a.reviewCount, 0);
+    
+    return totalReviews > 0 ? `${Math.round((totalPositive / totalReviews) * 100)}%` : "0%";
+  };
+
   // Apply RTL class for Arabic
   const rtlClass = language === 'ar' ? 'rtl' : '';
   
@@ -84,9 +93,7 @@ const Dashboard = () => {
           />
           <StatCard 
             title="Average Sentiment" 
-            value="76%" 
-            change="+5%" 
-            positive={true}
+            value={calculateAvgSentiment()} 
             icon={<Star className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
           />
           <StatCard 
@@ -96,15 +103,19 @@ const Dashboard = () => {
           />
           <StatCard 
             title="Sentiment Trend" 
-            value="Improving" 
-            change="+12%" 
-            positive={true}
+            value={savedAnalyses.length > 0 ? "Based on data" : "No data"} 
             icon={<Smile className="h-5 w-5 text-blue-600 dark:text-blue-400" />}
           />
         </div>
         
-        {/* Interactive Charts */}
-        <DashboardCharts />
+        {/* Interactive Charts - Only show if we have data */}
+        {savedAnalyses.length > 0 ? (
+          <DashboardCharts />
+        ) : (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center mb-8">
+            <p className="text-gray-500 dark:text-gray-400 mb-4">No analysis data available for charts.</p>
+          </div>
+        )}
         
         {/* Saved Analyses */}
         <div className="mb-8">
@@ -113,7 +124,7 @@ const Dashboard = () => {
           {savedAnalyses.length === 0 ? (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-8 text-center">
               <p className="text-gray-500 dark:text-gray-400 mb-4">You haven't saved any analyses yet.</p>
-              <Button asChild>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700">
                 <Link to="/demo">{t('analyzeNewReviews')}</Link>
               </Button>
             </div>
@@ -225,7 +236,7 @@ const Dashboard = () => {
         </div>
         
         <div className="text-center">
-          <Button asChild>
+          <Button asChild className="bg-blue-600 hover:bg-blue-700">
             <Link to="/demo">{t('analyzeNewReviews')}</Link>
           </Button>
         </div>

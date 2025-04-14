@@ -38,23 +38,20 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
     setImageError(true);
   };
   
+  // Default BERT-related fallback image for research papers
+  const fallbackImage = 'https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1080&q=80';
+  
   // Standard card for grid layout
   if (!featured) {
     return (
       <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-shadow duration-300">
         <div className="h-48 overflow-hidden relative">
-          {imageError ? (
-            <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-              <span className="text-gray-500 dark:text-gray-400">{t('imageNotAvailable')}</span>
-            </div>
-          ) : (
-            <img 
-              src={imageUrl} 
-              alt={title} 
-              className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-              onError={handleImageError}
-            />
-          )}
+          <img 
+            src={imageError ? fallbackImage : imageUrl} 
+            alt={title} 
+            className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
+            onError={handleImageError}
+          />
           {category && (
             <div className="absolute top-3 left-3">
               <span className="inline-block bg-blue-600 text-white rounded-md px-3 py-1 text-xs font-medium">
@@ -103,18 +100,12 @@ const ResearchPaperCard: React.FC<ResearchPaperCardProps> = ({
   return (
     <Card className="w-full overflow-hidden hover:shadow-lg transition-shadow duration-300 mb-8">
       <div className="relative h-80 w-full">
-        {imageError ? (
-          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-            <span className="text-gray-500 dark:text-gray-400 text-lg">{t('imageNotAvailable')}</span>
-          </div>
-        ) : (
-          <img 
-            src={imageUrl} 
-            alt={title} 
-            className="w-full h-full object-cover brightness-50"
-            onError={handleImageError}
-          />
-        )}
+        <img 
+          src={imageError ? fallbackImage : imageUrl} 
+          alt={title} 
+          className="w-full h-full object-cover brightness-50"
+          onError={handleImageError}
+        />
         <div className="absolute top-0 left-0 w-full h-full flex flex-col justify-end p-6 text-white">
           {category && (
             <div className="mb-3">
