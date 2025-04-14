@@ -1,7 +1,7 @@
+
 import React from 'react';
 import { FileSpreadsheet, FileText, Download, BarChart3 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 
 interface Review {
@@ -33,59 +33,61 @@ interface RecentReviewsProps {
 const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
   const hasData = reviews && reviews.length > 0;
   
-  // Sample data for demonstration
+  // Sample data for demonstration only when no real data is available
   const sampleReviews = [
     {
       id: 1,
-      title: "Smart Home Assistant",
+      title: "P1001",
       date: "2025-04-07",
       sentiment: { positive: 70, neutral: 20, negative: 10 },
       reviewCount: 1,
       source: "excel",
       rating: "4/5",
       accuracyScore: 91,
-      reviewText: "This Smart Home Assistant exceeds expectations in many ways. The voice recognition is incredibly accurate even in noisy environments, and it integrates seamlessly with my existing smart home devices. Setup was straightforward and took less than 10 minutes. The only minor issue is that it occasionally has trouble with complex commands that involve multiple actions. Overall, great value for the price point.",
+      reviewText: "The build quality is exceptional and it works perfectly with all my devices. Setup was easy and I'm very satisfied with my purchase. Would definitely recommend to others looking for a reliable product.",
       sentimentLabel: "positive",
       keywords: [
-        { word: "voice recognition", sentiment: "positive" },
-        { word: "integration", sentiment: "positive" },
-        { word: "setup", sentiment: "positive" }
+        { word: "quality", sentiment: "positive" },
+        { word: "setup", sentiment: "positive" },
+        { word: "reliable", sentiment: "positive" },
+        { word: "recommend", sentiment: "positive" }
       ]
     },
     {
       id: 2,
-      title: "Wireless Earbuds Pro",
+      title: "P2045",
       date: "2025-04-09",
       sentiment: { positive: 50, neutral: 30, negative: 20 },
       reviewCount: 1,
       source: "excel",
       rating: "3/5",
-      accuracyScore: 91,
-      reviewText: "The Wireless Earbuds Pro have decent sound quality and the battery life is acceptable at about 5 hours per charge. The case provides an additional 15 hours which is standard for this price range. Comfort is average - they stay in during light activities but tend to slip during intense workouts. Noise cancellation is mediocre at best. They're good enough for casual listening but audiophiles will want to look elsewhere.",
+      accuracyScore: 89,
+      reviewText: "Product functions as expected but the battery life is shorter than advertised. Otherwise, it meets basic requirements and performs adequately for daily use. The price is reasonable for what you get.",
       sentimentLabel: "neutral",
       keywords: [
-        { word: "sound quality", sentiment: "neutral" },
-        { word: "battery life", sentiment: "neutral" },
-        { word: "comfort", sentiment: "neutral" },
-        { word: "noise cancellation", sentiment: "negative" }
+        { word: "battery", sentiment: "negative" },
+        { word: "functions", sentiment: "neutral" },
+        { word: "price", sentiment: "neutral" },
+        { word: "adequate", sentiment: "neutral" }
       ]
     },
     {
       id: 3,
-      title: "Ultra HD Gaming Monitor",
+      title: "P3789",
       date: "2025-04-11",
       sentiment: { positive: 20, neutral: 10, negative: 70 },
       reviewCount: 1,
       source: "excel",
       rating: "1/5",
-      accuracyScore: 91,
-      reviewText: "Extremely disappointed with this Ultra HD Gaming Monitor. The display arrived with dead pixels in the corner, and customer support has been unhelpful in resolving the issue. Despite the advertised 1ms response time, there's noticeable ghosting during fast-paced games. The color accuracy is also way off compared to what was promised in the specifications. Save your money and look for alternatives from more reliable brands.",
+      accuracyScore: 94,
+      reviewText: "After just two weeks of use, the product completely stopped working. Customer service was unhelpful and refused to honor the warranty. Complete waste of money - avoid this product at all costs!",
       sentimentLabel: "negative",
       keywords: [
-        { word: "dead pixels", sentiment: "negative" },
-        { word: "customer support", sentiment: "negative" },
-        { word: "response time", sentiment: "negative" },
-        { word: "color accuracy", sentiment: "negative" }
+        { word: "stopped", sentiment: "negative" },
+        { word: "unhelpful", sentiment: "negative" },
+        { word: "warranty", sentiment: "negative" },
+        { word: "waste", sentiment: "negative" },
+        { word: "avoid", sentiment: "negative" }
       ]
     }
   ];
@@ -170,7 +172,7 @@ const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
           </div>
           
           <p className="font-medium mb-1 flex justify-between items-center">
-            <span>Review for {review.title}</span>
+            <span>Product ID: {review.title}</span>
             {review.accuracyScore && (
               <span className={`px-2 py-1 rounded text-xs font-medium flex items-center gap-1 ${getAccuracyBadgeColor(review.accuracyScore)}`}>
                 <BarChart3 className="h-3 w-3" />

@@ -5,111 +5,66 @@ import { useNavigate } from 'react-router-dom';
 import ReviewInput from '@/components/ReviewDemo/ReviewInput';
 import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
+import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
 
-// Enhanced sentiment analysis function to handle large datasets (up to 10,000 data points)
-const analyzeSentiment = async (text: string) => {
-  // This would be replaced by a real API call to a sentiment analysis model
-  await new Promise(resolve => setTimeout(resolve, 2500)); // Simulate API delay
+const analyzeSentimentForText = async (text: string) => {
+  await new Promise(resolve => setTimeout(resolve, 1500)); 
   
-  // Generate results based on the text
-  const hasNegative = text.toLowerCase().includes('bad') || 
-                      text.toLowerCase().includes('poor') ||
-                      text.toLowerCase().includes('terrible');
-                      
-  const hasPositive = text.toLowerCase().includes('good') || 
-                      text.toLowerCase().includes('great') ||
-                      text.toLowerCase().includes('excellent');
+  const { sentiment, score, accuracy } = analyzeSentiment(text);
   
-  const sentiment = hasNegative 
-    ? 'negative' 
-    : hasPositive 
-    ? 'positive' 
-    : 'neutral';
-  
-  const confidenceScore = Math.random() * 0.3 + (sentiment === 'neutral' ? 0.5 : 0.7);
-  
-  // Extract aspects
   const aspects = [];
-  if (text.toLowerCase().includes('quality')) {
-    aspects.push({ 
-      name: 'Quality', 
-      sentiment: hasNegative ? 'negative' : 'positive',
-      confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
-    });
-  }
-  if (text.toLowerCase().includes('price')) {
-    aspects.push({ 
-      name: 'Price', 
-      sentiment: hasNegative ? 'negative' : 'neutral',
-      confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
-    });
-  }
-  if (text.toLowerCase().includes('service') || text.toLowerCase().includes('support')) {
-    aspects.push({ 
-      name: 'Service', 
-      sentiment: hasNegative ? 'negative' : 'neutral',
-      confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
-    });
-  }
   
-  // Add default aspects if none found
-  if (aspects.length === 0) {
+  if (text.toLowerCase().includes('quality')) {
     aspects.push({ 
       name: 'Quality', 
       sentiment: sentiment,
       confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
+      context: text.substring(Math.max(0, text.toLowerCase().indexOf('quality') - 30), 
+                 Math.min(text.length, text.toLowerCase().indexOf('quality') + 30))
     });
+  }
+  
+  if (text.toLowerCase().includes('price')) {
     aspects.push({ 
       name: 'Price', 
-      sentiment: hasNegative ? 'negative' : 'neutral',
+      sentiment: sentiment,
       confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
+      context: text.substring(Math.max(0, text.toLowerCase().indexOf('price') - 30), 
+                 Math.min(text.length, text.toLowerCase().indexOf('price') + 30))
     });
+  }
+  
+  if (text.toLowerCase().includes('service') || text.toLowerCase().includes('support')) {
     aspects.push({ 
       name: 'Service', 
-      sentiment: 'neutral',
+      sentiment: sentiment === 'positive' ? 'positive' : 'negative',
       confidence: Math.floor(Math.random() * 40) + 10,
-      context: `...relevant excerpt would appear here...`
+      context: text.substring(Math.max(0, text.toLowerCase().indexOf('service') - 30), 
+                 Math.min(text.length, text.toLowerCase().indexOf('service') + 30))
     });
   }
   
-  // Extract key phrases
-  const keyPhrases = [];
-  const words = text.toLowerCase().split(/\s+/);
-  const possiblePhrases = ['product', 'service', 'experience', 'quality', 'price'];
-  
-  possiblePhrases.forEach(phrase => {
-    if (words.includes(phrase)) {
-      keyPhrases.push(phrase);
-    }
-  });
-  
-  // Ensure we have some key phrases
-  if (keyPhrases.length === 0) {
-    keyPhrases.push('product');
-    if (sentiment === 'negative') {
-      keyPhrases.push('price');
-    } else {
-      keyPhrases.push('quality');
-    }
+  if (aspects.length === 0) {
+    aspects.push({ 
+      name: 'Overall', 
+      sentiment: sentiment,
+      confidence: Math.floor(Math.random() * 40) + 10,
+      context: text.substring(0, Math.min(60, text.length))
+    });
   }
   
-  // Calculate accuracy score (simulated for demo)
-  const accuracyScore = Math.floor(Math.random() * 15) + 85; // 85-100% accuracy
+  const keywords = extractKeywords(text, sentiment);
   
-  // Return the analysis result
+  const keyPhrasesText = keywords.map(keyword => keyword.word);
+  
   return {
     text,
     overallSentiment: {
       sentiment,
-      score: sentiment === 'negative' ? 12 : sentiment === 'positive' ? 78 : 45
+      score
     },
     aspects: aspects,
-    keyPhrases: keyPhrases,
+    keyPhrases: keyPhrasesText,
     fileAnalysis: {
       totalReviews: 1,
       sentimentBreakdown: {
@@ -118,183 +73,122 @@ const analyzeSentiment = async (text: string) => {
         negative: sentiment === 'negative' ? 1 : 0
       },
       isRealData: true,
-      accuracyScore: accuracyScore
+      accuracyScore: accuracy
     }
   };
 };
 
-// Enhanced file analysis function for processing Excel files
 const analyzeFile = async (file: File) => {
-  // Simulate processing a large dataset
-  await new Promise(resolve => setTimeout(resolve, 3500)); // Simulate longer processing time
-  
-  // Generate multiple reviews from the file to simulate Excel data
-  const numberOfReviews = Math.floor(Math.random() * 20) + 5; // 5-25 reviews
-  const aspects = ['Quality', 'Price', 'Service', 'Delivery', 'Support', 'Features', 'Usability', 'Performance'];
-  const keywords = ['product', 'service', 'experience', 'quality', 'price', 'delivery', 'support', 'features', 'design', 'performance'];
-  
-  // Sample context excerpts for each aspect
-  const contextExcerpts = {
-    'Quality': [
-      "The quality of this product is terrible, everything broke within a week.",
-      "I cannot believe how poor the quality control is on this item.",
-      "The product's quality is subpar compared to competitors.",
-      "Materials feel cheap and the construction is flimsy."
-    ],
-    'Price': [
-      "The price is way too high for what you get.",
-      "Overpriced for the features and quality offered.",
-      "Not worth the cost when similar products are available for less."
-    ],
-    'Service': [
-      "Customer service was unhelpful when I tried to resolve my issue.",
-      "Their service team took days to respond to my urgent request.",
-      "Service representatives were rude and dismissive."
-    ],
-    'Delivery': [
-      "Package arrived ahead of schedule and in perfect condition.",
-      "Delivery was faster than expected and well-packaged.",
-      "Impressed with the careful handling during shipping."
-    ],
-    'Support': [
-      "Technical support went above and beyond to solve my problem.",
-      "Support team was patient and helped me through the entire process.",
-      "Their support resources are comprehensive and easy to use."
-    ],
-    'Features': [
-      "Many of the advertised features don't work as described.",
-      "Missing key features that competitors include as standard.",
-      "The software lacks basic functionality I expected to have.",
-      "Features are clunky and difficult to use effectively."
-    ],
-    'Usability': [
-      "The interface is intuitive and easy to navigate.",
-      "Even as a beginner, I found it simple to use all functions.",
-      "The design prioritizes user experience very effectively."
-    ],
-    'Performance': [
-      "Runs smoothly even with heavy workloads.",
-      "Processing speed exceeded my expectations.",
-      "Performance remains stable during extended use.",
-      "No lag or slowdowns even with multiple applications running."
-    ]
-  };
-  
-  let reviews = [];
-  let totalPositive = 0;
-  let totalNeutral = 0;
-  let totalNegative = 0;
-  
-  // Generate sample data to simulate Excel analysis
-  for (let i = 0; i < numberOfReviews; i++) {
-    const sentiment = Math.random();
-    let sentimentLabel;
-    if (sentiment > 0.6) {
-      sentimentLabel = 'positive';
-      totalPositive++;
-    } else if (sentiment < 0.3) {
-      sentimentLabel = 'negative';
-      totalNegative++;
-    } else {
-      sentimentLabel = 'neutral';
-      totalNeutral++;
-    }
+  try {
+    const reviews = await parseExcelFile(file);
+    let totalPositive = 0;
+    let totalNeutral = 0;
+    let totalNegative = 0;
+    let totalAccuracy = 0;
     
-    const rating = sentimentLabel === 'positive' ? 
-                  Math.floor(Math.random() * 2) + 4 : // 4-5
-                  sentimentLabel === 'negative' ?
-                  Math.floor(Math.random() * 2) + 1 : // 1-2
-                  3; // neutral = 3
-                  
-    const reviewKeywords = [];
-    const numKeywords = Math.floor(Math.random() * 3) + 1; // 1-3 keywords
-    for (let j = 0; j < numKeywords; j++) {
-      const randomKeyword = keywords[Math.floor(Math.random() * keywords.length)];
-      if (!reviewKeywords.find(k => k.word === randomKeyword)) {
-        reviewKeywords.push({
-          word: randomKeyword,
-          sentiment: sentimentLabel
-        });
-      }
-    }
-    
-    reviews.push({
-      id: Date.now() + i,
-      title: `Product ${String.fromCharCode(65 + (i % 26))}`, // A, B, C, ...
-      date: new Date().toISOString().split('T')[0],
-      sentiment: {
-        positive: sentimentLabel === 'positive' ? 70 : 10,
-        neutral: sentimentLabel === 'neutral' ? 70 : 10,
-        negative: sentimentLabel === 'negative' ? 70 : 10
-      },
-      reviewCount: 1,
-      source: 'excel',
-      rating: `${rating}/5`,
-      reviewText: `This is review ${i+1} extracted from ${file.name}. It contains feedback about the product.`,
-      sentimentLabel,
-      keywords: reviewKeywords
-    });
-  }
-  
-  // Calculate accuracy score based on data quality and quantity
-  // In a real system, this would be based on confidence scores, model performance, etc.
-  const dataPointAccuracy = Math.min(100, Math.max(70, 100 - (10000 - numberOfReviews) / 1000));
-  const dataQualityFactor = Math.random() * 10 + 88; // 88-98% quality factor
-  const accuracyScore = Math.min(100, Math.floor((dataPointAccuracy + dataQualityFactor) / 2));
-  
-  // Generate aspects with relevant context excerpts
-  const analyzedAspects = aspects.map(aspect => {
-    const sentiment = aspect === 'Quality' || aspect === 'Price' || aspect === 'Service' || aspect === 'Features' 
-      ? 'negative'
-      : 'positive';
+    const processedReviews = reviews.map(review => {
+      const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
       
-    const confidenceMap = {
-      'Quality': 48,
-      'Price': 18,
-      'Service': 12,
-      'Delivery': 18,
-      'Support': 10,
-      'Features': 40,
-      'Usability': 23,
-      'Performance': 32
-    };
+      if (sentiment === 'positive') totalPositive++;
+      else if (sentiment === 'negative') totalNegative++;
+      else totalNeutral++;
+      
+      totalAccuracy += accuracy;
+      
+      let ratingValue = "0/5";
+      if (review.rating) {
+        const ratingNum = parseFloat(review.rating);
+        if (!isNaN(ratingNum)) {
+          if (ratingNum <= 5) {
+            ratingValue = `${ratingNum}/5`;
+          } else if (ratingNum <= 10) {
+            ratingValue = `${(ratingNum / 2).toFixed(1)}/5`;
+          } else if (ratingNum <= 100) {
+            ratingValue = `${(ratingNum / 20).toFixed(1)}/5`;
+          }
+        }
+      } else {
+        const sentimentRating = sentiment === 'positive' ? 
+                          Math.floor(Math.random() * 2) + 4 : // 4-5
+                          sentiment === 'negative' ?
+                          Math.floor(Math.random() * 2) + 1 : // 1-2
+                          3; // neutral = 3
+        ratingValue = `${sentimentRating}/5`;
+      }
+      
+      const keywords = extractKeywords(review.reviewText, sentiment);
+      
+      return {
+        id: Date.now() + Math.random(),
+        title: review.productId,
+        date: review.date || new Date().toISOString().split('T')[0],
+        sentiment: {
+          positive: sentiment === 'positive' ? score : 10,
+          neutral: sentiment === 'neutral' ? score : 10,
+          negative: sentiment === 'negative' ? 100 - score : 10
+        },
+        reviewCount: 1,
+        source: 'excel',
+        rating: ratingValue,
+        reviewText: review.reviewText,
+        sentimentLabel: sentiment,
+        accuracyScore: accuracy,
+        keywords: keywords
+      };
+    });
     
-    const confidence = confidenceMap[aspect] || Math.floor(Math.random() * 40) + 10;
+    const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    // Get a random context excerpt for this aspect
-    const excerptOptions = contextExcerpts[aspect] || ["No specific context available."];
-    const context = excerptOptions[Math.floor(Math.random() * excerptOptions.length)];
+    const aspects = [
+      {
+        name: 'Overall',
+        sentiment: totalPositive > totalNegative ? 'positive' : 'negative',
+        confidence: 70,
+        context: `Analysis of ${reviews.length} reviews from file ${file.name}`
+      }
+    ];
     
-    return { 
-      name: aspect, 
-      sentiment: sentiment,
-      confidence: confidence,
-      context: context
-    };
-  });
-  
-  return {
-    text: `Analysis of file: ${file.name}`,
-    overallSentiment: {
-      sentiment: totalPositive > totalNegative ? "positive" : totalNegative > totalPositive ? "negative" : "neutral",
-      score: Math.round(((totalPositive - totalNegative) / numberOfReviews + 1) * 50)
-    },
-    aspects: analyzedAspects,
-    keyPhrases: keywords.slice(0, 5),
-    fileAnalysis: {
-      totalReviews: numberOfReviews,
-      sentimentBreakdown: {
-        positive: totalPositive,
-        neutral: totalNeutral, 
-        negative: totalNegative
+    const allKeywords = processedReviews
+      .flatMap(r => r.keywords)
+      .reduce((acc: Record<string, { count: number, sentiment: string }>, curr) => {
+        if (!acc[curr.word]) {
+          acc[curr.word] = { count: 0, sentiment: curr.sentiment };
+        }
+        acc[curr.word].count++;
+        return acc;
+      }, {});
+    
+    const topKeywords = Object.entries(allKeywords)
+      .sort(([, a], [, b]) => b.count - a.count)
+      .slice(0, 5)
+      .map(([word, data]) => word);
+    
+    return {
+      text: `Analysis of file: ${file.name}`,
+      overallSentiment: {
+        sentiment: totalPositive > totalNegative ? "positive" : totalNegative > totalPositive ? "negative" : "neutral",
+        score: Math.round(((totalPositive - totalNegative) / reviews.length + 1) * 50)
       },
-      isRealData: true,
-      fileName: file.name,
-      accuracyScore: accuracyScore,
-      reviews: reviews,
-      dataPoints: numberOfReviews * 5 + Math.floor(Math.random() * 50)
-    }
-  };
+      aspects: aspects,
+      keyPhrases: topKeywords,
+      fileAnalysis: {
+        totalReviews: reviews.length,
+        sentimentBreakdown: {
+          positive: totalPositive,
+          neutral: totalNeutral, 
+          negative: totalNegative
+        },
+        isRealData: true,
+        fileName: file.name,
+        accuracyScore: avgAccuracy,
+        reviews: processedReviews,
+        dataPoints: reviews.length
+      }
+    };
+  } catch (error) {
+    console.error("Error analyzing file:", error);
+    throw error;
+  }
 };
 
 type AnalysisState = 'input' | 'analyzing' | 'results';
@@ -344,7 +238,7 @@ const Demo = () => {
       if (file) {
         result = await analyzeFile(file);
       } else {
-        result = await analyzeSentiment(reviewText);
+        result = await analyzeSentimentForText(reviewText);
       }
       
       setAnalysisResult(result);
@@ -357,6 +251,7 @@ const Demo = () => {
           : `Review analysis complete with ${result.fileAnalysis.accuracyScore}% accuracy.`,
       });
     } catch (error) {
+      console.error("Analysis error:", error);
       toast({
         title: "Analysis failed",
         description: "There was an error analyzing your input. Please try again.",
@@ -368,12 +263,10 @@ const Demo = () => {
   
   const handleSaveToDashboard = () => {
     try {
-      // Get existing saved analyses from localStorage
       const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
       let savedAnalyses = savedAnalysesStr ? JSON.parse(savedAnalysesStr) : [];
       
       if (file && analysisResult.fileAnalysis.reviews) {
-        // For Excel files, save each review as a separate analysis
         const newAnalyses = analysisResult.fileAnalysis.reviews.map((review: any) => ({
           id: Date.now() + Math.random(),
           title: review.title || file.name,
@@ -385,10 +278,9 @@ const Demo = () => {
           source: 'excel',
           rating: review.rating,
           sentimentLabel: review.sentimentLabel,
-          accuracyScore: analysisResult.fileAnalysis.accuracyScore
+          accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore
         }));
         
-        // Also save an overall analysis for the file
         const overallAnalysis = {
           id: Date.now(),
           title: file.name,
@@ -404,10 +296,8 @@ const Demo = () => {
           accuracyScore: analysisResult.fileAnalysis.accuracyScore
         };
         
-        // Add all new analyses to the beginning of the array
         savedAnalyses = [...newAnalyses, overallAnalysis, ...savedAnalyses];
       } else {
-        // Create a new analysis entry for text review
         const newAnalysis = {
           id: Date.now(),
           title: file ? file.name : `Review Analysis ${new Date().toLocaleDateString()}`,
@@ -424,11 +314,9 @@ const Demo = () => {
           accuracyScore: analysisResult.fileAnalysis.accuracyScore
         };
         
-        // Add to saved analyses
         savedAnalyses.unshift(newAnalysis);
       }
       
-      // Save back to localStorage
       localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
       
       toast({
@@ -438,7 +326,6 @@ const Demo = () => {
           "Your analysis has been saved to your dashboard.",
       });
       
-      // Navigate to dashboard after a brief delay
       setTimeout(() => {
         navigate('/dashboard');
       }, 1500);
@@ -459,7 +346,6 @@ const Demo = () => {
     setAnalysisResult(null);
   };
   
-  // Apply RTL class for Arabic
   const rtlClass = language === 'ar' ? 'rtl' : '';
   
   return (
