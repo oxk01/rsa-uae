@@ -9,6 +9,7 @@ import { LanguageProvider } from "@/contexts/LanguageContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ChatAssistant from "@/components/ChatAssistant";
 
 // Pages
 import Home from "./pages/Home";
@@ -93,6 +94,7 @@ const App = () => (
                 </Routes>
               </div>
               <Footer />
+              <ChatAssistant />
             </div>
           </BrowserRouter>
         </AuthProvider>
