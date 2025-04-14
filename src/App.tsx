@@ -47,6 +47,7 @@ const App = () => (
                   <Route path="/terms" element={<TermsAndConditions />} />
                   <Route path="/privacy" element={<PrivacyPolicy />} />
                   <Route path="/contact" element={<Contact />} />
+                  <Route path="/pricing" element={<Pricing />} />
                   
                   {/* Protected routes - only accessible when logged in */}
                   <Route 
@@ -62,14 +63,6 @@ const App = () => (
                     element={
                       <ProtectedRoute>
                         <Demo />
-                      </ProtectedRoute>
-                    } 
-                  />
-                  <Route 
-                    path="/pricing" 
-                    element={
-                      <ProtectedRoute>
-                        <Pricing />
                       </ProtectedRoute>
                     } 
                   />
