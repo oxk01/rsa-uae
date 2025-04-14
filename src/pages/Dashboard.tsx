@@ -39,6 +39,9 @@ interface Analysis {
     sentiment: string;
     count: number;
   }[];
+  // Add missing properties to fix TypeScript errors
+  reviewText?: string;
+  source?: string;
 }
 
 const Dashboard = () => {
