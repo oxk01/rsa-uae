@@ -26,14 +26,34 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
   
   const handleSave = () => {
     try {
+      // Add a try-catch block around the onSave call to capture errors
       onSave();
-    } catch (error) {
-      console.error("Error in save handler:", error);
+      
+      // If the save was successful, show a success toast
       toast({
-        title: "Save failed",
-        description: "There was an error saving your analysis. Please try again.",
-        variant: "destructive",
+        title: "Analysis saved",
+        description: "Your analysis has been successfully saved to the dashboard.",
       });
+    } catch (error: any) {
+      console.error("Error in save handler:", error);
+      
+      // Check specifically for localStorage quota exceeded errors
+      if (error?.name === 'QuotaExceededError' || 
+          (error?.message && error.message.includes('quota')) || 
+          (error?.toString().includes('quota'))) {
+        
+        toast({
+          title: "Storage limit reached",
+          description: "Your browser's storage is full. Please delete some analyses before saving new ones.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Save failed",
+          description: "There was an error saving your analysis. Please try again.",
+          variant: "destructive",
+        });
+      }
     }
   };
   

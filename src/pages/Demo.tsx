@@ -323,10 +323,14 @@ const Demo = () => {
         savedAnalyses = [];
       }
       
+      const MAX_ANALYSES = 50;  // Maximum number of individual reviews to store
+      const MAX_BATCH_SIZE = 10; // Maximum number of reviews to save at once from a file
+      
       if (file && analysisResult?.fileAnalysis?.reviews) {
         const fileReviews = analysisResult.fileAnalysis.reviews as Review[];
+        const reviewsToSave = fileReviews.slice(0, MAX_BATCH_SIZE);
         
-        const newAnalyses = fileReviews.map((review: any) => ({
+        const newAnalyses = reviewsToSave.map((review: any) => ({
           id: Date.now() + Math.random(),
           title: review.title || file.name,
           date: new Date().toISOString().split('T')[0],
@@ -336,8 +340,8 @@ const Demo = () => {
             neutral: 0,
             negative: 0
           },
-          keywords: review.keywords || [],
-          reviewText: review.reviewText || "",
+          keywords: review.keywords?.slice(0, 5) || [],
+          reviewText: review.reviewText?.substring(0, 500) || "",
           source: 'excel',
           rating: review.rating || "0/5",
           sentimentLabel: review.sentimentLabel || "neutral",
@@ -355,7 +359,7 @@ const Demo = () => {
             neutral: 0, 
             negative: 0
           },
-          keywords: (analysisResult.keyPhrases || []).map((phrase: string) => ({
+          keywords: (analysisResult.keyPhrases || []).slice(0, 5).map((phrase: string) => ({
             word: phrase,
             sentiment: analysisResult.overallSentiment?.sentiment || "neutral",
             count: 1
@@ -363,7 +367,7 @@ const Demo = () => {
           accuracyScore: analysisResult.fileAnalysis.accuracyScore || 0
         };
         
-        savedAnalyses = [overallAnalysis, ...newAnalyses, ...savedAnalyses];
+        savedAnalyses = [overallAnalysis, ...newAnalyses, ...savedAnalyses.slice(0, MAX_ANALYSES - newAnalyses.length - 1)];
       } else {
         const newAnalysis = {
           id: Date.now(),
@@ -375,12 +379,12 @@ const Demo = () => {
             neutral: analysisResult?.overallSentiment?.sentiment === 'neutral' ? 100 : 0,
             negative: analysisResult?.overallSentiment?.sentiment === 'negative' ? 100 : 0
           },
-          keywords: (analysisResult?.keyPhrases || []).map((phrase: string) => ({
+          keywords: (analysisResult?.keyPhrases || []).slice(0, 5).map((phrase: string) => ({
             word: phrase,
             sentiment: analysisResult?.overallSentiment?.sentiment || "neutral",
             count: 1
           })),
-          reviewText: reviewText || "",
+          reviewText: reviewText?.substring(0, 500) || "",
           source: 'text',
           accuracyScore: analysisResult?.fileAnalysis?.accuracyScore || 0
         };
@@ -388,12 +392,41 @@ const Demo = () => {
         savedAnalyses.unshift(newAnalysis);
       }
       
-      localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
+      try {
+        const dataString = JSON.stringify(savedAnalyses);
+        const estimatedSize = new Blob([dataString]).size;
+        
+        if (estimatedSize > 4 * 1024 * 1024) {
+          const reducedAnalyses = savedAnalyses.slice(0, Math.max(5, Math.floor(savedAnalyses.length / 2)));
+          localStorage.setItem('rsa_saved_analyses', JSON.stringify(reducedAnalyses));
+          
+          toast({
+            title: "Storage limit reached",
+            description: "Some older analyses were removed to make space for new ones.",
+          });
+        } else {
+          localStorage.setItem('rsa_saved_analyses', dataString);
+        }
+      } catch (storageError) {
+        console.error("Storage error:", storageError);
+        
+        try {
+          const minimalSave = [savedAnalyses[0]];
+          localStorage.setItem('rsa_saved_analyses', JSON.stringify(minimalSave));
+          
+          toast({
+            title: "Storage limit reached",
+            description: "Only the most recent analysis could be saved. Previous analyses were removed.",
+          });
+        } catch (finalError) {
+          throw new Error("Cannot save any data - storage completely full");
+        }
+      }
       
       toast({
         title: "Analysis saved",
         description: file ? 
-          `All ${analysisResult?.fileAnalysis?.totalReviews || 0} reviews from the file have been saved to your dashboard.` : 
+          `${Math.min(MAX_BATCH_SIZE, analysisResult?.fileAnalysis?.totalReviews || 0)} reviews from the file have been saved to your dashboard.` : 
           "Your analysis has been saved to your dashboard.",
       });
       
@@ -403,11 +436,7 @@ const Demo = () => {
     } catch (error) {
       console.error("Error saving to dashboard:", error);
       
-      toast({
-        title: "Save failed",
-        description: "There was an error saving your analysis. Please try again.",
-        variant: "destructive",
-      });
+      throw error;
     }
   };
   
