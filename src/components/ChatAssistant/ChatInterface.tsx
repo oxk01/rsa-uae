@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,12 +34,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
   
-  // Scroll to bottom when messages change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Focus on input when chat opens
   useEffect(() => {
     if (isOpen) {
       setTimeout(() => {
@@ -49,25 +46,20 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen]);
 
-  // Simulate typing animation for assistant messages
   const addMessageWithTypingEffect = (message: ChatMessageProps) => {
     if (message.type === 'assistant') {
       setIsTyping(true);
       
-      // Add typing indicator
       setMessages(prev => [...prev, {
         content: "...",
         type: 'assistant',
         timestamp: new Date()
       }]);
       
-      // Simulate typing delay based on message length
       const typingDelay = Math.min(Math.max(message.content.length * 15, 500), 1500);
       
       setTimeout(() => {
         setMessages(prev => {
-          // Remove typing indicator and add real message
-          const newMessages = [...prev];
           newMessages.pop();
           return [...newMessages, message];
         });
@@ -83,7 +75,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     if (!input.trim() && !file) return;
     if (isProcessing || isTyping) return;
     
-    // Add user message
     const userMessage: ChatMessageProps = {
       content: input || (file ? `Sent a file: ${file.name}` : ''),
       type: 'user',
@@ -93,7 +84,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     
-    // Get AI response
     try {
       const query = file 
         ? `I'm sending you a file named ${file.name}. Can you help me with this?` 
@@ -109,7 +99,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       
       addMessageWithTypingEffect(botMessage);
       
-      // Clear file after sending
       if (file) {
         setFile(null);
       }
@@ -135,7 +124,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     if (e.target.files && e.target.files[0]) {
       const selectedFile = e.target.files[0];
       
-      // Check file size (limit to 5MB)
       if (selectedFile.size > 5 * 1024 * 1024) {
         toast({
           title: "File too large",
@@ -147,7 +135,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       
       setFile(selectedFile);
       
-      // Add a message showing the file was attached
       const fileMessage: ChatMessageProps = {
         content: `File attached: ${selectedFile.name}`,
         type: 'system',
@@ -156,10 +143,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       
       setMessages(prev => [...prev, fileMessage]);
       
-      // Focus back on input
       inputRef.current?.focus();
       
-      // Show toast
       toast({
         title: "File attached",
         description: `${selectedFile.name} has been attached`,
@@ -196,15 +181,14 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       overflow-hidden rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700
       bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900`}
     >
-      {/* Chat Header */}
       <div className="flex items-center justify-between p-4 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
         <div className="flex items-center">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center mr-3 shadow-inner">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-r from-purple-500 to-purple-600 flex items-center justify-center mr-3 shadow-inner">
             <Brain className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="font-medium">Virtual Assistant</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Ask me about our services and technologies</p>
+            <h3 className="font-medium text-gray-800 dark:text-gray-200">AI Assistant</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Intelligent support for your queries</p>
           </div>
         </div>
         <div className="flex items-center space-x-1">
@@ -236,7 +220,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         </div>
       </div>
       
-      {/* Chat Messages */}
       <ScrollArea className="flex-1 p-4 bg-slate-50 dark:bg-gray-850">
         {messages.map((message, index) => (
           <ChatMessage
@@ -258,7 +241,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         <div ref={messagesEndRef} />
       </ScrollArea>
       
-      {/* File Upload Indicator */}
       {file && (
         <div className="border-t dark:border-gray-700 p-2 bg-blue-50 dark:bg-blue-900/20 flex items-center justify-between">
           <div className="flex items-center">
@@ -276,7 +258,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         </div>
       )}
       
-      {/* Chat Input */}
       <form onSubmit={handleSendMessage} className="border-t dark:border-gray-700 p-3 flex gap-2 items-center bg-white dark:bg-gray-800">
         <input
           type="file"

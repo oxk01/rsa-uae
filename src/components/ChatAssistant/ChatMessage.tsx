@@ -26,7 +26,11 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, type, timestamp }) =
       {type === 'assistant' && (
         <div className="mr-2">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/lovable-uploads/fe0e17eb-004e-4730-9171-b309f4655ff0.png" alt="Assistant" />
+            <AvatarImage 
+              src="/lovable-uploads/fe0e17eb-004e-4730-9171-b309f4655ff0.png" 
+              alt="AI Assistant" 
+              className="object-cover" 
+            />
             <AvatarFallback className="bg-blue-600 text-white">AI</AvatarFallback>
           </Avatar>
         </div>
