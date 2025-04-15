@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -15,7 +14,10 @@ import {
   MessageSquare,
   Mail,
   ArrowRight,
-  Send
+  Send,
+  Shield,
+  BookText,
+  LifeBuoy
 } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { Input } from '@/components/ui/input';
@@ -43,17 +45,13 @@ const Footer = () => {
   
   return (
     <footer className={`relative ${language === 'ar' ? 'rtl' : ''}`}>
-      {/* Decorative wave */}
       <div className="absolute top-0 inset-x-0 h-16 bg-gradient-to-b from-background to-transparent"></div>
       
-      {/* Main footer content with gradient background */}
       <div className="bg-gradient-to-br from-blue-950 to-slate-900 pt-24 pb-8 text-white relative overflow-hidden">
-        {/* Decorative circles */}
         <div className="absolute top-1/4 -left-24 w-48 h-48 rounded-full bg-blue-700/10 blur-3xl"></div>
         <div className="absolute bottom-1/4 -right-24 w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          {/* Newsletter subscription */}
           <div className="max-w-3xl mx-auto mb-16 bg-gradient-to-r from-blue-900 to-indigo-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
             <div className="absolute inset-0 bg-blue-800 opacity-30 mix-blend-overlay"></div>
             <div className="relative z-10">
@@ -80,7 +78,6 @@ const Footer = () => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-            {/* Company Info */}
             <div className="flex flex-col items-start">
               <Link to="/" className="flex items-center mb-6">
                 <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">RSA</span>
@@ -108,7 +105,6 @@ const Footer = () => {
               </div>
             </div>
             
-            {/* Product Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Product
@@ -152,8 +148,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-          
-            {/* Company Column */}
+            
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Company
@@ -209,8 +204,7 @@ const Footer = () => {
                 </li>
               </ul>
             </div>
-          
-            {/* Legal Column */}
+            
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Legal
@@ -251,9 +245,27 @@ const Footer = () => {
               © {year} <span className="font-semibold text-white">RSA</span>. All rights reserved.
             </div>
             <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-              <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-              <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-              <Link to="/contact" className="hover:text-white transition-colors">Support</Link>
+              <Link 
+                to="/privacy" 
+                className="hover:text-white transition-colors flex items-center gap-2 group"
+              >
+                <Shield className="h-4 w-4 text-blue-400 group-hover:text-white transition-colors" />
+                Privacy
+              </Link>
+              <Link 
+                to="/terms" 
+                className="hover:text-white transition-colors flex items-center gap-2 group"
+              >
+                <BookText className="h-4 w-4 text-blue-400 group-hover:text-white transition-colors" />
+                Terms
+              </Link>
+              <Link 
+                to="/contact" 
+                className="hover:text-white transition-colors flex items-center gap-2 group"
+              >
+                <LifeBuoy className="h-4 w-4 text-blue-400 group-hover:text-white transition-colors" />
+                Support
+              </Link>
             </div>
           </div>
         </div>
