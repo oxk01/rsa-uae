@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send, X, Maximize2, Minimize2 } from "lucide-react";
+import { Send, X, Maximize2, Minimize2, Upload } from "lucide-react";
 import ChatMessage, { ChatMessageProps } from './ChatMessage';
 import { useGetAnswer } from '@/hooks/useGetAnswer';
 
@@ -22,6 +22,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   ]);
   const [input, setInput] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { getAnswer, isProcessing } = useGetAnswer();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   
@@ -32,11 +34,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isProcessing) return;
+    if (!input.trim() && !file) return;
+    if (isProcessing) return;
     
     // Add user message
     const userMessage: ChatMessageProps = {
-      content: input,
+      content: input || (file ? `Sent a file: ${file.name}` : ''),
       type: 'user',
       timestamp: new Date()
     };
@@ -46,7 +49,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     
     // Get AI response
     try {
-      const answer = await getAnswer(input);
+      const query = file 
+        ? `I'm sending you a file named ${file.name}. Can you help me with this?` 
+        : input;
+        
+      const answer = await getAnswer(query);
       const botMessage: ChatMessageProps = {
         content: answer,
         type: 'assistant',
@@ -54,6 +61,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       };
       
       setMessages(prev => [...prev, botMessage]);
+      
+      // Clear file after sending
+      if (file) {
+        setFile(null);
+      }
     } catch (error) {
       console.error('Failed to get answer:', error);
       const errorMessage: ChatMessageProps = {
@@ -63,6 +75,27 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       };
       
       setMessages(prev => [...prev, errorMessage]);
+    }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      
+      // Add a message showing the file was attached
+      const fileMessage: ChatMessageProps = {
+        content: `File attached: ${e.target.files[0].name}`,
+        type: 'system',
+        timestamp: new Date()
+      };
+      
+      setMessages(prev => [...prev, fileMessage]);
+    }
+  };
+  
+  const handleReplaceFile = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
     }
   };
 
@@ -120,8 +153,32 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         <div ref={messagesEndRef} />
       </ScrollArea>
       
+      {/* File Upload Indicator */}
+      {file && (
+        <div className="border-t dark:border-gray-700 p-2 bg-gray-50 dark:bg-gray-700 flex items-center justify-between">
+          <div className="flex items-center">
+            <Upload className="h-4 w-4 mr-2 text-blue-500" />
+            <span className="text-sm truncate max-w-[200px]">{file.name}</span>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" size="sm" onClick={handleReplaceFile}>
+              Replace File
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setFile(null)}>
+              Remove
+            </Button>
+          </div>
+        </div>
+      )}
+      
       {/* Chat Input */}
       <form onSubmit={handleSendMessage} className="border-t dark:border-gray-700 p-4 flex gap-2">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+        />
         <Input
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -131,7 +188,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         />
         <Button 
           type="submit" 
-          disabled={isProcessing || !input.trim()} 
+          disabled={isProcessing || (!input.trim() && !file)} 
           size="icon"
         >
           <Send className="h-4 w-4" />
