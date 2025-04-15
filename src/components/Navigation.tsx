@@ -27,7 +27,8 @@ const Navigation = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  // Change the ref type to match the element we're attaching it to
+  const dropdownRef = useRef<HTMLLIElement>(null);
   
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -107,7 +108,7 @@ const Navigation = () => {
                   </NavigationMenuItem>
                   
                   {/* Solutions dropdown */}
-                  <NavigationMenuItem className="relative" ref={dropdownRef}>
+                  <NavigationMenuItem ref={dropdownRef} className="relative">
                     <button 
                       className={`px-4 py-2 text-base font-medium rounded-md transition-colors flex items-center ${
                         location.pathname === '/dashboard' || location.pathname === '/demo'
