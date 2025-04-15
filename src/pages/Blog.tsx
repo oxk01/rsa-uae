@@ -3,7 +3,7 @@ import ResearchPaperCard from '@/components/ResearchPaperCard';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Send, ChevronDown } from 'lucide-react';
+import { Send, ChevronDown, Search, Filter } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import {
   Pagination,
@@ -25,6 +25,7 @@ const Blog = () => {
   const [postsPerPage, setPostsPerPage] = useState(6);
   const [activeCategory, setActiveCategory] = useState('All');
   const [showingAll, setShowingAll] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Categories for filter
   const categories = [
@@ -162,10 +163,16 @@ const Blog = () => {
     }
   ];
 
-  // Filter papers based on active category
-  const filteredPapers = activeCategory === 'All'
-    ? allPapers
-    : allPapers.filter(paper => paper.category === activeCategory);
+  // Filter papers based on active category and search term
+  const filteredPapers = allPapers
+    .filter(paper => activeCategory === 'All' || paper.category === activeCategory)
+    .filter(paper => 
+      searchTerm === '' || 
+      paper.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      paper.abstract.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      paper.authors.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      paper.category.toLowerCase().includes(searchTerm.toLowerCase())
+    );
     
   // Get featured paper
   const featuredPaper = filteredPapers.find(paper => paper.featured);
@@ -215,17 +222,41 @@ const Blog = () => {
   };
 
   return (
-    <div className={`min-h-screen bg-gray-50 dark:bg-gray-900 py-6 ${isRtl ? 'rtl' : ''}`}>
+    <div className={`min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 py-12 ${isRtl ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">Blog & Research</h1>
-          <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+        <div className="text-center mb-16">
+          <div className="inline-block bg-gradient-to-r from-blue-600 to-indigo-500 text-white px-4 py-2 rounded-full text-sm mb-4">
+            Our Knowledge Base
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+            Blog & Research
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 max-w-3xl mx-auto text-lg">
             Latest insights, research papers, and updates on sentiment analysis, BERT, ABSA, and more.
           </p>
         </div>
         
+        {/* Search and Filter Section */}
+        <div className="mb-10 max-w-3xl mx-auto">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="relative flex-grow">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+              <Input
+                placeholder="Search articles..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
+              />
+            </div>
+            <div className="flex items-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md px-3 py-2 shadow-sm">
+              <Filter className="h-4 w-4 text-gray-400" />
+              <span className="text-sm text-gray-500 dark:text-gray-400">Filter:</span>
+            </div>
+          </div>
+        </div>
+        
         {/* Category filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
+        <div className="flex flex-wrap justify-center gap-2 mb-12">
           {categories.map((category) => (
             <Button 
               key={category} 
@@ -236,7 +267,12 @@ const Blog = () => {
                 setCurrentPage(1);
                 setShowingAll(false);
               }}
-              className={activeCategory === category ? "bg-blue-600 hover:bg-blue-700" : ""}
+              className={`
+                transition-all duration-300 hover:shadow-md
+                ${activeCategory === category 
+                  ? "bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 scale-105" 
+                  : "hover:scale-105"}
+              `}
             >
               {category}
             </Button>
@@ -245,7 +281,7 @@ const Blog = () => {
         
         {/* Featured article */}
         {featuredPaper && (
-          <div className="mb-12">
+          <div className="mb-16 transform hover:scale-[1.01] transition-all duration-300">
             <ResearchPaperCard 
               {...featuredPaper}
               featured={true}
@@ -253,33 +289,58 @@ const Blog = () => {
           </div>
         )}
         
+        {/* Section title for articles */}
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Latest Research</h2>
+          <div className="h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent flex-grow mx-4"></div>
+          <span className="text-sm font-medium text-blue-600 dark:text-blue-400">{regularPapers.length} articles</span>
+        </div>
+        
         {/* Regular articles grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-          {currentPapers.map((paper, index) => (
-            <ResearchPaperCard 
-              key={`${paper.title}-${index}`}
-              {...paper}
-            />
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          {currentPapers.length > 0 ? (
+            currentPapers.map((paper, index) => (
+              <div 
+                key={`${paper.title}-${index}`} 
+                className="transform hover:translate-y-[-5px] transition-all duration-300"
+              >
+                <ResearchPaperCard {...paper} />
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full text-center py-12">
+              <p className="text-lg text-gray-500 dark:text-gray-400">No articles found matching your criteria</p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setActiveCategory('All');
+                  setSearchTerm('');
+                }} 
+                className="mt-4"
+              >
+                Clear filters
+              </Button>
+            </div>
+          )}
         </div>
         
         {/* Load more button */}
         {!showingAll && regularPapers.length > postsPerPage && (
-          <div className="flex justify-center mb-8">
+          <div className="flex justify-center mb-12">
             <Button
               onClick={handleLoadMore}
               variant="outline"
-              className="flex items-center gap-2 border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950"
+              className="flex items-center gap-2 border-blue-300 text-blue-700 hover:bg-blue-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-950 group transition-all duration-300"
             >
               Load More Articles
-              <ChevronDown className="h-4 w-4" />
+              <ChevronDown className="h-4 w-4 group-hover:translate-y-1 transition-transform" />
             </Button>
           </div>
         )}
         
         {/* Pagination */}
         {regularPapers.length > postsPerPage && !showingAll && (
-          <div className="mb-12">
+          <div className="mb-16">
             <Pagination>
               <PaginationContent>
                 {currentPage > 1 && (
@@ -302,6 +363,7 @@ const Blog = () => {
                       <PaginationLink 
                         onClick={() => paginate(pageNumber)}
                         isActive={pageNumber === currentPage}
+                        className={pageNumber === currentPage ? "bg-blue-600" : ""}
                       >
                         {pageNumber}
                       </PaginationLink>
@@ -320,30 +382,42 @@ const Blog = () => {
         )}
         
         {/* Email subscription */}
-        <div className="max-w-lg mx-auto my-16 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-sm">
-          <h2 className="text-xl font-semibold mb-4">Latest Developments</h2>
-          
-          <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
-            <Input
-              type="email"
-              placeholder="Enter your email address"
-              className="flex-1"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="gap-2 bg-blue-600 hover:bg-blue-700"
-            >
-              <Send className="h-4 w-4" />
-              Subscribe
-            </Button>
-          </form>
-          <p className="text-sm text-muted-foreground mt-3">
-            Subscribe to receive updates on our latest research and technology developments.
-          </p>
+        <div className="max-w-3xl mx-auto my-20">
+          <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 shadow-xl overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-blue-400 via-indigo-500 to-purple-600"></div>
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-50 dark:bg-blue-900/20 rounded-full opacity-70"></div>
+            <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-50 dark:bg-indigo-900/20 rounded-full opacity-70"></div>
+            
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800 dark:text-white">Stay Updated</h2>
+              <p className="text-gray-600 dark:text-gray-300 mb-6">
+                Subscribe to receive updates on our latest research and technology developments. We send out a monthly digest of the most important findings in the field.
+              </p>
+              
+              <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3">
+                <Input
+                  type="email"
+                  placeholder="Enter your email address"
+                  className="flex-1 bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                <Button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                  <Send className="h-4 w-4" />
+                  Subscribe
+                </Button>
+              </form>
+              
+              <p className="text-sm text-muted-foreground mt-4">
+                We respect your privacy. You can unsubscribe at any time.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
