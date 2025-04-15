@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { cn } from '@/lib/utils';
 
 interface TechCardProps {
   title: string;
@@ -17,7 +18,9 @@ const TechCard = ({
 }: TechCardProps) => {
   return (
     <div className={`relative bg-white rounded-lg p-6 shadow-md overflow-hidden ${className}`}>
-      <div className={`absolute top-0 left-0 right-0 h-1 ${lineColor}`}></div>
+      <div className={`absolute top-0 left-0 w-full flex justify-center`}>
+        <div className={`h-1 w-16 ${lineColor} rounded-b-md`}></div>
+      </div>
       <div className="space-y-4 text-center">
         <h3 className="text-xl font-bold text-gray-800 mt-4">{title}</h3>
         <p className="text-gray-600 leading-relaxed">{description}</p>

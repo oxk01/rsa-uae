@@ -27,34 +27,41 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Mission section */}
+      {/* Mission section - Updated with more attractive styling */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border-l-4 border-blue-600">
               <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                At RSA, our mission is to help businesses understand their customers better through advanced sentiment analysis. 
-                We believe that every customer review contains valuable insights that can drive business growth and improvement.
-              </p>
-              <p className="text-lg text-gray-700 dark:text-gray-300">
-                By leveraging cutting-edge AI technologies like BERT and Aspect-Based Sentiment Analysis, we provide businesses 
-                with a deeper understanding of customer sentiment, allowing them to make data-driven decisions that enhance 
-                customer satisfaction and loyalty.
-              </p>
+              <div className="space-y-4">
+                <p className="text-lg text-gray-700 dark:text-gray-300">
+                  At RSA, our mission is to help businesses understand their customers better through 
+                  advanced sentiment analysis. We believe that every customer review contains valuable 
+                  insights that can drive business growth and improvement.
+                </p>
+                <p className="text-lg text-gray-700 dark:text-gray-300">
+                  By leveraging cutting-edge AI technologies like BERT and Aspect-Based Sentiment Analysis, 
+                  we provide businesses with a deeper understanding of customer sentiment, allowing them to 
+                  make data-driven decisions that enhance customer satisfaction and loyalty.
+                </p>
+              </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700">
+            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border-l-4 border-teal-600">
               <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                We envision a world where businesses can instantly understand the voice of their customers, identifying 
-                trends and patterns that would otherwise remain hidden in vast amounts of textual feedback.
-              </p>
-              <p className="text-lg text-gray-700 dark:text-gray-300">
-                Our goal is to democratize access to advanced sentiment analysis tools, making them accessible to 
-                businesses of all sizes. We believe that by bridging the gap between customer feedback and business 
-                strategy, we can help create better products, services, and customer experiences.
-              </p>
+              <div className="space-y-4">
+                <p className="text-lg text-gray-700 dark:text-gray-300">
+                  We envision a world where businesses can instantly understand the voice of their customers, 
+                  identifying trends and patterns that would otherwise remain hidden in vast amounts of 
+                  textual feedback.
+                </p>
+                <p className="text-lg text-gray-700 dark:text-gray-300">
+                  Our goal is to democratize access to advanced sentiment analysis tools, making them 
+                  accessible to businesses of all sizes. We believe that by bridging the gap between 
+                  customer feedback and business strategy, we can help create better products, services, 
+                  and customer experiences.
+                </p>
+              </div>
             </div>
           </div>
         </div>
