@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User, Target, Flag, LightBulb, Award } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -49,7 +49,7 @@ const AboutPage = () => {
             {/* Vision Column */}
             <div className="flex flex-col items-center">
               <div className="mb-6 p-5 bg-teal-50 dark:bg-teal-900/30 rounded-full border-2 border-teal-500">
-                <LightBulb className="h-10 w-10 text-teal-600 dark:text-teal-400" />
+                <Lightbulb className="h-10 w-10 text-teal-600 dark:text-teal-400" />
               </div>
               <h3 className="text-xl font-bold text-center text-teal-600 dark:text-teal-400 mb-4">OUR VISION</h3>
               <Separator className="w-20 h-0.5 bg-teal-500 mb-6" />
