@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User, Target, Flag } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User, Target, Flag, LightBulb, Award } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -28,109 +28,46 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Mission and Vision section - Updated with circular design */}
+      {/* Mission, Vision and Values section - Updated to match image style */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Company</h2>
+          <h2 className="text-3xl font-bold text-center mb-16">Our Company</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            {/* Mission Circle */}
-            <div className="flex justify-center">
-              <div className="bg-blue-600 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
-                  <Target className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-5">MISSION</h3>
-                <ul className="space-y-2 text-center">
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Understand customer sentiment at scale</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Extract actionable insights from feedback</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Enable data-driven business decisions</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Drive continuous product improvement</span>
-                  </li>
-                </ul>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            {/* Mission Column */}
+            <div className="flex flex-col items-center">
+              <div className="mb-6 p-5 bg-blue-50 dark:bg-blue-900/30 rounded-full border-2 border-blue-500">
+                <Target className="h-10 w-10 text-blue-600 dark:text-blue-400" />
               </div>
+              <h3 className="text-xl font-bold text-center text-blue-600 dark:text-blue-400 mb-4">OUR MISSION</h3>
+              <Separator className="w-20 h-0.5 bg-blue-500 mb-6" />
+              <p className="text-center text-gray-600 dark:text-gray-300">
+                Understand customer sentiment at scale and extract actionable insights from feedback to enable data-driven business decisions and drive continuous product improvement.
+              </p>
             </div>
             
-            {/* Vision Circle */}
-            <div className="flex justify-center">
-              <div className="bg-teal-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
-                  <Flag className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-5">VISION</h3>
-                <ul className="space-y-2 text-center">
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Where customer feedback drives growth</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• AI-powered solutions to understand sentiment</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Accessible sentiment analysis for all</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Universal business intelligence</span>
-                  </li>
-                </ul>
+            {/* Vision Column */}
+            <div className="flex flex-col items-center">
+              <div className="mb-6 p-5 bg-teal-50 dark:bg-teal-900/30 rounded-full border-2 border-teal-500">
+                <LightBulb className="h-10 w-10 text-teal-600 dark:text-teal-400" />
               </div>
-            </div>
-          </div>
-          
-          {/* Bottom Circles - Values and Goals */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto mt-8">
-            {/* Goals Circle */}
-            <div className="flex justify-center">
-              <div className="bg-emerald-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
-                  <CheckCircle className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-5">GOALS</h3>
-                <ul className="space-y-2 text-center">
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Tangible ways to understand customer needs</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Empower businesses with AI tools</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Lead the sentiment analysis industry</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Drive innovation in NLP technology</span>
-                  </li>
-                </ul>
-              </div>
+              <h3 className="text-xl font-bold text-center text-teal-600 dark:text-teal-400 mb-4">OUR VISION</h3>
+              <Separator className="w-20 h-0.5 bg-teal-500 mb-6" />
+              <p className="text-center text-gray-600 dark:text-gray-300">
+                Create a world where customer feedback drives growth through AI-powered solutions that understand sentiment, making advanced analytics accessible to businesses of all sizes.
+              </p>
             </div>
             
-            {/* Values Circle */}
-            <div className="flex justify-center">
-              <div className="bg-amber-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
-                  <FileText className="h-8 w-8 text-white" />
-                </div>
-                <h3 className="text-2xl font-bold mb-5">VALUES</h3>
-                <ul className="space-y-2 text-center">
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Data-driven insights for better decisions</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Customer-focused solutions</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Continuous innovation and improvement</span>
-                  </li>
-                  <li className="flex items-center justify-center space-x-2">
-                    <span className="text-sm">• Ethical AI development practices</span>
-                  </li>
-                </ul>
+            {/* Values Column */}
+            <div className="flex flex-col items-center">
+              <div className="mb-6 p-5 bg-amber-50 dark:bg-amber-900/30 rounded-full border-2 border-amber-500">
+                <Award className="h-10 w-10 text-amber-600 dark:text-amber-400" />
               </div>
+              <h3 className="text-xl font-bold text-center text-amber-600 dark:text-amber-400 mb-4">OUR VALUES</h3>
+              <Separator className="w-20 h-0.5 bg-amber-500 mb-6" />
+              <p className="text-center text-gray-600 dark:text-gray-300">
+                We believe in data-driven insights for better decisions, customer-focused solutions, continuous innovation, and ethical AI development practices that respect privacy.
+              </p>
             </div>
           </div>
         </div>
