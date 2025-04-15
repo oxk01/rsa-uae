@@ -38,11 +38,6 @@ export const TechnologyCards = () => {
       />
       
       <TechCard
-        title="BERT-Powered Analytics"
-        description="Leverage BERT's deep contextual understanding to accurately interpret complex language variations in reviews."
-      />
-      
-      <TechCard
         title="Aspect-Based Sentiment"
         description="Identify specific aspects of your products or services mentioned in reviews and understand the sentiment around them."
       />
