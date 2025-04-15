@@ -195,43 +195,59 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Solutions section with enhanced styling - REDESIGNED */}
-      <section className="py-20 bg-gradient-to-br from-gray-900 to-blue-900 dark:from-gray-950 dark:to-blue-950 relative overflow-hidden">
+      {/* Solutions section with NEW light, attractive styling */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-teal-50 relative overflow-hidden">
         {/* Background decorative elements */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-blue-400 blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-teal-400 blur-3xl"></div>
+        <div className="absolute inset-0 opacity-30 pointer-events-none">
+          <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-blue-200 blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-teal-200 blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-amber-100 blur-3xl"></div>
+          
+          {/* Decorative patterns */}
+          <div className="absolute top-10 right-10">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-10">
+              <circle cx="60" cy="60" r="30" stroke="#0284c7" strokeWidth="2" />
+              <circle cx="60" cy="60" r="45" stroke="#0284c7" strokeWidth="1.5" />
+              <circle cx="60" cy="60" r="60" stroke="#0284c7" strokeWidth="1" />
+            </svg>
+          </div>
+          <div className="absolute bottom-10 left-10">
+            <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="opacity-10">
+              <rect x="10" y="10" width="100" height="100" stroke="#0d9488" strokeWidth="2" />
+              <rect x="25" y="25" width="70" height="70" stroke="#0d9488" strokeWidth="1.5" />
+              <rect x="40" y="40" width="40" height="40" stroke="#0d9488" strokeWidth="1" />
+            </svg>
+          </div>
         </div>
         
         <div className="container mx-auto px-6 relative z-10">
           <div className="text-center mb-16">
-            <span className="inline-block px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium mb-3">
+            <span className="inline-block px-3 py-1 bg-blue-500/20 text-blue-700 rounded-full text-sm font-medium mb-3">
               Our Offerings
             </span>
-            <h2 className="text-4xl font-bold mb-4 text-white">Innovative Solutions</h2>
+            <h2 className="text-4xl font-bold mb-4 text-gray-800 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-teal-600">Innovative Solutions</h2>
             <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-400 mx-auto"></div>
           </div>
           
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Card 1 */}
-              <div className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-teal-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
-                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+              <div className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-7 shadow-lg border border-blue-100 h-full hover:shadow-blue-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="flex-shrink-0 p-3 bg-blue-500/20 rounded-lg">
-                      <BarChart3 className="w-6 h-6 text-blue-400" />
+                    <div className="flex-shrink-0 p-3 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-all duration-300">
+                      <BarChart3 className="w-6 h-6 text-blue-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-white">Sentiment Analysis Dashboard</h3>
+                    <h3 className="text-xl font-bold text-blue-600">Sentiment Analysis Dashboard</h3>
                   </div>
                   
-                  <p className="text-gray-300 mb-5">
+                  <p className="text-gray-600 mb-5">
                     Our flagship sentiment analysis dashboard provides real-time insights into customer feedback from multiple sources. 
                     Track sentiment trends, identify key discussion topics, and monitor changes over time.
                   </p>
                   
                   <div className="mt-auto">
-                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-blue-500 to-teal-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                    <Button variant="ghost" asChild className="text-blue-600 group-hover:bg-blue-50 transition-all duration-300">
                       <Link to="/demo" className="flex items-center gap-2">
                         Try Demo <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
@@ -241,23 +257,22 @@ const AboutPage = () => {
               </div>
               
               {/* Card 2 */}
-              <div className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-amber-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
-                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+              <div className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-7 shadow-lg border border-teal-100 h-full hover:shadow-teal-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="flex-shrink-0 p-3 bg-teal-500/20 rounded-lg">
-                      <Star className="w-6 h-6 text-teal-400" />
+                    <div className="flex-shrink-0 p-3 bg-teal-500/10 rounded-lg group-hover:bg-teal-500/20 transition-all duration-300">
+                      <Star className="w-6 h-6 text-teal-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-white">Competitor Sentiment Benchmarking</h3>
+                    <h3 className="text-xl font-bold text-teal-600">Competitor Sentiment Benchmarking</h3>
                   </div>
                   
-                  <p className="text-gray-300 mb-5">
+                  <p className="text-gray-600 mb-5">
                     Compare your product's sentiment against competitors across key aspects and features. 
                     Identify competitive advantages and areas for improvement with detailed side-by-side analysis.
                   </p>
                   
                   <div className="mt-auto">
-                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-teal-400 to-amber-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                    <Button variant="ghost" asChild className="text-teal-600 group-hover:bg-teal-50 transition-all duration-300">
                       <Link to="/pricing" className="flex items-center gap-2">
                         View Plans <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
@@ -267,23 +282,22 @@ const AboutPage = () => {
               </div>
               
               {/* Card 3 */}
-              <div className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-rose-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
-                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+              <div className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-7 shadow-lg border border-amber-100 h-full hover:shadow-amber-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="flex-shrink-0 p-3 bg-amber-500/20 rounded-lg">
-                      <Zap className="w-6 h-6 text-amber-400" />
+                    <div className="flex-shrink-0 p-3 bg-amber-500/10 rounded-lg group-hover:bg-amber-500/20 transition-all duration-300">
+                      <Zap className="w-6 h-6 text-amber-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-white">Sentiment Alert System</h3>
+                    <h3 className="text-xl font-bold text-amber-600">Sentiment Alert System</h3>
                   </div>
                   
-                  <p className="text-gray-300 mb-5">
+                  <p className="text-gray-600 mb-5">
                     Receive real-time alerts when sentiment shifts significantly or when specific topics gain traction in customer feedback. 
                     Our alert system helps you address issues before they escalate and capitalize on positive trends.
                   </p>
                   
                   <div className="mt-auto">
-                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-amber-400 to-rose-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                    <Button variant="ghost" asChild className="text-amber-600 group-hover:bg-amber-50 transition-all duration-300">
                       <Link to="/pricing" className="flex items-center gap-2">
                         View Plans <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
@@ -293,23 +307,22 @@ const AboutPage = () => {
               </div>
               
               {/* Card 4 */}
-              <div className="group relative">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-400 to-blue-500 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
-                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+              <div className="group">
+                <div className="bg-white/80 backdrop-blur-sm rounded-xl p-7 shadow-lg border border-rose-100 h-full hover:shadow-rose-200/50 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                   <div className="flex items-center space-x-4 mb-4">
-                    <div className="flex-shrink-0 p-3 bg-rose-500/20 rounded-lg">
-                      <Globe className="w-6 h-6 text-rose-400" />
+                    <div className="flex-shrink-0 p-3 bg-rose-500/10 rounded-lg group-hover:bg-rose-500/20 transition-all duration-300">
+                      <Globe className="w-6 h-6 text-rose-600" />
                     </div>
-                    <h3 className="text-xl font-bold text-white">Enterprise API Integration</h3>
+                    <h3 className="text-xl font-bold text-rose-600">Enterprise API Integration</h3>
                   </div>
                   
-                  <p className="text-gray-300 mb-5">
+                  <p className="text-gray-600 mb-5">
                     Integrate our sentiment analysis capabilities directly into your existing systems via our comprehensive API. 
                     Build custom applications and workflows powered by our advanced NLP technology.
                   </p>
                   
                   <div className="mt-auto">
-                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-rose-400 to-blue-500 group-hover:text-white transition-all duration-300 text-gray-300">
+                    <Button variant="ghost" asChild className="text-rose-600 group-hover:bg-rose-50 transition-all duration-300">
                       <Link to="/contact" className="flex items-center gap-2">
                         Contact Sales <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                       </Link>
@@ -322,14 +335,12 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Future improvements - REDESIGNED */}
+      {/* Future improvements - keep existing section */}
       <section className="py-24 bg-white dark:bg-gray-800 relative overflow-hidden">
-        {/* Background decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 -left-10 w-40 h-40 bg-blue-100 dark:bg-blue-900/20 rounded-full opacity-70"></div>
           <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-100 dark:bg-amber-900/20 rounded-full opacity-70"></div>
           
-          {/* Decorative lines and dots */}
           <div className="absolute left-1/4 top-1/3">
             <div className="w-2 h-2 rounded-full bg-teal-500"></div>
           </div>
@@ -340,7 +351,6 @@ const AboutPage = () => {
             <div className="w-1 h-1 rounded-full bg-rose-500"></div>
           </div>
           
-          {/* Decorative dotted pattern */}
           <div className="absolute left-10 bottom-10 grid grid-cols-3 gap-2">
             {[...Array(9)].map((_, i) => (
               <div key={i} className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></div>
@@ -361,10 +371,8 @@ const AboutPage = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-            {/* Card 1 - 3D Hover Effect */}
             <div className="group hover:z-10">
               <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
-                {/* Top colorful border */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-blue-600"></div>
                 
                 <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
@@ -386,10 +394,8 @@ const AboutPage = () => {
               </div>
             </div>
             
-            {/* Card 2 - 3D Hover Effect */}
             <div className="group hover:z-10">
               <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
-                {/* Top colorful border */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-teal-600"></div>
                 
                 <div className="bg-gradient-to-b from-teal-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
@@ -411,10 +417,8 @@ const AboutPage = () => {
               </div>
             </div>
             
-            {/* Card 3 - 3D Hover Effect */}
             <div className="group hover:z-10">
               <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
-                {/* Top colorful border */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 to-amber-600"></div>
                 
                 <div className="bg-gradient-to-b from-amber-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
