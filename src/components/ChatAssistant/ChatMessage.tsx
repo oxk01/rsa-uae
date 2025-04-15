@@ -1,6 +1,6 @@
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot } from 'lucide-react';
+import { Bot, Brain } from 'lucide-react';
 
 export type MessageType = 'user' | 'assistant' | 'system';
 
@@ -25,14 +25,14 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, type, timestamp }) =
     <div className={`flex w-full ${type === 'user' ? 'justify-end' : 'justify-start'} mb-4`}>
       {type === 'assistant' && (
         <div className="mr-3">
-          <Avatar className="h-10 w-10 border-2 border-blue-100 dark:border-blue-900">
+          <Avatar className="h-10 w-10 border-2 border-purple-100 dark:border-purple-900">
             <AvatarImage 
-              src="/lovable-uploads/0e6ead79-9ee0-4a2e-a0da-10ccd947316d.png" 
+              src="/lovable-uploads/61704fd3-df75-4b2e-a8c4-4936bfd29110.png" 
               alt="AI Assistant" 
               className="object-cover rounded-full" 
             />
-            <AvatarFallback className="bg-blue-600 text-white">
-              <Bot className="h-5 w-5" />
+            <AvatarFallback className="bg-purple-600 text-white">
+              <Brain className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
         </div>
