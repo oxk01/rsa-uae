@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,19 +51,23 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     if (message.type === 'assistant') {
       setIsTyping(true);
       
-      setMessages(prev => [...prev, {
+      const currentMessages = [...messages];
+      currentMessages.push({
         content: "...",
         type: 'assistant',
         timestamp: new Date()
-      }]);
+      });
+      
+      setMessages(currentMessages);
       
       const typingDelay = Math.min(Math.max(message.content.length * 15, 500), 1500);
       
       setTimeout(() => {
-        setMessages(prev => {
-          newMessages.pop();
-          return [...newMessages, message];
-        });
+        const updatedMessages = [...currentMessages];
+        updatedMessages.pop();
+        updatedMessages.push(message);
+        
+        setMessages(updatedMessages);
         setIsTyping(false);
       }, typingDelay);
     } else {
