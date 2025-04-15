@@ -36,31 +36,6 @@ export const TechnologyCards = () => {
         title="Insight Generation"
         description="Review the processed data through visual dashboards for actionable business insights."
       />
-      
-      <TechCard
-        title="Aspect-Based Sentiment"
-        description="Identify specific aspects of your products or services mentioned in reviews and understand the sentiment around them."
-      />
-      
-      <TechCard
-        title="Big Data Processing"
-        description="Process thousands of reviews quickly and efficiently to help improve business decisions efficiently."
-      />
-      
-      <TechCard
-        title="Trend Analysis"
-        description="Track sentiment trends over time to gauge the impact of product changes, marketing campaigns, or service improvements."
-      />
-      
-      <TechCard
-        title="Interactive Dashboards"
-        description="Intuitive dashboards with in-depth customizable visualizations to make data accessible and actionable to all stakeholders."
-      />
-      
-      <TechCard
-        title="Automated Reports"
-        description="Get auto-generated, comprehensive, actionable reporting for immediate insights and informed business decisions."
-      />
     </div>
   );
 };
