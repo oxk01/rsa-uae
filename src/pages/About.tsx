@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award, Brain } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award, Brain, Zap, Layers, Shield, Cpu, BarChart3, Globe, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,6 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from '@/components/ui/separator';
+import { cn } from '@/lib/utils';
 
 const AboutPage = () => {
   const { isAuthenticated } = useAuth();
@@ -195,137 +195,245 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Solutions section with enhanced styling */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold mb-3">Our Solutions</h2>
-            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              We offer a range of solutions to help businesses understand and act on customer sentiment
-            </p>
+      {/* Solutions section with enhanced styling - REDESIGNED */}
+      <section className="py-20 bg-gradient-to-br from-gray-900 to-blue-900 dark:from-gray-950 dark:to-blue-950 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-10 w-64 h-64 rounded-full bg-blue-400 blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-80 h-80 rounded-full bg-teal-400 blur-3xl"></div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-sm font-medium mb-3">
+              Our Offerings
+            </span>
+            <h2 className="text-4xl font-bold mb-4 text-white">Innovative Solutions</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-400 mx-auto"></div>
           </div>
           
-          <div className="max-w-3xl mx-auto">
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden divide-y divide-gray-200 dark:divide-gray-700">
-              <Accordion type="single" collapsible className="w-full">
-                <AccordionItem value="sentiment-analysis" className="border-0">
-                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
-                    Sentiment Analysis Dashboard
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
-                    <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Our flagship sentiment analysis dashboard provides real-time insights into customer feedback from multiple sources. 
-                        Track sentiment trends, identify key discussion topics, and monitor changes over time.
-                      </p>
-                      <div className="flex items-center mt-3">
-                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                          <Link to="/demo">Try Demo <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                        </Button>
-                      </div>
+          <div className="max-w-5xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Card 1 */}
+              <div className="group relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-teal-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="flex-shrink-0 p-3 bg-blue-500/20 rounded-lg">
+                      <BarChart3 className="w-6 h-6 text-blue-400" />
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="competitor-analysis" className="border-0">
-                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
-                    Competitor Sentiment Benchmarking
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
-                    <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Compare your product's sentiment against competitors across key aspects and features. 
-                        Identify competitive advantages and areas for improvement with detailed side-by-side analysis.
-                      </p>
-                      <div className="flex items-center mt-3">
-                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                          <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                        </Button>
-                      </div>
+                    <h3 className="text-xl font-bold text-white">Sentiment Analysis Dashboard</h3>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-5">
+                    Our flagship sentiment analysis dashboard provides real-time insights into customer feedback from multiple sources. 
+                    Track sentiment trends, identify key discussion topics, and monitor changes over time.
+                  </p>
+                  
+                  <div className="mt-auto">
+                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-blue-500 to-teal-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                      <Link to="/demo" className="flex items-center gap-2">
+                        Try Demo <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Card 2 */}
+              <div className="group relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-amber-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="flex-shrink-0 p-3 bg-teal-500/20 rounded-lg">
+                      <Star className="w-6 h-6 text-teal-400" />
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="alert-system" className="border-0">
-                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
-                    Sentiment Alert System
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
-                    <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Receive real-time alerts when sentiment shifts significantly or when specific topics gain traction in customer feedback. 
-                        Our alert system helps you address issues before they escalate and capitalize on positive trends.
-                      </p>
-                      <div className="flex items-center mt-3">
-                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                          <Link to="/pricing">View Plans <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                        </Button>
-                      </div>
+                    <h3 className="text-xl font-bold text-white">Competitor Sentiment Benchmarking</h3>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-5">
+                    Compare your product's sentiment against competitors across key aspects and features. 
+                    Identify competitive advantages and areas for improvement with detailed side-by-side analysis.
+                  </p>
+                  
+                  <div className="mt-auto">
+                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-teal-400 to-amber-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                      <Link to="/pricing" className="flex items-center gap-2">
+                        View Plans <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Card 3 */}
+              <div className="group relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-amber-400 to-rose-400 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="flex-shrink-0 p-3 bg-amber-500/20 rounded-lg">
+                      <Zap className="w-6 h-6 text-amber-400" />
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-                
-                <AccordionItem value="custom-integration" className="border-0">
-                  <AccordionTrigger className="px-6 py-4 text-lg font-medium hover:bg-blue-50 dark:hover:bg-gray-700 hover:text-blue-600 transition-colors">
-                    Enterprise API Integration
-                  </AccordionTrigger>
-                  <AccordionContent className="bg-blue-50/30 dark:bg-gray-700/30 px-6 py-4">
-                    <div className="space-y-3">
-                      <p className="text-gray-600 dark:text-gray-300">
-                        Integrate our sentiment analysis capabilities directly into your existing systems via our comprehensive API. 
-                        Build custom applications and workflows powered by our advanced NLP technology.
-                      </p>
-                      <div className="flex items-center mt-3">
-                        <Button variant="link" asChild className="p-0 text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300">
-                          <Link to="/contact">Contact Sales <ArrowRight className="ml-1 h-4 w-4" /></Link>
-                        </Button>
-                      </div>
+                    <h3 className="text-xl font-bold text-white">Sentiment Alert System</h3>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-5">
+                    Receive real-time alerts when sentiment shifts significantly or when specific topics gain traction in customer feedback. 
+                    Our alert system helps you address issues before they escalate and capitalize on positive trends.
+                  </p>
+                  
+                  <div className="mt-auto">
+                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-amber-400 to-rose-400 group-hover:text-white transition-all duration-300 text-gray-300">
+                      <Link to="/pricing" className="flex items-center gap-2">
+                        View Plans <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Card 4 */}
+              <div className="group relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-rose-400 to-blue-500 rounded-2xl blur opacity-60 group-hover:opacity-100 transition duration-1000 group-hover:duration-300"></div>
+                <div className="relative bg-gray-900 dark:bg-gray-800 rounded-xl p-6 h-full transform transition-all duration-500 group-hover:-translate-y-1">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <div className="flex-shrink-0 p-3 bg-rose-500/20 rounded-lg">
+                      <Globe className="w-6 h-6 text-rose-400" />
                     </div>
-                  </AccordionContent>
-                </AccordionItem>
-              </Accordion>
+                    <h3 className="text-xl font-bold text-white">Enterprise API Integration</h3>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-5">
+                    Integrate our sentiment analysis capabilities directly into your existing systems via our comprehensive API. 
+                    Build custom applications and workflows powered by our advanced NLP technology.
+                  </p>
+                  
+                  <div className="mt-auto">
+                    <Button variant="ghost" asChild className="group-hover:bg-gradient-to-r from-rose-400 to-blue-500 group-hover:text-white transition-all duration-300 text-gray-300">
+                      <Link to="/contact" className="flex items-center gap-2">
+                        Contact Sales <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
       
-      {/* Future improvements - Updated with better spacing */}
-      <section className="py-16 bg-white dark:bg-gray-800">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">{t('futureImprovements')}</h2>
+      {/* Future improvements - REDESIGNED */}
+      <section className="py-24 bg-white dark:bg-gray-800 relative overflow-hidden">
+        {/* Background decorative elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 -left-10 w-40 h-40 bg-blue-100 dark:bg-blue-900/20 rounded-full opacity-70"></div>
+          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-100 dark:bg-amber-900/20 rounded-full opacity-70"></div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-              <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Cloud className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+          {/* Decorative lines and dots */}
+          <div className="absolute left-1/4 top-1/3">
+            <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+          </div>
+          <div className="absolute right-1/3 bottom-1/4">
+            <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+          </div>
+          <div className="absolute right-1/4 top-1/4">
+            <div className="w-1 h-1 rounded-full bg-rose-500"></div>
+          </div>
+          
+          {/* Decorative dotted pattern */}
+          <div className="absolute left-10 bottom-10 grid grid-cols-3 gap-2">
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600"></div>
+            ))}
+          </div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-full text-sm font-medium mb-3">
+              What's Next
+            </span>
+            <h2 className="text-4xl font-bold mb-4 text-gray-800 dark:text-white">{t('futureImprovements')}</h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-teal-500 mx-auto"></div>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mt-4">
+              We're constantly innovating to bring you the best sentiment analysis experience
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            {/* Card 1 - 3D Hover Effect */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
+                {/* Top colorful border */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                
+                <div className="bg-gradient-to-b from-blue-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-blue-400 dark:bg-blue-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-blue-100 dark:bg-blue-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Cpu className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">{t('aiModels')}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Developing and integrating specialized AI models for different industries, such as healthcare, finance, 
+                    hospitality, and e-commerce, with focused training for domain-specific terminology.
+                  </p>
+                  
+                  <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-blue-400 to-blue-600 mt-6 transition-all duration-300"></div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{t('aiModels')}</h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Developing and integrating specialized AI models for different industries, such as healthcare, finance, 
-                hospitality, and e-commerce, with focused training for domain-specific terminology.
-              </p>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-              <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <FileText className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            {/* Card 2 - 3D Hover Effect */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
+                {/* Top colorful border */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-teal-600"></div>
+                
+                <div className="bg-gradient-to-b from-teal-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-teal-400 dark:bg-teal-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-teal-100 dark:bg-teal-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Layers className="h-8 w-8 text-teal-600 dark:text-teal-400" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold mb-4 text-teal-600 dark:text-teal-400">{t('enterpriseIntegration')}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Creating seamless integrations with enterprise systems like Salesforce, HubSpot, Zendesk, 
+                    and Microsoft Dynamics to enable sentiment analysis directly within existing workflows.
+                  </p>
+                  
+                  <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-teal-400 to-teal-600 mt-6 transition-all duration-300"></div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{t('enterpriseIntegration')}</h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Creating seamless integrations with enterprise systems like Salesforce, HubSpot, Zendesk, 
-                and Microsoft Dynamics to enable sentiment analysis directly within existing workflows.
-              </p>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-              <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+            {/* Card 3 - 3D Hover Effect */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl group-hover:scale-105">
+                {/* Top colorful border */}
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 to-amber-600"></div>
+                
+                <div className="bg-gradient-to-b from-amber-50 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-amber-400 dark:bg-amber-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-amber-100 dark:bg-amber-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Shield className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl font-bold mb-4 text-amber-600 dark:text-amber-400">{t('customModels')}</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Allowing businesses to train custom sentiment models on their own data, enabling higher accuracy 
+                    analysis for specific products, services, and unique industry vocabularies.
+                  </p>
+                  
+                  <div className="h-1 w-0 group-hover:w-full bg-gradient-to-r from-amber-400 to-amber-600 mt-6 transition-all duration-300"></div>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">{t('customModels')}</h3>
-              <p className="text-gray-700 dark:text-gray-300">
-                Allowing businesses to train custom sentiment models on their own data, enabling higher accuracy 
-                analysis for specific products, services, and unique industry vocabularies.
-              </p>
             </div>
           </div>
         </div>
