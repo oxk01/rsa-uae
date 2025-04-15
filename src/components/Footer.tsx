@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -52,32 +53,31 @@ const Footer = () => {
         <div className="absolute bottom-1/4 -right-24 w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto mb-16 bg-gradient-to-r from-blue-900 to-indigo-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
-            <div className="absolute inset-0 bg-blue-800 opacity-30 mix-blend-overlay"></div>
-            <div className="relative z-10">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="text-center md:text-left">
-                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Stay Updated</h3>
-                  <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
-                </div>
-                <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
-                  <Input
-                    type="email"
-                    placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
-                  />
-                  <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100">
-                    <Send className="h-4 w-4 mr-2" />
-                    <span>Subscribe</span>
-                  </Button>
-                </form>
+          {/* Newsletter subscription box styled to match the design */}
+          <div className="max-w-3xl mx-auto mb-16 bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-semibold mb-2">Stay Updated</h3>
+                <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
               </div>
+              <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
+                />
+                <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100 flex items-center">
+                  <Send className="h-4 w-4 mr-2" />
+                  <span>Subscribe</span>
+                </Button>
+              </form>
             </div>
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+            {/* Company Info Column */}
             <div className="flex flex-col items-start">
               <Link to="/" className="flex items-center mb-6">
                 <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">RSA</span>
@@ -105,6 +105,7 @@ const Footer = () => {
               </div>
             </div>
             
+            {/* Product Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Product
@@ -149,6 +150,7 @@ const Footer = () => {
               </ul>
             </div>
             
+            {/* Company Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Company
@@ -205,6 +207,7 @@ const Footer = () => {
               </ul>
             </div>
             
+            {/* Legal Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Legal

@@ -2,20 +2,35 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart, Brain, Database, Lightbulb } from 'lucide-react';
+import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart, Brain, Database, Lightbulb, Send } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TechnologyCards } from '@/components/TechnologyCards';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
+  const { toast } = useToast();
+  const [email, setEmail] = React.useState('');
+  
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email) {
+      toast({
+        title: "Subscription successful!",
+        description: "Thank you for subscribing to our newsletter.",
+      });
+      setEmail('');
+    }
+  };
   
   return (
     <div className={`min-h-screen bg-white ${language === 'ar' ? 'rtl' : ''}`}>
       {/* Hero section with background */}
-      <section className="bg-gradient-to-r from-blue-900 to-blue-950 text-white py-20 relative">
+      <section className="bg-gradient-to-r from-blue-900 to-blue-950 text-white py-20 relative overflow-hidden">
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
           {/* Left column with text */}
           <div className="space-y-6">
@@ -39,7 +54,7 @@ const Home = () => {
           
           {/* Right column with dashboard preview */}
           <div className="hidden md:block">
-            <div className="bg-blue-800/50 backdrop-blur-sm p-6 rounded-lg border border-blue-700/50">
+            <div className="bg-blue-800/50 backdrop-blur-sm p-6 rounded-lg border border-blue-700/50 shadow-xl">
               <div className="grid grid-cols-2 gap-4">
                 {/* Sentiment Distribution Card */}
                 <Card className="bg-blue-800/50 border-blue-700/50 p-4 space-y-3">
@@ -108,6 +123,37 @@ const Home = () => {
             </div>
           </div>
         </div>
+        
+        {/* Decorative background elements */}
+        <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full filter blur-3xl"></div>
+        <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
+      </section>
+      
+      {/* Newsletter section matching Footer design */}
+      <section className="py-16 bg-white border-b border-gray-100">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl mx-auto bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="text-center md:text-left">
+                <h3 className="text-xl md:text-2xl font-semibold mb-2 text-white">Stay Updated</h3>
+                <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
+              </div>
+              <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
+                />
+                <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100 flex items-center">
+                  <Send className="h-4 w-4 mr-2" />
+                  <span>Subscribe</span>
+                </Button>
+              </form>
+            </div>
+          </div>
+        </div>
       </section>
       
       {/* Features section */}
@@ -145,33 +191,6 @@ const Home = () => {
                 Process thousands of reviews quickly and efficiently to help improve business decisions efficiently.
               </p>
             </div>
-            
-            {/* Trend Analysis */}
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/40 p-6 rounded-lg shadow-md border border-purple-100 dark:border-purple-700 transform transition-transform hover:scale-105">
-              <div className="h-2 bg-purple-500 rounded-full w-1/3 mb-6"></div>
-              <h3 className="text-xl font-semibold mb-2 text-purple-700 dark:text-purple-300">Trend Analysis</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Track sentiment trends over time to gauge the impact of product changes, marketing campaigns, or service improvements.
-              </p>
-            </div>
-            
-            {/* Interactive Dashboards */}
-            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/40 p-6 rounded-lg shadow-md border border-indigo-100 dark:border-indigo-700 transform transition-transform hover:scale-105">
-              <div className="h-2 bg-indigo-500 rounded-full w-1/3 mb-6"></div>
-              <h3 className="text-xl font-semibold mb-2 text-indigo-700 dark:text-indigo-300">Interactive Dashboards</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Intuitive dashboards with in-depth customizable visualizations to make data accessible and actionable to all stakeholders.
-              </p>
-            </div>
-            
-            {/* Automated Reports */}
-            <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/40 p-6 rounded-lg shadow-md border border-rose-100 dark:border-rose-700 transform transition-transform hover:scale-105">
-              <div className="h-2 bg-rose-500 rounded-full w-1/3 mb-6"></div>
-              <h3 className="text-xl font-semibold mb-2 text-rose-700 dark:text-rose-300">Automated Reports</h3>
-              <p className="text-gray-600 dark:text-gray-300">
-                Get auto-generated, comprehensive, actionable reporting for immediate insights and informed business decisions.
-              </p>
-            </div>
           </div>
         </div>
       </section>
@@ -193,7 +212,7 @@ const Home = () => {
         <div className="container mx-auto px-6">
           <h2 className="text-3xl font-bold text-center mb-12">Why Choose RSA</h2>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8">
             <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
               <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
               <h3 className="text-xl font-semibold mb-3">Comprehensive Reports</h3>
