@@ -12,12 +12,12 @@ interface TechCardProps {
 
 const TechCard = ({ icon, title, description, className = '' }: TechCardProps) => {
   return (
-    <div className={`bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm ${className}`}>
-      <div className="flex flex-col items-center text-center">
-        <div className="bg-blue-100 dark:bg-blue-900 p-3 rounded-full mb-4 flex items-center justify-center w-16 h-16">
+    <div className={`bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-100 dark:border-gray-700 shadow-sm ${className} flex flex-col items-center`}>
+      <div className="mb-5 flex flex-col items-center">
+        <div className="bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center w-20 h-20 mb-4">
           {icon}
         </div>
-        <h3 className="text-xl font-semibold mb-3">{title}</h3>
+        <h3 className="text-xl font-semibold text-center">{title}</h3>
       </div>
       <p className="text-gray-600 dark:text-gray-300 text-center">{description}</p>
     </div>
@@ -30,25 +30,25 @@ export const TechnologyCards = () => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
       <TechCard
-        icon={<BrainCircuit className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+        icon={<BrainCircuit className="h-8 w-8 text-blue-600 dark:text-blue-400" />}
         title={t('nlpTechnology')}
         description="Natural Language Processing technology that understands context, nuance, and sentiment in human language."
       />
       
       <TechCard
-        icon={<Network className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+        icon={<Network className="h-8 w-8 text-blue-600 dark:text-blue-400" />}
         title={t('absaTechnology')}
         description="Aspect-Based Sentiment Analysis that identifies specific features and topics in customer feedback."
       />
       
       <TechCard
-        icon={<Cpu className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+        icon={<Cpu className="h-8 w-8 text-blue-600 dark:text-blue-400" />}
         title={t('bertTechnology')}
         description="BERT transformer models for deep contextual understanding of text and nuanced sentiment analysis."
       />
       
       <TechCard
-        icon={<Database className="h-6 w-6 text-blue-600 dark:text-blue-400" />}
+        icon={<Database className="h-8 w-8 text-blue-600 dark:text-blue-400" />}
         title={t('bigDataTechnology')}
         description="Distributed data processing architecture to analyze millions of reviews at enterprise scale."
       />
