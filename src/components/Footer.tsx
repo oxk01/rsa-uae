@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
   Facebook, 
@@ -30,6 +29,8 @@ const Footer = () => {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const [email, setEmail] = useState('');
+  const location = useLocation();
+  const isBlogPage = location.pathname === '/blog';
   
   const year = new Date().getFullYear();
   
@@ -53,28 +54,30 @@ const Footer = () => {
         <div className="absolute bottom-1/4 -right-24 w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          {/* Newsletter subscription box styled to match the design */}
-          <div className="max-w-3xl mx-auto mb-16 bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-left">
-                <h3 className="text-xl md:text-2xl font-semibold mb-2">Stay Updated</h3>
-                <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
+          {/* Newsletter subscription box - only shown when not on blog page */}
+          {!isBlogPage && (
+            <div className="max-w-3xl mx-auto mb-16 bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="text-center md:text-left">
+                  <h3 className="text-xl md:text-2xl font-semibold mb-2">Stay Updated</h3>
+                  <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
+                </div>
+                <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
+                  <Input
+                    type="email"
+                    placeholder="Enter your email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
+                  />
+                  <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100 flex items-center">
+                    <Send className="h-4 w-4 mr-2" />
+                    <span>Subscribe</span>
+                  </Button>
+                </form>
               </div>
-              <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
-                />
-                <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100 flex items-center">
-                  <Send className="h-4 w-4 mr-2" />
-                  <span>Subscribe</span>
-                </Button>
-              </form>
             </div>
-          </div>
+          )}
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
             {/* Company Info Column */}
