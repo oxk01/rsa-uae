@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -7,25 +6,10 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { TechnologyCards } from '@/components/TechnologyCards';
-import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
   const { language } = useLanguage();
-  const { toast } = useToast();
-  const [email, setEmail] = React.useState('');
-  
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      toast({
-        title: "Subscription successful!",
-        description: "Thank you for subscribing to our newsletter.",
-      });
-      setEmail('');
-    }
-  };
   
   return (
     <div className={`min-h-screen bg-white ${language === 'ar' ? 'rtl' : ''}`}>
@@ -127,33 +111,6 @@ const Home = () => {
         {/* Decorative background elements */}
         <div className="absolute top-0 right-0 w-1/3 h-1/3 bg-blue-500/10 rounded-full filter blur-3xl"></div>
         <div className="absolute bottom-0 left-0 w-1/4 h-1/4 bg-indigo-500/10 rounded-full filter blur-3xl"></div>
-      </section>
-      
-      {/* Newsletter section matching Footer design */}
-      <section className="py-16 bg-white border-b border-gray-100">
-        <div className="container mx-auto px-6">
-          <div className="max-w-3xl mx-auto bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div className="text-center md:text-left">
-                <h3 className="text-xl md:text-2xl font-semibold mb-2 text-white">Stay Updated</h3>
-                <p className="text-blue-100">Subscribe to our newsletter for the latest updates and insights</p>
-              </div>
-              <form onSubmit={handleSubscribe} className="flex w-full max-w-sm space-x-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-blue-200"
-                />
-                <Button type="submit" className="bg-white text-blue-900 hover:bg-blue-100 flex items-center">
-                  <Send className="h-4 w-4 mr-2" />
-                  <span>Subscribe</span>
-                </Button>
-              </form>
-            </div>
-          </div>
-        </div>
       </section>
       
       {/* Features section */}
