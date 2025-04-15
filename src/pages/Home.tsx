@@ -6,6 +6,7 @@ import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { TechnologyCards } from '@/components/TechnologyCards';
 
 const Home = () => {
   const { isAuthenticated } = useAuth();
@@ -119,67 +120,55 @@ const Home = () => {
           
           <div className="grid md:grid-cols-3 gap-8">
             {/* BERT-Powered Analytics */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Brain className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">BERT-Powered Analytics</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/40 p-6 rounded-lg shadow-md border border-blue-100 dark:border-blue-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-blue-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-blue-700 dark:text-blue-300">BERT-Powered Analytics</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Leverage BERT's deep contextual understanding to accurately interpret complex language variations in reviews.
               </p>
             </div>
             
             {/* Aspect-Based Sentiment */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <BarChart3 className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Aspect-Based Sentiment</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-teal-50 to-teal-100 dark:from-teal-900/30 dark:to-teal-800/40 p-6 rounded-lg shadow-md border border-teal-100 dark:border-teal-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-teal-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-teal-700 dark:text-teal-300">Aspect-Based Sentiment</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Identify specific aspects of your products or services mentioned in reviews and understand the sentiment around them.
               </p>
             </div>
             
             {/* Big Data Processing */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <Database className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Big Data Processing</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/40 p-6 rounded-lg shadow-md border border-amber-100 dark:border-amber-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-amber-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-amber-700 dark:text-amber-300">Big Data Processing</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Process thousands of reviews quickly and efficiently to help improve business decisions efficiently.
               </p>
             </div>
             
             {/* Trend Analysis */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <TrendingUp className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Trend Analysis</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/30 dark:to-purple-800/40 p-6 rounded-lg shadow-md border border-purple-100 dark:border-purple-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-purple-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-purple-700 dark:text-purple-300">Trend Analysis</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Track sentiment trends over time to gauge the impact of product changes, marketing campaigns, or service improvements.
               </p>
             </div>
             
             {/* Interactive Dashboards */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <PieChart className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Interactive Dashboards</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/30 dark:to-indigo-800/40 p-6 rounded-lg shadow-md border border-indigo-100 dark:border-indigo-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-indigo-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-indigo-700 dark:text-indigo-300">Interactive Dashboards</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Intuitive dashboards with in-depth customizable visualizations to make data accessible and actionable to all stakeholders.
               </p>
             </div>
             
             {/* Automated Reports */}
-            <div className="bg-white p-6 rounded-lg shadow-md">
-              <div className="bg-blue-100 p-3 rounded-full w-12 h-12 flex items-center justify-center mb-4">
-                <MessageSquare className="h-6 w-6 text-blue-600" />
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Automated Reports</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/30 dark:to-rose-800/40 p-6 rounded-lg shadow-md border border-rose-100 dark:border-rose-700 transform transition-transform hover:scale-105">
+              <div className="h-2 bg-rose-500 rounded-full w-1/3 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-2 text-rose-700 dark:text-rose-300">Automated Reports</h3>
+              <p className="text-gray-600 dark:text-gray-300">
                 Get auto-generated, comprehensive, actionable reporting for immediate insights and informed business decisions.
               </p>
             </div>
@@ -195,40 +184,7 @@ const Home = () => {
             Our advanced AI processes customer reviews and extracts meaningful insights in just a few simple steps.
           </p>
           
-          <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {/* Step 1: Data Collection */}
-            <div className="relative">
-              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 font-bold">1</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Data Collection</h3>
-              <p className="text-gray-600">
-                Upload reviews from multiple sources or connect to data sources through our automated data collection.
-              </p>
-            </div>
-            
-            {/* Step 2: AI Processing */}
-            <div>
-              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 font-bold">2</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">AI Processing</h3>
-              <p className="text-gray-600">
-                Our BERT and ABSA algorithms analyze the data, identifying entities, aspects, sentiment, and relevant keywords.
-              </p>
-            </div>
-            
-            {/* Step 3: Insight Generation */}
-            <div>
-              <div className="bg-blue-100 rounded-full w-12 h-12 flex items-center justify-center mx-auto mb-4">
-                <span className="text-blue-600 font-bold">3</span>
-              </div>
-              <h3 className="text-xl font-semibold mb-2">Insight Generation</h3>
-              <p className="text-gray-600">
-                Review the processed data through visual dashboards for actionable business insights.
-              </p>
-            </div>
-          </div>
+          <TechnologyCards />
         </div>
       </section>
       
@@ -238,26 +194,26 @@ const Home = () => {
           <h2 className="text-3xl font-bold text-center mb-12">Why Choose RSA</h2>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <PieChart className="h-10 w-10 text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Comprehensive Reports</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
+              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-3">Comprehensive Reports</h3>
+              <p className="text-blue-50">
                 Get detailed breakdowns of sentiment across different aspects of your product or service.
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <TrendingUp className="h-10 w-10 text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Trend Analysis</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-r from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
+              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-3">Trend Analysis</h3>
+              <p className="text-teal-50">
                 Track sentiment changes over time to measure the impact of your improvements.
               </p>
             </div>
             
-            <div className="bg-white p-6 rounded-lg shadow-sm">
-              <MessageSquare className="h-10 w-10 text-blue-500 mb-4" />
-              <h3 className="text-xl font-semibold mb-2">Keyword Extraction</h3>
-              <p className="text-gray-600">
+            <div className="bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
+              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+              <h3 className="text-xl font-semibold mb-3">Keyword Extraction</h3>
+              <p className="text-amber-50">
                 Identify the most important terms in your reviews and their associated sentiment.
               </p>
             </div>
