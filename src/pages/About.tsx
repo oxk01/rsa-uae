@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award, Brain } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
