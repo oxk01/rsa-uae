@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Brain, Package, ChartBar, User, Target, Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -8,6 +8,7 @@ import { TechnologyTabs } from '@/components/TechnologyTabs';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Card, CardContent } from "@/components/ui/card";
+import { Separator } from '@/components/ui/separator';
 
 const AboutPage = () => {
   const { isAuthenticated } = useAuth();
@@ -27,40 +28,108 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Mission section - Updated with more attractive styling */}
+      {/* Mission and Vision section - Updated with circular design */}
       <section className="py-16 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-6">
-          <div className="grid md:grid-cols-2 gap-12">
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border-l-4 border-blue-600">
-              <h2 className="text-3xl font-bold mb-6">Our Mission</h2>
-              <div className="space-y-4">
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                  At RSA, our mission is to help businesses understand their customers better through 
-                  advanced sentiment analysis. We believe that every customer review contains valuable 
-                  insights that can drive business growth and improvement.
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                  By leveraging cutting-edge AI technologies like BERT and Aspect-Based Sentiment Analysis, 
-                  we provide businesses with a deeper understanding of customer sentiment, allowing them to 
-                  make data-driven decisions that enhance customer satisfaction and loyalty.
-                </p>
+          <h2 className="text-3xl font-bold text-center mb-12">Our Company</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+            {/* Mission Circle */}
+            <div className="flex justify-center">
+              <div className="bg-blue-600 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
+                  <Target className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-5">MISSION</h3>
+                <ul className="space-y-2 text-center">
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Understand customer sentiment at scale</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Extract actionable insights from feedback</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Enable data-driven business decisions</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Drive continuous product improvement</span>
+                  </li>
+                </ul>
               </div>
             </div>
             
-            <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border-l-4 border-teal-600">
-              <h2 className="text-3xl font-bold mb-6">Our Vision</h2>
-              <div className="space-y-4">
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                  We envision a world where businesses can instantly understand the voice of their customers, 
-                  identifying trends and patterns that would otherwise remain hidden in vast amounts of 
-                  textual feedback.
-                </p>
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                  Our goal is to democratize access to advanced sentiment analysis tools, making them 
-                  accessible to businesses of all sizes. We believe that by bridging the gap between 
-                  customer feedback and business strategy, we can help create better products, services, 
-                  and customer experiences.
-                </p>
+            {/* Vision Circle */}
+            <div className="flex justify-center">
+              <div className="bg-teal-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
+                  <Flag className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-5">VISION</h3>
+                <ul className="space-y-2 text-center">
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Where customer feedback drives growth</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• AI-powered solutions to understand sentiment</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Accessible sentiment analysis for all</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Universal business intelligence</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          
+          {/* Bottom Circles - Values and Goals */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl mx-auto mt-8">
+            {/* Goals Circle */}
+            <div className="flex justify-center">
+              <div className="bg-emerald-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
+                  <CheckCircle className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-5">GOALS</h3>
+                <ul className="space-y-2 text-center">
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Tangible ways to understand customer needs</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Empower businesses with AI tools</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Lead the sentiment analysis industry</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Drive innovation in NLP technology</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            
+            {/* Values Circle */}
+            <div className="flex justify-center">
+              <div className="bg-amber-500 rounded-full p-8 w-80 h-80 shadow-lg flex flex-col items-center justify-center text-white transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                <div className="flex items-center justify-center bg-white/20 rounded-full p-3 mb-4">
+                  <FileText className="h-8 w-8 text-white" />
+                </div>
+                <h3 className="text-2xl font-bold mb-5">VALUES</h3>
+                <ul className="space-y-2 text-center">
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Data-driven insights for better decisions</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Customer-focused solutions</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Continuous innovation and improvement</span>
+                  </li>
+                  <li className="flex items-center justify-center space-x-2">
+                    <span className="text-sm">• Ethical AI development practices</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
