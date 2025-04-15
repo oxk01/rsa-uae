@@ -76,6 +76,9 @@ export default {
 				footer: {
 					bg: '#091429',
 					hover: '#162a4c'
+				},
+				gray: {
+					850: '#161b22', // New dark shade for better contrast in dark mode
 				}
 			},
 			borderRadius: {
@@ -127,6 +130,10 @@ export default {
 					'50%': { 
 						transform: 'translateY(-10px)'
 					}
+				},
+				'theme-fade': {
+					'0%': { opacity: '0.5' },
+					'100%': { opacity: '1' }
 				}
 			},
 			animation: {
@@ -134,7 +141,8 @@ export default {
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.5s ease-out',
 				'slide-up': 'slide-up 0.5s ease-out',
-				'float': 'float 3s ease-in-out infinite'
+				'float': 'float 3s ease-in-out infinite',
+				'theme-fade': 'theme-fade 0.3s ease-in-out'
 			},
 			fontFamily: {
 				sans: ['Montserrat', 'Inter', 'system-ui', 'sans-serif'],

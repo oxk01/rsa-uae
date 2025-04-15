@@ -23,6 +23,16 @@ export const useTheme = () => {
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(theme);
+    
+    // Add a transition class for smooth theme changes
+    root.classList.add('theme-transition');
+    
+    // Remove the transition class after the transition completes
+    const timeout = setTimeout(() => {
+      root.classList.remove('theme-transition');
+    }, 300);
+    
+    return () => clearTimeout(timeout);
   }, [theme]);
 
   const toggleTheme = () => {

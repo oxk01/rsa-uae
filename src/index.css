@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap');
 
 @tailwind base;
@@ -95,6 +96,11 @@
     @apply bg-background text-foreground;
     font-family: 'Times New Roman', serif;
   }
+  
+  /* Add smooth transitions when switching between themes */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
 }
 
 /* Improved dark mode styles for better visibility */
@@ -113,7 +119,9 @@
   @apply bg-gray-800;
 }
 
-.dark .bg-gray-50 {
+.dark .bg-gray-50,
+.dark .bg-slate-50,
+.dark .bg-gray-100 {
   @apply bg-gray-900;
 }
 
@@ -187,11 +195,6 @@
   @apply bg-gray-800 border-gray-700 text-gray-200;
 }
 
-/* Fix background colors for cards and sections */
-.dark .bg-gray-100 {
-  @apply bg-gray-800;
-}
-
 /* Better code blocks and pre elements */
 .dark pre, 
 .dark code {
@@ -253,4 +256,33 @@
 /* Login/Signup form improvements */
 .dark .auth-form-container {
   @apply bg-gray-800 shadow-xl border border-gray-700;
+}
+
+/* Chat interface dark mode enhancements */
+.dark .bg-slate-50 {
+  @apply bg-gray-850; /* Using a slightly darker shade for chat area */
+}
+
+/* Improved dark mode for scrollbars */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(75, 85, 99, 0.1);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Enhance focus states in dark mode */
+.dark *:focus-visible {
+  outline-color: rgb(59, 130, 246); /* blue-500 */
 }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Bot, Brain } from 'lucide-react';
@@ -40,7 +41,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, type, timestamp }) =
       
       <div className={`max-w-[80%] rounded-2xl p-4 ${
         type === 'user' 
-          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-none shadow-md' 
+          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-tr-none shadow-md dark:from-blue-600 dark:to-blue-700' 
           : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-tl-none shadow-lg border border-gray-100 dark:border-gray-700'
       }`}>
         <p className="text-sm whitespace-pre-wrap">{content}</p>
