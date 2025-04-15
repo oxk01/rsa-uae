@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Robot } from 'lucide-react';
+import { Bot } from 'lucide-react';
 
 export type MessageType = 'user' | 'assistant' | 'system';
 
@@ -33,7 +32,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, type, timestamp }) =
               className="object-cover rounded-full" 
             />
             <AvatarFallback className="bg-blue-600 text-white">
-              <Robot className="h-5 w-5" />
+              <Bot className="h-5 w-5" />
             </AvatarFallback>
           </Avatar>
         </div>
