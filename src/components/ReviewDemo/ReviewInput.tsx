@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { UploadCloud, FileUp } from 'lucide-react';
+import { UploadCloud } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 
@@ -38,15 +37,6 @@ const ReviewInput = ({
       
       onFileChange(selectedFile);
     }
-  };
-  
-  const handleReplaceFile = () => {
-    // Clear the current file
-    onFileChange(null);
-    // Trigger file input click after a short delay to allow state update
-    setTimeout(() => {
-      document.getElementById('file-upload')?.click();
-    }, 100);
   };
   
   return (
@@ -125,15 +115,7 @@ const ReviewInput = ({
                       <UploadCloud className="h-6 w-6 text-blue-500 mr-2" />
                       <span className="font-medium">{file.name}</span>
                     </div>
-                    <div className="flex gap-2 justify-center">
-                      <Button
-                        variant="outline"
-                        className="bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 flex items-center gap-2"
-                        onClick={handleReplaceFile}
-                      >
-                        <FileUp className="h-4 w-4" />
-                        Replace File
-                      </Button>
+                    <div className="flex justify-center">
                       <Button 
                         onClick={onAnalyze}
                         className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
