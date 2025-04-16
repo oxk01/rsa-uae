@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
@@ -27,10 +26,8 @@ const Navigation = () => {
   const location = useLocation();
   const { isDark, toggleTheme } = useTheme();
   const [solutionsDropdownOpen, setSolutionsDropdownOpen] = useState(false);
-  // Change the ref type to match the element we're attaching it to
   const dropdownRef = useRef<HTMLLIElement>(null);
   
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -44,7 +41,6 @@ const Navigation = () => {
     };
   }, []);
   
-  // Close dropdown when navigating
   useEffect(() => {
     setSolutionsDropdownOpen(false);
   }, [location.pathname]);
@@ -64,14 +60,13 @@ const Navigation = () => {
           
           <NavigationMenu>
             <NavigationMenuList className="hidden md:flex space-x-1 justify-center mx-auto">
-              {/* Home and About are always visible */}
               <NavigationMenuItem>
                 <Link 
                   to="/" 
                   className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
                     location.pathname === '/' 
                       ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
-                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                      : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                   }`}
                 >
                   {t('home')}
@@ -84,14 +79,13 @@ const Navigation = () => {
                   className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
                     location.pathname === '/about' 
                       ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
-                      : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                      : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                   }`}
                 >
                   {t('about')}
                 </Link>
               </NavigationMenuItem>
               
-              {/* Only show these menu items when authenticated */}
               {isAuthenticated && (
                 <>
                   <NavigationMenuItem>
@@ -100,20 +94,19 @@ const Navigation = () => {
                       className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
                         location.pathname === '/pricing' 
                           ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
-                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                          : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                       }`}
                     >
                       {t('pricing')}
                     </Link>
                   </NavigationMenuItem>
                   
-                  {/* Solutions dropdown */}
                   <NavigationMenuItem ref={dropdownRef} className="relative">
                     <button 
                       className={`px-4 py-2 text-base font-medium rounded-md transition-colors flex items-center ${
                         location.pathname === '/dashboard' || location.pathname === '/demo'
                           ? 'text-blue-700 dark:text-blue-300' 
-                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                          : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                       }`}
                       onClick={() => setSolutionsDropdownOpen(!solutionsDropdownOpen)}
                     >
@@ -125,16 +118,16 @@ const Navigation = () => {
                       <div className="absolute left-0 w-[240px] mt-1 py-2 bg-white rounded-lg shadow-lg border border-gray-100 dark:bg-gray-800 dark:border-gray-700 z-30">
                         <Link 
                           to="/dashboard"
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-100"
                         >
-                          <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <LayoutDashboard className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                           <span className="font-medium">{t('dashboard')}</span>
                         </Link>
                         <Link 
                           to="/demo" 
-                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-300"
+                          className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-700 dark:text-gray-100"
                         >
-                          <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-400" />
+                          <PlayCircle className="h-5 w-5 text-gray-600 dark:text-gray-300" />
                           <span className="font-medium">{t('demo')}</span>
                         </Link>
                       </div>
@@ -147,7 +140,7 @@ const Navigation = () => {
                       className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
                         location.pathname === '/blog' 
                           ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
-                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                          : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                       }`}
                     >
                       {t('blog')}
@@ -160,7 +153,7 @@ const Navigation = () => {
                       className={`px-4 py-2 text-base font-medium rounded-md transition-colors relative ${
                         location.pathname === '/contact' 
                           ? 'text-blue-700 dark:text-blue-300 after:content-[""] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-blue-600 dark:after:bg-blue-400' 
-                          : 'text-gray-700 dark:text-gray-300 hover:text-blue-700 dark:hover:text-blue-300'
+                          : 'text-gray-700 dark:text-gray-100 hover:text-blue-700 dark:hover:text-blue-300'
                       }`}
                     >
                       {t('contact')}
@@ -174,7 +167,7 @@ const Navigation = () => {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="flex h-6 items-center space-x-1">
-                <Sun className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                <Sun className="h-4 w-4 text-gray-500 dark:text-gray-300" />
                 <button
                   onClick={toggleTheme}
                   className={`
@@ -192,23 +185,23 @@ const Navigation = () => {
                     `}
                   />
                 </button>
-                <Moon className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                <Moon className="h-4 w-4 text-gray-500 dark:text-gray-300" />
               </div>
             </div>
             
             {isAuthenticated ? (
               <div className="flex items-center gap-4">
-                <div className="text-sm font-medium hidden md:block text-gray-700 dark:text-gray-300">
+                <div className="text-sm font-medium hidden md:block text-gray-700 dark:text-gray-100">
                   {user?.name || user?.email}
                 </div>
-                <Button variant="outline" size="sm" onClick={logout}>
+                <Button variant="outline" size="sm" onClick={logout} className="dark:border-gray-600 dark:text-white">
                   <LogOut className="h-4 w-4 mr-2" />
                   {t('logout')}
                 </Button>
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button asChild variant="outline" size="sm">
+                <Button asChild variant="outline" size="sm" className="dark:border-gray-600 dark:text-white">
                   <Link to="/login">{t('login')}</Link>
                 </Button>
                 <Button asChild variant="default" size="sm" className="bg-blue-600 hover:bg-blue-700">

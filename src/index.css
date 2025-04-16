@@ -64,7 +64,7 @@
     --secondary-foreground: 210 40% 98%;
     
     --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted-foreground: 215 20.2% 75.1%; /* Increased brightness for better visibility */
     
     --accent: 217.2 32.6% 17.5%;
     --accent-foreground: 210 40% 98%;
@@ -78,7 +78,7 @@
     
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary: 224.3 76.3% 60%; /* Brighter primary color for sidebar */
     --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 240 3.7% 15.9%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
@@ -103,16 +103,24 @@
   }
 }
 
-/* Improved dark mode styles for better visibility */
+/* Enhanced dark mode styles for better visibility */
 .dark .text-gray-600,
 .dark .text-gray-700,
 .dark .text-gray-800 {
-  @apply text-gray-200;
+  @apply text-gray-100;  /* Significantly brighter text */
 }
 
 /* Fix for the circular dependency - use direct color instead of apply */
 .dark .text-gray-500 {
-  color: rgb(209, 213, 219); /* This is the equivalent of text-gray-300 */
+  color: rgb(229, 231, 235); /* This is the equivalent of text-gray-200 - much brighter */
+}
+
+.dark .text-gray-300 {
+  color: rgb(255, 255, 255); /* Pure white for better visibility */
+}
+
+.dark .text-gray-400 {
+  color: rgb(243, 244, 246); /* Very bright gray for better visibility */
 }
 
 .dark .bg-white {
@@ -133,28 +141,28 @@
 
 /* High contrast buttons in dark mode */
 .dark .bg-blue-600 {
-  background-color: rgb(59, 130, 246);
+  background-color: rgb(96, 165, 250); /* Much brighter blue */
 }
 
 .dark .bg-blue-700 {
-  background-color: rgb(29, 78, 216);
+  background-color: rgb(59, 130, 246); /* Brighter blue */
 }
 
 .dark .bg-blue-800,
 .dark .bg-blue-900 {
-  background-color: rgb(30, 64, 175);
+  background-color: rgb(59, 130, 246); /* Use bright blue to ensure visibility */
 }
 
 .dark .hover\:bg-blue-700:hover {
-  background-color: rgb(29, 78, 216);
+  background-color: rgb(96, 165, 250);
 }
 
 .dark .hover\:bg-blue-800:hover {
-  background-color: rgb(30, 64, 175);
+  background-color: rgb(59, 130, 246);
 }
 
 .dark .text-blue-600 {
-  @apply text-blue-400;
+  @apply text-blue-300; /* Much brighter blue text */
 }
 
 /* Fix for link visibility in dark mode */
@@ -162,12 +170,15 @@
   @apply text-white;
 }
 
+/* Enhanced link visibility in dark mode */
 .dark a:not(.no-dark-styling) {
-  @apply text-blue-400 hover:text-blue-300;
+  @apply text-blue-300 hover:text-blue-200; /* Brighter links */
 }
 
-.dark .text-blue-900 {
-  @apply text-blue-400;
+.dark .text-blue-900,
+.dark .text-blue-800,
+.dark .text-blue-700 {
+  @apply text-blue-300; /* Consistently bright blue text */
 }
 
 /* Better shadows for dark mode */
@@ -185,20 +196,20 @@
 
 /* More readable paragraphs in dark mode */
 .dark p {
-  @apply text-gray-300;
+  @apply text-gray-100; /* Significantly brighter text for paragraphs */
 }
 
 /* Ensure form elements are readable */
 .dark input, 
 .dark textarea, 
 .dark select {
-  @apply bg-gray-800 border-gray-700 text-gray-200;
+  @apply bg-gray-800 border-gray-700 text-gray-50;
 }
 
 /* Better code blocks and pre elements */
 .dark pre, 
 .dark code {
-  @apply bg-gray-900 text-gray-300;
+  @apply bg-gray-900 text-gray-200;
 }
 
 /* General utility for enforcing dark text in light mode / light text in dark mode */
@@ -208,12 +219,12 @@
 
 /* Fix for all buttons to ensure they're visible */
 .dark button[class*="bg-blue"] {
-  background-color: rgb(37, 99, 235);
+  background-color: rgb(59, 130, 246); /* bright blue */
   color: white;
 }
 
 .dark button[class*="bg-blue"]:hover {
-  background-color: rgb(29, 78, 216);
+  background-color: rgb(96, 165, 250); /* brighter blue on hover */
 }
 
 .dark button[class*="bg-gray"] {
@@ -226,12 +237,12 @@
 
 /* Improved form fields visibility in dark mode */
 .dark label {
-  @apply text-gray-200;
+  @apply text-gray-100; /* Brighten labels significantly */
 }
 
 /* Fix circular dependency in placeholder styling */
 .dark .placeholder-slate-400::placeholder {
-  color: rgb(156, 163, 175); /* Equivalent of text-gray-400 */
+  color: rgb(209, 213, 219); /* Equivalent of text-gray-300 - brighter */
 }
 
 /* Enhanced chat button visibility */
@@ -250,7 +261,7 @@
 }
 
 .dark .bg-blue-50 {
-  @apply bg-blue-900/30 border-blue-800;
+  @apply bg-blue-900/40 border-blue-700;
 }
 
 /* Login/Signup form improvements */
@@ -263,7 +274,24 @@
   @apply bg-gray-850; /* Using a slightly darker shade for chat area */
 }
 
-/* Improved dark mode for scrollbars */
+/* Enhanced text input fields for dark mode */
+.dark input {
+  @apply text-white placeholder-gray-300;
+}
+
+/* Enhanced form elements for dark mode */
+.dark .form-group label,
+.dark form label {
+  @apply text-gray-100;
+}
+
+/* Navigation specific enhancements */
+.dark nav a,
+.dark header a {
+  @apply text-gray-100 hover:text-white;
+}
+
+/* Enhanced dark mode for scrollbars */
 .dark ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -284,5 +312,16 @@
 
 /* Enhance focus states in dark mode */
 .dark *:focus-visible {
-  outline-color: rgb(59, 130, 246); /* blue-500 */
+  outline-color: rgb(96, 165, 250); /* blue-400 */
+}
+
+/* Specific improvements for headings in dark mode */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  @apply text-white;
+}
+
+/* Ensure checkbox and radio labels are visible */
+.dark .checkbox-label,
+.dark .radio-label {
+  @apply text-gray-100;
 }
