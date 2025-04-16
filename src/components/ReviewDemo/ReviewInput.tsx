@@ -40,6 +40,15 @@ const ReviewInput = ({
     }
   };
   
+  const handleReplaceFile = () => {
+    // Clear the current file
+    onFileChange(null);
+    // Trigger file input click after a short delay to allow state update
+    setTimeout(() => {
+      document.getElementById('file-upload')?.click();
+    }, 100);
+  };
+  
   return (
     <div>
       {/* Use shadcn Tabs component for better centered tabs */}
@@ -119,8 +128,8 @@ const ReviewInput = ({
                     <div className="flex gap-2 justify-center">
                       <Button
                         variant="outline"
-                        className="dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 flex items-center gap-2"
-                        onClick={() => onFileChange(null)}
+                        className="bg-white text-gray-700 border-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-700 flex items-center gap-2"
+                        onClick={handleReplaceFile}
                       >
                         <FileUp className="h-4 w-4" />
                         Replace File
