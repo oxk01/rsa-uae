@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -225,6 +224,20 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      {/* Add CTA section with consistent styling */}
+      <section className="py-16 bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900/50 dark:to-teal-900/50 text-gray-800 dark:text-white mt-20">
+        <div className="container mx-auto px-6 text-center">
+          <h2 className="text-3xl font-bold mb-6 text-blue-800 dark:text-blue-200">Ready to gain insights from your reviews?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
+            Start analyzing your customer feedback today and discover actionable insights.
+          </p>
+          
+          <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
+            <a href="/demo">Try Demo Analysis</a>
+          </Button>
+        </div>
+      </section>
     </div>
   );
 };

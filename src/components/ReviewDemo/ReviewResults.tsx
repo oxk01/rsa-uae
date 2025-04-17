@@ -160,11 +160,11 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
       </div>
       
       <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-        <Button onClick={handleSave} className="bg-green-600 hover:bg-green-700 gap-2">
+        <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600 gap-2">
           <Save className="h-4 w-4" />
           Save to Dashboard
         </Button>
-        <Button variant="outline" onClick={onStartOver} className="gap-2">
+        <Button variant="outline" onClick={onStartOver} className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 gap-2">
           <RefreshCcw className="h-4 w-4" />
           Start New Analysis
         </Button>

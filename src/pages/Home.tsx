@@ -197,20 +197,20 @@ const Home = () => {
         </div>
       </section>
       
-      {/* CTA section */}
-      <section className="py-16 bg-blue-600 text-white">
+      {/* CTA section with Improved Colors */}
+      <section className="py-16 bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900/50 dark:to-teal-900/50 text-gray-800 dark:text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to gain insights from your reviews?</h2>
-          <p className="text-xl mb-8">
+          <h2 className="text-3xl font-bold mb-6 text-blue-800 dark:text-blue-200">Ready to gain insights from your reviews?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
             Join RSA today and transform your customer feedback into actionable business intelligence.
           </p>
           
           {!isAuthenticated ? (
-            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
+            <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
               <Link to="/signup">Create an Account</Link>
             </Button>
           ) : (
-            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
+            <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
               <Link to="/demo">Try Demo Analysis</Link>
             </Button>
           )}
