@@ -422,25 +422,25 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* CTA section with green buttons */}
-      <section className="py-16 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+      {/* CTA section with Improved Colors */}
+      <section className="py-16 bg-gradient-to-r from-blue-100 to-teal-100 dark:from-blue-900/50 dark:to-teal-900/50 text-gray-800 dark:text-white">
         <div className="container mx-auto px-6 text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to see RSA in action?</h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Experience the power of advanced sentiment analysis and discover insights hidden in your customer feedback.
+          <h2 className="text-3xl font-bold mb-6 text-blue-800 dark:text-blue-200">Ready to gain insights from your reviews?</h2>
+          <p className="text-xl mb-8 max-w-2xl mx-auto text-gray-700 dark:text-gray-300">
+            Join RSA today and transform your customer feedback into actionable business intelligence.
           </p>
           
           {!isAuthenticated ? (
             <div className="flex justify-center space-x-4">
-              <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
-                <Link to="/signup">Sign Up Now</Link>
+              <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
+                <Link to="/signup">Create an Account</Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="border-white text-white hover:bg-blue-700 bg-transparent">
+              <Button asChild variant="outline" size="lg" className="border-blue-500 text-blue-700 hover:bg-blue-50 dark:border-blue-300 dark:text-blue-300 dark:hover:bg-blue-900/30">
                 <Link to="/login">Log In <ArrowRight className="ml-1 h-4 w-4" /></Link>
               </Button>
             </div>
           ) : (
-            <Button asChild size="lg" className="bg-teal-500 hover:bg-teal-600 text-white">
+            <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white">
               <Link to="/demo">Try Demo Analysis</Link>
             </Button>
           )}
