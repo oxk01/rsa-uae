@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bot, Brain } from 'lucide-react';
+import { Brain } from 'lucide-react';
 
 export type MessageType = 'user' | 'assistant' | 'system';
 
@@ -28,7 +28,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ content, type, timestamp }) =
         <div className="mr-3">
           <Avatar className="h-10 w-10 border-2 border-purple-100 dark:border-purple-900">
             <AvatarImage 
-              src="/lovable-uploads/61704fd3-df75-4b2e-a8c4-4936bfd29110.png" 
+              src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e" 
               alt="AI Assistant" 
               className="object-cover rounded-full" 
             />
