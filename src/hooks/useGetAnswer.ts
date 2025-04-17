@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from "@/components/ui/use-toast";
@@ -152,6 +151,16 @@ const createKnowledgeBase = (isArabic: boolean) => ({
       content: isArabic 
         ? 'يمكنني مساعدتك في فهم خدماتنا وتقنياتنا وكيفية استخدام النظام. يمكنني أيضاً توجيهك إلى الموارد ذات الصلة وتقديم دعم أساسي.'
         : 'I can help you understand our services, technologies, and how to use the system. I can also direct you to relevant resources and provide basic support.'
+    },
+    imageAnalysis: {
+      content: isArabic
+        ? 'يبدو أنك أرسلت صورة. يمكنني تحليل الصور المتعلقة بتحليل المشاعر أو مراجعات المنتجات. ماذا تريد أن تعرف عن هذه الصورة؟'
+        : 'It looks like you\'ve sent an image. I can analyze images related to sentiment analysis or product reviews. What would you like to know about this image?'
+    },
+    imageProcessing: {
+      content: isArabic
+        ? 'يمكنني معالجة الصور التي تحتوي على مراجعات نصية أو بيانات المشاعر. هل تريد مني تحليل النص في هذه الصورة أو تقديم رؤى حول بيانات المشاعر المعروضة؟'
+        : 'I can process images containing textual reviews or sentiment data. Would you like me to analyze the text in this image or provide insights about the sentiment data displayed?'
     }
   },
   services: {
@@ -213,6 +222,29 @@ const createKnowledgeBase = (isArabic: boolean) => ({
       ? 'يتيح لك العرض التوضيحي الخاص بنا تجربة تحليل المشاعر في الوقت الفعلي. ما عليك سوى إدخال بعض النصوص وسترى على الفور تحليلًا لمشاعرها.'
       : 'Our demo allows you to experience real-time sentiment analysis. Simply input some text and you\'ll instantly see an analysis of its sentiment.',
     keywords: ['demo', 'try', 'test', 'example', 'sentiment analysis', 'real-time']
+  },
+  images: {
+    analysis: {
+      title: isArabic ? 'تحليل الصور' : 'Image Analysis',
+      content: isArabic
+        ? 'يمكن لنظامنا تحليل الصور التي تحتوي على مراجعات أو بيانات المشاعر. نستخدم تقنيات OCR (التعرف الضوئي على الحروف) لاستخراج النص من الصور ثم تحليل المشاعر باستخدام خوارزمياتنا المتقدمة.'
+        : 'Our system can analyze images containing reviews or sentiment data. We use OCR (Optical Character Recognition) techniques to extract text from images and then analyze sentiment using our advanced algorithms.',
+      keywords: ['image', 'analysis', 'ocr', 'text extraction', 'visual', 'picture', 'photo']
+    },
+    visualization: {
+      title: isArabic ? 'تصور البيانات' : 'Data Visualization',
+      content: isArabic
+        ? 'نقدم أدوات متقدمة لتصور البيانات تساعدك على فهم نتائج تحليل المشاعر بشكل أفضل من خلال الرسوم البيانية وأشكال التصور الأخرى.'
+        : 'We provide advanced data visualization tools that help you better understand sentiment analysis results through charts and other visualization forms.',
+      keywords: ['visualization', 'charts', 'graphs', 'dashboard', 'visual', 'display', 'diagram']
+    },
+    screenshot: {
+      title: isArabic ? 'تحليل لقطات الشاشة' : 'Screenshot Analysis',
+      content: isArabic
+        ? 'يمكننا تحليل لقطات الشاشة من منصات التواصل الاجتماعي أو مواقع التجارة الإلكترونية لاستخراج المراجعات وتحليل المشاعر.'
+        : 'We can analyze screenshots from social media platforms or e-commerce sites to extract reviews and analyze sentiment.',
+      keywords: ['screenshot', 'screen capture', 'social media', 'e-commerce', 'extract', 'analysis']
+    }
   }
 });
 
@@ -248,8 +280,19 @@ export const useGetAnswer = () => {
     return [...tokens, ...ngrams];
   };
   
+  // Check if query potentially relates to an image
+  const isImageRelatedQuery = (query: string): boolean => {
+    const imageKeywords = [
+      'image', 'picture', 'photo', 'screenshot', 'scan', 'visual', 'chart', 
+      'graph', 'diagram', 'visualization', 'صورة', 'رسم', 'تخطيط', 'بياني', 'مرئي'
+    ];
+    
+    const lowerQuery = query.toLowerCase();
+    return imageKeywords.some(keyword => lowerQuery.includes(keyword));
+  };
+  
   // Improved relevance calculation with context awareness
-  const calculateRelevance = (queryTerms: string[], topic: any): number => {
+  const calculateRelevance = (queryTerms: string[], topic: any, hasImage: boolean = false): number => {
     if (!topic || !topic.content) return 0;
     
     const content = topic.content.toLowerCase();
@@ -258,6 +301,11 @@ export const useGetAnswer = () => {
     let score = 0;
     let keywordMatches = 0;
     let exactMatches = 0;
+    
+    // If query is image-related, boost image-related topics
+    if (hasImage && topic.id && topic.id.includes('images')) {
+      score += 5; // Significant boost for image topics when an image is detected
+    }
     
     queryTerms.forEach(term => {
       // Check content match
@@ -320,11 +368,26 @@ export const useGetAnswer = () => {
   };
   
   // Get combined answer from multiple topics
-  const getCombinedAnswer = (matchedTopics: any[], query: string, isArabic: boolean) => {
+  const getCombinedAnswer = (matchedTopics: any[], query: string, isArabic: boolean, hasImage: boolean = false) => {
     if (matchedTopics.length === 0) {
       return isArabic 
         ? 'عذراً، لم أتمكن من العثور على معلومات حول استفسارك. هل يمكنك إعادة صياغة سؤالك بطريقة مختلفة؟'
         : 'Sorry, I couldn\'t find information about your query. Could you rephrase your question?';
+    }
+
+    // If this is an image-related query and we have a file attached
+    if (hasImage) {
+      // Find image-specific topics
+      const imageTopics = matchedTopics.filter(topic => topic.id && topic.id.includes('images'));
+      
+      if (imageTopics.length > 0) {
+        return imageTopics[0].content;
+      }
+      
+      // If no specific image topics matched but we have an image, use generic image response
+      return isArabic
+        ? 'أرى أنك أرسلت صورة. يمكنني مساعدتك في تحليل المشاعر من المراجعات في هذه الصورة أو تفسير البيانات المرئية المتعلقة بتحليل المشاعر. ما الذي تحتاج إلى معرفته تحديداً حول هذه الصورة؟'
+        : 'I see you\'ve sent an image. I can help you analyze sentiment from reviews in this image or interpret visual data related to sentiment analysis. What specifically do you need to know about this image?';
     }
 
     // If we have just one topic with high relevance, return it directly
@@ -363,7 +426,7 @@ export const useGetAnswer = () => {
     return matchedTopics[0].content;
   };
 
-  const getAnswer = async (question: string): Promise<string> => {
+  const getAnswer = async (question: string, hasFile: boolean = false): Promise<string> => {
     setIsProcessing(true);
     
     try {
@@ -375,9 +438,12 @@ export const useGetAnswer = () => {
 
       // Handle greeting patterns directly
       const greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
-      if (greetings.some(g => lowerQuestion.includes(g))) {
+      if (greetings.some(g => lowerQuestion.includes(g)) && !hasFile) {
         return knowledgeBase.general.welcome.content;
       }
+      
+      // Detect if this is likely an image-related query
+      const isImageQuery = hasFile || isImageRelatedQuery(question);
       
       // Process the query to extract meaningful terms
       const queryTerms = processQuery(question);
@@ -385,10 +451,10 @@ export const useGetAnswer = () => {
       // Get all topics from the knowledge base
       const allTopics = getAllTopics(knowledgeBase);
       
-      // Calculate relevance for each topic
+      // Calculate relevance for each topic, boosting image topics if needed
       const scoredTopics = allTopics.map(topic => ({
         ...topic,
-        score: calculateRelevance(queryTerms, topic)
+        score: calculateRelevance(queryTerms, topic, isImageQuery)
       }));
       
       // Sort by relevance score (highest first)
@@ -398,7 +464,7 @@ export const useGetAnswer = () => {
       const relevantTopics = scoredTopics.filter(topic => topic.score > 0);
       
       // Generate appropriate answer based on matched topics and query context
-      return getCombinedAnswer(relevantTopics, question, isArabic);
+      return getCombinedAnswer(relevantTopics, question, isArabic, isImageQuery);
     } catch (error) {
       console.error('Error processing question:', error);
       

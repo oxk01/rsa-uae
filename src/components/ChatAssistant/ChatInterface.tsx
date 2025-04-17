@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -90,10 +91,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     
     try {
       const query = file 
-        ? `I'm sending you a file named ${file.name}. Can you help me with this?` 
+        ? `I'm sending you a file named ${file.name}. ${input.trim() ? input : "Can you analyze this image?"}`
         : input;
         
-      const answer = await getAnswer(query);
+      // Pass information about file presence to the getAnswer function
+      const answer = await getAnswer(query, !!file);
       
       const botMessage: ChatMessageProps = {
         content: answer,
@@ -137,10 +139,29 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         return;
       }
       
+      // Check if the file is an image or a supported document type
+      const fileType = selectedFile.type.toLowerCase();
+      const isImage = fileType.startsWith('image/');
+      const isDocument = ['application/pdf', 'text/plain', 'application/msword', 
+                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                         'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                         'text/csv', 'application/json'].includes(fileType);
+      
+      if (!isImage && !isDocument) {
+        toast({
+          title: "Unsupported file type",
+          description: "Please upload an image or a supported document file",
+          variant: "destructive"
+        });
+        return;
+      }
+      
       setFile(selectedFile);
       
+      const fileTypeDescription = isImage ? 'Image' : 'File';
+      
       const fileMessage: ChatMessageProps = {
-        content: `File attached: ${selectedFile.name}`,
+        content: `${fileTypeDescription} attached: ${selectedFile.name}`,
         type: 'system',
         timestamp: new Date()
       };
@@ -150,7 +171,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       inputRef.current?.focus();
       
       toast({
-        title: "File attached",
+        title: `${fileTypeDescription} attached`,
         description: `${selectedFile.name} has been attached`,
       });
     }
@@ -268,7 +289,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
           ref={fileInputRef}
           onChange={handleFileUpload}
           className="hidden"
-          accept=".txt,.pdf,.doc,.docx,.xlsx,.csv,.json"
+          accept=".txt,.pdf,.doc,.docx,.xlsx,.csv,.json,.png,.jpg,.jpeg,.gif"
         />
         <Button
           type="button"
@@ -285,7 +306,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message..."
+            placeholder={file ? "Ask about this file..." : "Type your message..."}
             disabled={isProcessing || isTyping}
             className="pr-10 bg-gray-50 dark:bg-gray-700 rounded-full"
             onKeyDown={(e) => {
