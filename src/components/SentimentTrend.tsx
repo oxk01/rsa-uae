@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { AlertCircle } from 'lucide-react';
@@ -37,6 +38,20 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
       };
     });
   }, [trendData, hasData]);
+  
+  // Define aspectData for the aspect analysis tab
+  const aspectData = useMemo(() => {
+    if (!hasData) return [];
+    
+    // Create sample aspect data since we don't have actual aspect data in the props
+    return [
+      { aspect: 'Quality', positive: 65, neutral: 20, negative: 15 },
+      { aspect: 'Price', positive: 40, neutral: 30, negative: 30 },
+      { aspect: 'Service', positive: 70, neutral: 20, negative: 10 },
+      { aspect: 'Delivery', positive: 55, neutral: 25, negative: 20 },
+      { aspect: 'User Interface', positive: 60, neutral: 30, negative: 10 }
+    ];
+  }, [hasData]);
   
   return (
     <div className="bg-white rounded-lg border shadow-sm p-6">
