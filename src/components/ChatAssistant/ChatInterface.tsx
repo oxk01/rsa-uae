@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -62,27 +63,31 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     }
   }, [messages]);
 
+  // Modified to ensure typing effect doesn't overwrite existing messages
   const addMessageWithTypingEffect = (message: ChatMessageProps) => {
     if (message.type === 'assistant') {
       setIsTyping(true);
       
-      const currentMessages = [...messages];
-      currentMessages.push({
-        content: "...",
-        type: 'assistant',
-        timestamp: new Date()
-      });
-      
-      setMessages(currentMessages);
+      // Add a temporary typing indicator message
+      setMessages(prevMessages => [
+        ...prevMessages,
+        {
+          content: "...",
+          type: 'assistant',
+          timestamp: new Date()
+        }
+      ]);
       
       const typingDelay = Math.min(Math.max(message.content.length * 15, 500), 1500);
       
       setTimeout(() => {
-        const updatedMessages = [...currentMessages];
-        updatedMessages.pop();
-        updatedMessages.push(message);
+        // Replace only the typing indicator with the actual message
+        setMessages(prevMessages => {
+          const newMessages = [...prevMessages];
+          newMessages[newMessages.length - 1] = message;
+          return newMessages;
+        });
         
-        setMessages(updatedMessages);
         setIsTyping(false);
       }, typingDelay);
     } else {
@@ -101,6 +106,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       timestamp: new Date()
     };
     
+    // Always append the user message, never replace existing messages
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     
@@ -268,7 +274,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             timestamp={message.timestamp}
           />
         ))}
-        {isTyping && (
+        {isTyping && !messages.some(m => m.content === "...") && (
           <div className="flex justify-start mb-4">
             <div className="flex items-center space-x-1 bg-gray-100 dark:bg-gray-700 p-2 rounded-lg">
               <div className="w-2 h-2 bg-gray-400 rounded-full animate-pulse"></div>
