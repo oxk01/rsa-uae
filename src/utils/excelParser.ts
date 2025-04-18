@@ -5,7 +5,22 @@ export interface ParsedReview {
   reviewText: string;
   date?: string;
   rating?: string;
+  helpfulnessNumerator?: number;
+  helpfulnessDenominator?: number;
+  userId?: string;
+  verified?: boolean;
 }
+
+const columnMappings = {
+  productId: ['product', 'id', 'product_id', 'productid', 'item', 'asin', 'product id', 'item id', 'sku'],
+  reviewText: ['review', 'comment', 'feedback', 'description', 'text', 'content', 'review text', 'comments', 'review_text'],
+  date: ['date', 'time', 'timestamp', 'created', 'submitted', 'posted', 'review date', 'submission date', 'review_date'],
+  rating: ['rating', 'score', 'stars', 'rank', 'grade', 'review score', 'review_rating', 'star_rating'],
+  helpfulnessNumerator: ['helpful', 'upvotes', 'likes', 'helpfulness', 'helpful votes', 'helpfulnessnumerator'],
+  helpfulnessDenominator: ['total votes', 'total', 'votes', 'helpfulness denominator', 'helpfulnessdenominator'],
+  userId: ['user', 'customer', 'reviewer', 'user_id', 'customer_id', 'reviewer_id', 'user id'],
+  verified: ['verified', 'verified purchase', 'verified_purchase', 'verified buyer', 'is verified', 'authenticated']
+};
 
 export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
   return new Promise((resolve, reject) => {
@@ -17,34 +32,35 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
         
-        // Convert to JSON with header: true to use column names
         const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: "A" });
         
-        // Get header row and find column indexes by name
-        const headers = jsonData[0] as Record<string, string>;
-        const headerMap = new Map<string, string>();
+        if (jsonData.length === 0) {
+          reject(new Error("The file appears to be empty or has no valid data"));
+          return;
+        }
         
-        // Map possible header names to standardized keys
+        const headers = jsonData[0] as Record<string, string>;
+        
+        const fieldMap = new Map<string, string>();
+        
         Object.entries(headers).forEach(([col, value]) => {
-          const lowerValue = String(value).toLowerCase();
-          if (lowerValue.includes('product') || lowerValue.includes('id')) {
-            headerMap.set('productId', col);
-          } else if (lowerValue.includes('review') || lowerValue.includes('comment') || 
-                    lowerValue.includes('feedback') || lowerValue.includes('description')) {
-            headerMap.set('reviewText', col);
-          } else if (lowerValue.includes('date')) {
-            headerMap.set('date', col);
-          } else if (lowerValue.includes('rating') || lowerValue.includes('score') || 
-                    lowerValue.includes('stars')) {
-            headerMap.set('rating', col);
+          if (!value) return;
+          
+          const lowerValue = String(value).toLowerCase().trim();
+          
+          for (const [fieldName, possibleNames] of Object.entries(columnMappings)) {
+            if (possibleNames.some(name => lowerValue.includes(name))) {
+              fieldMap.set(fieldName, col);
+              break;
+            }
           }
         });
         
-        // Process data rows (skip header)
+        console.log("Detected columns:", Object.fromEntries(fieldMap.entries()));
+        
         const reviews: ParsedReview[] = [];
         const dataRows = jsonData.slice(1);
         
-        // Process in chunks to avoid blocking the UI thread
         const CHUNK_SIZE = 1000;
         let processedCount = 0;
         
@@ -53,33 +69,67 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
           
           for (let i = startIdx; i < endIdx; i++) {
             const row = dataRows[i] as Record<string, any>;
+            if (!row) continue;
             
-            // Extract data using header mapping
-            const productId = row[headerMap.get('productId') || 'A'] || 'Unknown';
-            const reviewText = row[headerMap.get('reviewText') || 'B'] || '';
-            const date = row[headerMap.get('date') || 'C'] || new Date().toISOString().split('T')[0];
-            const rating = row[headerMap.get('rating') || 'D'] || null;
+            const productId = row[fieldMap.get('productId') || ''] || 'Unknown';
+            const reviewText = row[fieldMap.get('reviewText') || ''] || '';
+            
+            if (!reviewText || reviewText.toString().trim() === '') {
+              continue;
+            }
+            
+            const date = row[fieldMap.get('date') || ''] || new Date().toISOString().split('T')[0];
+            const rating = row[fieldMap.get('rating') || ''] || null;
+            
+            let helpfulnessNumerator: number | undefined = undefined;
+            let helpfulnessDenominator: number | undefined = undefined;
+            
+            if (fieldMap.has('helpfulnessNumerator')) {
+              const helpfulValue = row[fieldMap.get('helpfulnessNumerator') || ''];
+              if (helpfulValue !== undefined) {
+                helpfulnessNumerator = Number(helpfulValue) || 0;
+              }
+            }
+            
+            if (fieldMap.has('helpfulnessDenominator')) {
+              const totalValue = row[fieldMap.get('helpfulnessDenominator') || ''];
+              if (totalValue !== undefined) {
+                helpfulnessDenominator = Number(totalValue) || 0;
+              }
+            }
+            
+            const userId = row[fieldMap.get('userId') || ''] || undefined;
+            
+            let verified: boolean | undefined = undefined;
+            if (fieldMap.has('verified')) {
+              const verifiedValue = row[fieldMap.get('verified') || ''];
+              if (verifiedValue !== undefined) {
+                const verifiedStr = String(verifiedValue).toLowerCase();
+                verified = verifiedStr === 'true' || verifiedStr === 'yes' || verifiedStr === '1' || verifiedStr === 'y';
+              }
+            }
             
             reviews.push({
               productId: String(productId),
               reviewText: String(reviewText),
               date: String(date),
-              rating: rating !== null ? String(rating) : undefined
+              rating: rating !== null ? String(rating) : undefined,
+              helpfulnessNumerator,
+              helpfulnessDenominator,
+              userId: userId ? String(userId) : undefined,
+              verified
             });
           }
           
           processedCount += (endIdx - startIdx);
           
           if (processedCount < dataRows.length) {
-            // Continue processing next chunk
             setTimeout(() => processChunk(endIdx), 0);
           } else {
-            // All chunks processed
             resolve(reviews);
           }
         };
         
-        // Start processing in chunks
         processChunk(0);
         
       } catch (error) {
@@ -92,7 +142,6 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
   });
 };
 
-// Enhanced sentiment analysis function
 export const analyzeSentiment = (text: string): {
   sentiment: 'positive' | 'negative' | 'neutral';
   score: number;
@@ -104,7 +153,6 @@ export const analyzeSentiment = (text: string): {
 
   const lowerText = text.toLowerCase();
   
-  // Define positive and negative word lists
   const positiveWords = [
     'good', 'great', 'excellent', 'awesome', 'amazing', 'love', 'best', 'perfect',
     'happy', 'satisfied', 'quality', 'recommend', 'positive', 'fantastic', 'nice',
@@ -129,14 +177,11 @@ export const analyzeSentiment = (text: string): {
   let positiveCount = 0;
   let negativeCount = 0;
   
-  // Count matches - optimize for large text
   const words = lowerText.split(/\s+/);
   const wordSet = new Set(words);
   
-  // Check for positive words
   positiveWords.forEach(word => {
     if (lowerText.includes(word)) {
-      // Count actual occurrences in text
       const regex = new RegExp(`\\b${word}\\b`, 'gi');
       const matches = lowerText.match(regex);
       if (matches) {
@@ -145,10 +190,8 @@ export const analyzeSentiment = (text: string): {
     }
   });
   
-  // Check for negative words
   negativeWords.forEach(word => {
     if (lowerText.includes(word)) {
-      // Count actual occurrences in text
       const regex = new RegExp(`\\b${word}\\b`, 'gi');
       const matches = lowerText.match(regex);
       if (matches) {
@@ -157,20 +200,16 @@ export const analyzeSentiment = (text: string): {
     }
   });
   
-  // Calculate scores
   const totalWords = words.length;
   const totalMatches = positiveCount + negativeCount;
   
-  // Calculate accuracy based on review quality and length
   let accuracy = calculateAccuracy(text);
   
-  // Context awareness - check for negations
   let negationAdjustment = 0;
   const negationWords = ['not', 'no', "don't", 'doesn\'t', 'didn\'t', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'never'];
   
   for (let i = 0; i < words.length - 1; i++) {
     if (negationWords.includes(words[i])) {
-      // Check next few words for sentiment words
       for (let j = i + 1; j < Math.min(i + 4, words.length); j++) {
         if (positiveWords.includes(words[j])) {
           positiveCount--;
@@ -187,12 +226,10 @@ export const analyzeSentiment = (text: string): {
     }
   }
   
-  // If we found negations, increase accuracy
   if (negationAdjustment > 0) {
     accuracy = Math.min(99, accuracy + 5);
   }
   
-  // Determine sentiment
   let sentiment: 'positive' | 'negative' | 'neutral';
   let score: number;
   
@@ -210,11 +247,9 @@ export const analyzeSentiment = (text: string): {
   return { sentiment, score, accuracy };
 };
 
-// Extract keywords from review text - optimized for performance
 export const extractKeywords = (text: string, sentiment: string): Array<{word: string, sentiment: string}> => {
   if (!text || typeof text !== 'string') return [];
   
-  // Common words to exclude
   const stopWords = new Set([
     'a', 'an', 'the', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be',
     'have', 'has', 'had', 'do', 'does', 'did', 'to', 'from', 'in', 'out',
@@ -239,11 +274,9 @@ export const extractKeywords = (text: string, sentiment: string): Array<{word: s
     'use', 'used', 'using'
   ]);
   
-  // Use a better regex to extract words
   const words = text.toLowerCase().match(/\b(\w+)\b/g) || [];
   const wordFrequency = new Map<string, number>();
   
-  // More efficient way to process words
   for (const word of words) {
     if (!stopWords.has(word) && word.length > 2) {
       const count = wordFrequency.get(word) || 0;
@@ -251,7 +284,6 @@ export const extractKeywords = (text: string, sentiment: string): Array<{word: s
     }
   }
   
-  // Sort by frequency
   const sorted = Array.from(wordFrequency.entries())
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5);
@@ -262,20 +294,91 @@ export const extractKeywords = (text: string, sentiment: string): Array<{word: s
   }));
 };
 
-// Calculate accuracy based on review quality and length
 const calculateAccuracy = (text: string): number => {
-  // Basic calculation based on review length and diversity of words
   const length = text.length;
   const words = text.split(/\s+/);
   const uniqueWords = new Set(words).size;
   
-  // Calculate base accuracy score
   let accuracyValue = Math.min(95, Math.max(70, 
     70 + 
     (length > 100 ? 10 : length > 50 ? 5 : 0) + 
     (uniqueWords > 20 ? 10 : uniqueWords > 10 ? 5 : 0) +
-    (text.includes('.') ? 5 : 0) // Proper sentences with periods
+    (text.includes('.') ? 5 : 0)
   ));
   
   return accuracyValue;
+};
+
+export const extractAspects = (text: string, sentiment: string): Array<{
+  name: string;
+  sentiment: 'positive' | 'negative' | 'neutral';
+  confidence: number;
+  context: string;
+}> => {
+  if (!text || typeof text !== 'string') return [];
+  
+  const lowerText = text.toLowerCase();
+  const aspects = [];
+  
+  const commonAspects = [
+    'quality', 'price', 'value', 'service', 'delivery', 'shipping', 
+    'design', 'durability', 'reliability', 'customer service', 'packaging', 
+    'usability', 'performance', 'size', 'color', 'features', 'functionality',
+    'support', 'installation', 'ease of use', 'comfort'
+  ];
+  
+  for (const aspect of commonAspects) {
+    if (lowerText.includes(aspect)) {
+      const aspectIndex = lowerText.indexOf(aspect);
+      const contextStart = Math.max(0, aspectIndex - 30);
+      const contextEnd = Math.min(text.length, aspectIndex + aspect.length + 30);
+      const context = text.substring(contextStart, contextEnd);
+      
+      let aspectPositive = 0;
+      let aspectNegative = 0;
+      
+      const contextWords = context.toLowerCase().split(/\s+/);
+      const positiveAspectWords = ['good', 'great', 'excellent', 'awesome', 'love', 'perfect', 'best', 'nice', 'happy', 'satisfied'];
+      const negativeAspectWords = ['bad', 'poor', 'terrible', 'horrible', 'awful', 'worst', 'hate', 'disappointing', 'broken', 'useless'];
+      
+      contextWords.forEach(word => {
+        if (positiveAspectWords.includes(word)) aspectPositive++;
+        if (negativeAspectWords.includes(word)) aspectNegative++;
+      });
+      
+      let aspectSentiment: 'positive' | 'negative' | 'neutral';
+      if (aspectPositive > aspectNegative) {
+        aspectSentiment = 'positive';
+      } else if (aspectNegative > aspectPositive) {
+        aspectSentiment = 'negative';
+      } else {
+        aspectSentiment = sentiment as 'positive' | 'negative' | 'neutral';
+      }
+      
+      const totalMatches = aspectPositive + aspectNegative;
+      const confidence = totalMatches > 0 
+        ? Math.min(95, 70 + (totalMatches * 5)) 
+        : 70;
+      
+      aspects.push({
+        name: aspect.charAt(0).toUpperCase() + aspect.slice(1),
+        sentiment: aspectSentiment,
+        confidence,
+        context
+      });
+      
+      if (aspects.length >= 5) break;
+    }
+  }
+  
+  if (aspects.length === 0) {
+    aspects.push({
+      name: 'Overall',
+      sentiment: sentiment as 'positive' | 'negative' | 'neutral',
+      confidence: 70,
+      context: text.substring(0, Math.min(60, text.length))
+    });
+  }
+  
+  return aspects;
 };

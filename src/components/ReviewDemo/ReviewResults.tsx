@@ -78,7 +78,10 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
         keywords: keyPhrases.map((phrase: string) => ({
           word: phrase,
           sentiment: sentiment
-        }))
+        })),
+        helpfulnessRatio: result?.helpfulness ? 
+          `${result.helpfulness.helpful}/${result.helpfulness.total}` : undefined,
+        verified: result?.verified
       }];
 
   return (

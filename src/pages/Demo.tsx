@@ -5,7 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import ReviewInput from '@/components/ReviewDemo/ReviewInput';
 import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
-import { parseExcelFile, analyzeSentiment, extractKeywords, ParsedReview } from '@/utils/excelParser';
+import { 
+  parseExcelFile, 
+  analyzeSentiment, 
+  extractKeywords, 
+  extractAspects, 
+  ParsedReview 
+} from '@/utils/excelParser';
 import { KeywordItem, Review } from '@/components/RecentReviews/types';
 
 const analyzeSentimentForText = async (text: string) => {
@@ -13,46 +19,8 @@ const analyzeSentimentForText = async (text: string) => {
   
   const { sentiment, score, accuracy } = analyzeSentiment(text);
   
-  const aspects = [];
-  
-  if (text.toLowerCase().includes('quality')) {
-    aspects.push({ 
-      name: 'Quality', 
-      sentiment: sentiment,
-      confidence: accuracy,
-      context: text.substring(Math.max(0, text.toLowerCase().indexOf('quality') - 30), 
-                 Math.min(text.length, text.toLowerCase().indexOf('quality') + 30))
-    });
-  }
-  
-  if (text.toLowerCase().includes('price')) {
-    aspects.push({ 
-      name: 'Price', 
-      sentiment: sentiment,
-      confidence: accuracy,
-      context: text.substring(Math.max(0, text.toLowerCase().indexOf('price') - 30), 
-                 Math.min(text.length, text.toLowerCase().indexOf('price') + 30))
-    });
-  }
-  
-  if (text.toLowerCase().includes('service') || text.toLowerCase().includes('support')) {
-    aspects.push({ 
-      name: 'Service', 
-      sentiment: sentiment,
-      confidence: accuracy,
-      context: text.substring(Math.max(0, text.toLowerCase().indexOf('service') - 30), 
-                 Math.min(text.length, text.toLowerCase().indexOf('service') + 30))
-    });
-  }
-  
-  if (aspects.length === 0) {
-    aspects.push({ 
-      name: 'Overall', 
-      sentiment: sentiment,
-      confidence: accuracy,
-      context: text.substring(0, Math.min(60, text.length))
-    });
-  }
+  // Use the new extractAspects function
+  const aspects = extractAspects(text, sentiment);
   
   const keywords = extractKeywords(text, sentiment);
   const keyPhrasesText = keywords.map(keyword => keyword.word);
@@ -129,6 +97,15 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         
         const keywords = extractKeywords(review.reviewText, sentiment);
         
+        // Use the new extractAspects function
+        const aspects = extractAspects(review.reviewText, sentiment);
+        
+        // Calculate helpfulness ratio if available
+        let helpfulnessRatio;
+        if (review.helpfulnessNumerator !== undefined && review.helpfulnessDenominator !== undefined) {
+          helpfulnessRatio = `${review.helpfulnessNumerator}/${review.helpfulnessDenominator}`;
+        }
+        
         return {
           id: Date.now() + Math.random(),
           title: review.productId,
@@ -144,7 +121,11 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
           reviewText: review.reviewText,
           sentimentLabel: sentiment,
           accuracyScore: accuracy,
-          keywords: keywords
+          keywords: keywords,
+          aspects: aspects,
+          helpfulnessRatio,
+          verified: review.verified,
+          userId: review.userId
         };
       });
       
@@ -158,14 +139,49 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    const aspects = [
-      {
-        name: 'Overall',
-        sentiment: totalPositive > totalNegative ? 'positive' : 'negative',
-        confidence: 70,
-        context: `Analysis of ${reviews.length} reviews from file ${file.name}`
-      }
-    ];
+    // Collect all aspects from reviews and find the most common ones
+    const allAspects = processedReviews
+      .flatMap((r: any) => r.aspects || [])
+      .reduce((acc: Record<string, any[]>, curr: any) => {
+        if (!curr || !curr.name) return acc;
+        
+        if (!acc[curr.name]) {
+          acc[curr.name] = [];
+        }
+        acc[curr.name].push(curr);
+        return acc;
+      }, {});
+    
+    // Get the top 5 most common aspects
+    const topAspects = Object.entries(allAspects)
+      .sort(([, a], [, b]) => (b as any[]).length - (a as any[]).length)
+      .slice(0, 5)
+      .map(([name, instances]) => {
+        const aspectInstances = instances as any[];
+        const positive = aspectInstances.filter(a => a.sentiment === 'positive').length;
+        const negative = aspectInstances.filter(a => a.sentiment === 'negative').length;
+        const neutral = aspectInstances.filter(a => a.sentiment === 'neutral').length;
+        
+        // Determine overall sentiment for this aspect
+        let sentiment;
+        if (positive > negative && positive > neutral) sentiment = 'positive';
+        else if (negative > positive && negative > neutral) sentiment = 'negative';
+        else sentiment = 'neutral';
+        
+        // Use the context from the first instance as an example
+        const context = aspectInstances[0].context || '';
+        
+        // Calculate confidence as percentage of dominant sentiment
+        const total = aspectInstances.length;
+        const confidence = Math.round((sentiment === 'positive' ? positive : sentiment === 'negative' ? negative : neutral) / total * 100);
+        
+        return {
+          name,
+          sentiment,
+          confidence,
+          context
+        };
+      });
     
     const allKeywords = processedReviews
       .flatMap((r: any) => r.keywords || [])
@@ -186,7 +202,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     const topKeywords = Object.entries(allKeywords)
       .sort(([, a], [, b]) => {
         const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
-        const countB = b && typeof b === 'object' && 'count' in b ? (b.count as number) : 0;
+        const countB = b && typeof b === 'object' && 'count' in a ? (b.count as number) : 0;
         return countB - countA;
       })
       .slice(0, 5)
@@ -200,7 +216,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         sentiment: totalPositive > totalNegative ? "positive" : totalNegative > totalPositive ? "negative" : "neutral",
         score: Math.round(((totalPositive - totalNegative) / reviews.length + 1) * 50)
       },
-      aspects: aspects,
+      aspects: topAspects,
       keyPhrases: topKeywords,
       fileAnalysis: {
         totalReviews: reviews.length,

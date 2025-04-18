@@ -11,9 +11,15 @@ interface SentimentTrendProps {
     neutral: number;
     negative: number;
   }>;
+  aspectData?: Array<{
+    aspect: string;
+    positive: number;
+    neutral: number;
+    negative: number;
+  }>;
 }
 
-const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
+const SentimentTrend = ({ trendData, aspectData: providedAspectData }: SentimentTrendProps) => {
   const hasData = trendData && trendData.length > 0;
   const [chartHeight] = useState(300);
   const [showLegend] = useState(true);
@@ -39,11 +45,15 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
     });
   }, [trendData, hasData]);
   
-  // Define aspectData for the aspect analysis tab
+  // Use provided aspect data or generate sample data if not provided
   const aspectData = useMemo(() => {
+    if (providedAspectData && providedAspectData.length > 0) {
+      return providedAspectData;
+    }
+    
     if (!hasData) return [];
     
-    // Create sample aspect data since we don't have actual aspect data in the props
+    // Create sample aspect data if real data isn't provided
     return [
       { aspect: 'Quality', positive: 65, neutral: 20, negative: 15 },
       { aspect: 'Price', positive: 40, neutral: 30, negative: 30 },
@@ -51,7 +61,7 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
       { aspect: 'Delivery', positive: 55, neutral: 25, negative: 20 },
       { aspect: 'User Interface', positive: 60, neutral: 30, negative: 10 }
     ];
-  }, [hasData]);
+  }, [providedAspectData, hasData]);
   
   return (
     <div className="bg-white rounded-lg border shadow-sm p-6">
