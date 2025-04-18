@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { AlertCircle } from 'lucide-react';
@@ -14,38 +13,22 @@ interface SentimentTrendProps {
 }
 
 const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
-  // Check if we have actual data
   const hasData = trendData && trendData.length > 0;
+  const [chartHeight] = useState(300);
+  const [showLegend] = useState(true);
   
-  // Process dates to ensure they're in a consistent format
   const processedData = useMemo(() => {
-    if (!hasData) {
-      // If no data, use sample data for display
-      return [
-        { date: 'Jan', positive: 0, neutral: 0, negative: 0 },
-        { date: 'Feb', positive: 0, neutral: 0, negative: 0 },
-        { date: 'Mar', positive: 0.2, neutral: 0, negative: 0 },
-        { date: 'Apr', positive: 1.0, neutral: 1.0, negative: 2.0 },
-        { date: 'May', positive: 0, neutral: 0, negative: 0 },
-        { date: 'Jun', positive: 0, neutral: 0, negative: 0 },
-      ];
-    }
+    if (!hasData) return [];
     
     return trendData.map(item => {
-      // Format the date properly
       let formattedDate = item.date;
       try {
-        // Try to parse and format the date
         const dateObj = new Date(item.date);
         if (!isNaN(dateObj.getTime())) {
           formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
-        } else if (typeof item.date === 'string') {
-          // If it's already a string like "Jan", keep it as is
-          formattedDate = item.date;
         }
       } catch (e) {
         console.error("Date parsing error:", e);
-        // If there's an error, keep the original value
       }
       
       return {
@@ -55,157 +38,145 @@ const SentimentTrend = ({ trendData }: SentimentTrendProps) => {
     });
   }, [trendData, hasData]);
   
-  // Sample aspect data
-  const aspectData = [
-    { aspect: 'Quality', positive: 65, neutral: 20, negative: 15 },
-    { aspect: 'Price', positive: 40, neutral: 25, negative: 35 },
-    { aspect: 'Service', positive: 55, neutral: 30, negative: 15 }
-  ];
-
-  // Add state for chart customization
-  const [chartHeight, setChartHeight] = useState(300);
-  const [showLegend, setShowLegend] = useState(true);
-  
   return (
     <div className="bg-white rounded-lg border shadow-sm p-6">
-      <Tabs defaultValue="sentiment-trends">
-        <TabsList className="mb-4 bg-gray-100 p-1 rounded-md w-full">
-          <TabsTrigger value="aspect-analysis" className="flex-1">Aspect Analysis</TabsTrigger>
-          <TabsTrigger value="sentiment-trends" className="flex-1">Sentiment Trends</TabsTrigger>
-        </TabsList>
+      {!hasData ? (
+        <div className="bg-amber-50 border border-amber-200 rounded p-4 flex items-center gap-2 text-sm text-amber-700">
+          <AlertCircle className="h-4 w-4" />
+          <span>Upload a file or enter text to see sentiment trends.</span>
+        </div>
+      ) : (
+        <Tabs defaultValue="sentiment-trends">
+          <TabsList className="mb-4 bg-gray-100 p-1 rounded-md w-full">
+            <TabsTrigger value="aspect-analysis" className="flex-1">Aspect Analysis</TabsTrigger>
+            <TabsTrigger value="sentiment-trends" className="flex-1">Sentiment Trends</TabsTrigger>
+          </TabsList>
 
-        <TabsContent value="sentiment-trends">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-1">Sentiment Trends Over Time</h2>
-                <p className="text-sm text-gray-500">How sentiment has changed over the selected time period</p>
+          <TabsContent value="sentiment-trends">
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold mb-1">Sentiment Trends Over Time</h2>
+                  <p className="text-sm text-gray-500">How sentiment has changed over the selected time period</p>
+                </div>
+              </div>
+              
+              <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={processedData}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <Tooltip content={<CustomTooltip />} />
+                    {showLegend && <Legend />}
+                    <Line 
+                      type="monotone" 
+                      dataKey="positive" 
+                      stroke="#10b981" 
+                      strokeWidth={2} 
+                      activeDot={{ r: 8 }} 
+                      dot={{ r: 4 }}
+                      name="Positive"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="neutral" 
+                      stroke="#6b7280" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }}
+                      name="Neutral"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="negative" 
+                      stroke="#ef4444" 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }}
+                      name="Negative"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+              
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
+                  <span className="text-xs">Positive</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
+                  <span className="text-xs">Neutral</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
+                  <span className="text-xs">Negative</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#f59e0b] mr-2"></div>
+                  <span className="text-xs">Mixed</span>
+                </div>
               </div>
             </div>
-            
-            {!hasData && (
-              <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
-                <AlertCircle className="h-4 w-4" />
-                <span>Using sample data. Analyze reviews to see actual trends.</span>
-              </div>
-            )}
-            
-            <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={processedData}
-                  margin={{
-                    top: 5,
-                    right: 30,
-                    left: 20,
-                    bottom: 5,
-                  }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip content={<CustomTooltip />} />
-                  {showLegend && <Legend />}
-                  <Line 
-                    type="monotone" 
-                    dataKey="positive" 
-                    stroke="#10b981" 
-                    strokeWidth={2} 
-                    activeDot={{ r: 8 }} 
-                    dot={{ r: 4 }}
-                    name="Positive"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="neutral" 
-                    stroke="#6b7280" 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }}
-                    name="Neutral"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="negative" 
-                    stroke="#ef4444" 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }}
-                    name="Negative"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-            
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
-                <span className="text-xs">Positive</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
-                <span className="text-xs">Neutral</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
-                <span className="text-xs">Negative</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#f59e0b] mr-2"></div>
-                <span className="text-xs">Mixed</span>
-              </div>
-            </div>
-          </div>
-        </TabsContent>
+          </TabsContent>
 
-        <TabsContent value="aspect-analysis">
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <div>
-                <h2 className="text-xl font-semibold mb-1">Aspect-Based Analysis</h2>
-                <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
+          <TabsContent value="aspect-analysis">
+            <div>
+              <div className="flex justify-between items-center mb-4">
+                <div>
+                  <h2 className="text-xl font-semibold mb-1">Aspect-Based Analysis</h2>
+                  <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
+                </div>
               </div>
-            </div>
-            
-            <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={aspectData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" opacity={0.2} horizontal={false} />
-                  <XAxis type="number" />
-                  <YAxis dataKey="aspect" type="category" />
-                  <Tooltip />
-                  {showLegend && <Legend />}
-                  <Bar dataKey="positive" stackId="a" fill="#10b981" name="Positive" />
-                  <Bar dataKey="neutral" stackId="a" fill="#6b7280" name="Neutral" />
-                  <Bar dataKey="negative" stackId="a" fill="#ef4444" name="Negative" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+              
+              <div className={`h-${chartHeight} mt-8`} style={{ height: `${chartHeight}px` }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={aspectData}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" opacity={0.2} horizontal={false} />
+                    <XAxis type="number" />
+                    <YAxis dataKey="aspect" type="category" />
+                    <Tooltip />
+                    {showLegend && <Legend />}
+                    <Bar dataKey="positive" stackId="a" fill="#10b981" name="Positive" />
+                    <Bar dataKey="neutral" stackId="a" fill="#6b7280" name="Neutral" />
+                    <Bar dataKey="negative" stackId="a" fill="#ef4444" name="Negative" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
 
-            <div className="flex justify-center gap-6 mt-4">
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
-                <span className="text-xs">Positive</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
-                <span className="text-xs">Neutral</span>
-              </div>
-              <div className="flex items-center">
-                <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
-                <span className="text-xs">Negative</span>
+              <div className="flex justify-center gap-6 mt-4">
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
+                  <span className="text-xs">Positive</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
+                  <span className="text-xs">Neutral</span>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
+                  <span className="text-xs">Negative</span>
+                </div>
               </div>
             </div>
-          </div>
-        </TabsContent>
-      </Tabs>
+          </TabsContent>
+        </Tabs>
+      )}
     </div>
   );
 };
 
-// Custom tooltip that shows values in a more readable format
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
