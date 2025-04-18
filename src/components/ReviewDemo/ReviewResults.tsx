@@ -2,19 +2,17 @@
 import React from 'react';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { CheckCircle, Save, RefreshCcw } from "lucide-react";
+import { CheckCircle, RefreshCcw } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
-import RecentReviews from '@/components/RecentReviews';
 import { useToast } from '@/hooks/use-toast';
 
 interface ResultProps {
   result: any;
   onSave: () => void;
   onStartOver: () => void;
-  displayMode?: 'cards' | 'table';
 }
 
-const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: ResultProps) => {
+const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
   const { toast } = useToast();
   const sentiment = result?.overallSentiment?.sentiment || 'neutral';
   const score = result?.overallSentiment?.score || 50;
@@ -22,14 +20,11 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
   const aspects = result?.aspects || [];
   const totalReviews = result?.fileAnalysis?.totalReviews || 1;
   const accuracyScore = result?.fileAnalysis?.accuracyScore || 80;
-  const isFileAnalysis = totalReviews > 1;
   
   const handleSave = () => {
     try {
-      // Add a try-catch block around the onSave call to capture errors
       onSave();
       
-      // If the save was successful, show a success toast
       toast({
         title: "Analysis saved",
         description: "Your analysis has been successfully saved to the dashboard.",
@@ -37,7 +32,6 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
     } catch (error: any) {
       console.error("Error in save handler:", error);
       
-      // Check specifically for localStorage quota exceeded errors
       if (error?.name === 'QuotaExceededError' || 
           (error?.message && error.message.includes('quota')) || 
           (error?.toString().includes('quota'))) {
@@ -56,33 +50,6 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
       }
     }
   };
-  
-  // Construct review data to display in RecentReviews component
-  const reviewData = isFileAnalysis && result?.fileAnalysis?.reviews
-    ? result.fileAnalysis.reviews
-    : [{
-        id: Date.now(),
-        title: "Single Review",
-        date: new Date().toISOString().split('T')[0],
-        sentiment: {
-          positive: sentiment === 'positive' ? score : 10,
-          neutral: sentiment === 'neutral' ? score : 10,
-          negative: sentiment === 'negative' ? 100 - score : 10
-        },
-        reviewCount: 1,
-        source: isFileAnalysis ? 'excel' : 'text',
-        rating: `${Math.max(1, Math.min(5, Math.round(score * 5 / 100)))}/5`,
-        reviewText: result.text,
-        sentimentLabel: sentiment,
-        accuracyScore: accuracyScore,
-        keywords: keyPhrases.map((phrase: string) => ({
-          word: phrase,
-          sentiment: sentiment
-        })),
-        helpfulnessRatio: result?.helpfulness ? 
-          `${result.helpfulness.helpful}/${result.helpfulness.total}` : undefined,
-        verified: result?.verified
-      }];
 
   return (
     <div className="p-6 space-y-6">
@@ -90,8 +57,8 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
         <CheckCircle className="h-12 w-12 text-green-500 mb-2" />
         <h2 className="text-2xl font-semibold text-center">Analysis Complete</h2>
         <p className="text-gray-500 text-center mb-4">
-          {isFileAnalysis 
-            ? `Successfully analyzed ${totalReviews} reviews from file with ${accuracyScore}% accuracy`
+          {totalReviews > 1 
+            ? `Successfully analyzed ${totalReviews} reviews with ${accuracyScore}% accuracy`
             : `Your review has been analyzed with ${accuracyScore}% accuracy`
           }
         </p>
@@ -155,20 +122,12 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode = 'cards' }: R
         </div>
       </Card>
       
-      <div className="bg-white rounded-lg border p-6 mb-6">
-        <RecentReviews 
-          reviews={reviewData} 
-          displayMode={displayMode}
-        />
-      </div>
-      
       <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
-        <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600 gap-2">
-          <Save className="h-4 w-4" />
+        <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600">
           Save to Dashboard
         </Button>
-        <Button variant="outline" onClick={onStartOver} className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20 gap-2">
-          <RefreshCcw className="h-4 w-4" />
+        <Button variant="outline" onClick={onStartOver} className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20">
+          <RefreshCcw className="h-4 w-4 mr-2" />
           Start New Analysis
         </Button>
       </div>

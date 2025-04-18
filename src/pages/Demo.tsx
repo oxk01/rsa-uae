@@ -19,7 +19,6 @@ const analyzeSentimentForText = async (text: string) => {
   
   const { sentiment, score, accuracy } = analyzeSentiment(text);
   
-  // Use the new extractAspects function
   const aspects = extractAspects(text, sentiment);
   
   const keywords = extractKeywords(text, sentiment);
@@ -97,10 +96,8 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         
         const keywords = extractKeywords(review.reviewText, sentiment);
         
-        // Use the new extractAspects function
         const aspects = extractAspects(review.reviewText, sentiment);
         
-        // Calculate helpfulness ratio if available
         let helpfulnessRatio;
         if (review.helpfulnessNumerator !== undefined && review.helpfulnessDenominator !== undefined) {
           helpfulnessRatio = `${review.helpfulnessNumerator}/${review.helpfulnessDenominator}`;
@@ -139,7 +136,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    // Collect all aspects from reviews and find the most common ones
     const allAspects = processedReviews
       .flatMap((r: any) => r.aspects || [])
       .reduce((acc: Record<string, any[]>, curr: any) => {
@@ -152,7 +148,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         return acc;
       }, {});
     
-    // Get the top 5 most common aspects
     const topAspects = Object.entries(allAspects)
       .sort(([, a], [, b]) => (b as any[]).length - (a as any[]).length)
       .slice(0, 5)
@@ -162,16 +157,13 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         const negative = aspectInstances.filter(a => a.sentiment === 'negative').length;
         const neutral = aspectInstances.filter(a => a.sentiment === 'neutral').length;
         
-        // Determine overall sentiment for this aspect
         let sentiment;
         if (positive > negative && positive > neutral) sentiment = 'positive';
         else if (negative > positive && negative > neutral) sentiment = 'negative';
         else sentiment = 'neutral';
         
-        // Use the context from the first instance as an example
         const context = aspectInstances[0].context || '';
         
-        // Calculate confidence as percentage of dominant sentiment
         const total = aspectInstances.length;
         const confidence = Math.round((sentiment === 'positive' ? positive : sentiment === 'negative' ? negative : neutral) / total * 100);
         
@@ -184,7 +176,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       });
     
     const allKeywords = processedReviews
-      .flatMap((r: any) => r.keywords || [])
+      .flatMap((r: Review) => r.keywords || [])
       .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
         if (!curr) return acc;
         
