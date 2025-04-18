@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +19,7 @@ interface ChatInterfaceProps {
 const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const [messages, setMessages] = useState<ChatMessageProps[]>([
     {
-      content: "Hello! I'm your virtual assistant. How can I help you today?",
+      content: "Hello! I'm your website assistant. Ask me anything about our features, services, or how to use our sentiment analysis tools.",
       type: 'assistant',
       timestamp: new Date()
     }
@@ -29,6 +28,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [conversationContext, setConversationContext] = useState<string[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { getAnswer, isProcessing } = useGetAnswer();
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -46,6 +46,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
       }, 300);
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    if (messages.length > 1) {
+      const lastUserMessage = messages.filter(m => m.type === 'user').pop();
+      const lastAssistantMessage = messages.filter(m => m.type === 'assistant').pop();
+      
+      if (lastUserMessage && lastAssistantMessage) {
+        setConversationContext(prev => [
+          ...prev.slice(-4),
+          `User: ${lastUserMessage.content}`,
+          `Assistant: ${lastAssistantMessage.content}`
+        ]);
+      }
+    }
+  }, [messages]);
 
   const addMessageWithTypingEffect = (message: ChatMessageProps) => {
     if (message.type === 'assistant') {
@@ -90,12 +105,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
     setInput('');
     
     try {
-      const query = file 
-        ? `I'm sending you a file named ${file.name}. ${input.trim() ? input : "Can you analyze this image?"}`
+      const contextualizedQuery = file 
+        ? `I'm sending you a file named ${file.name}. ${input.trim() ? input : "Can you analyze this?"}`
         : input;
         
-      // Pass information about file presence to the getAnswer function
-      const answer = await getAnswer(query, !!file);
+      const answer = await getAnswer(contextualizedQuery, !!file);
       
       const botMessage: ChatMessageProps = {
         content: answer,
@@ -139,7 +153,6 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
         return;
       }
       
-      // Check if the file is an image or a supported document type
       const fileType = selectedFile.type.toLowerCase();
       const isImage = fileType.startsWith('image/');
       const isDocument = ['application/pdf', 'text/plain', 'application/msword', 
@@ -190,12 +203,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
   const clearChat = () => {
     setMessages([
       {
-        content: "Hello! I'm your virtual assistant. How can I help you today?",
+        content: "Hello! I'm your website assistant. Ask me anything about our features, services, or how to use our sentiment analysis tools.",
         type: 'assistant',
         timestamp: new Date()
       }
     ]);
     setFile(null);
+    setConversationContext([]);
   };
 
   return (
@@ -212,8 +226,8 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             <Brain className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="font-medium text-gray-800 dark:text-gray-200">AI Assistant</h3>
-            <p className="text-xs text-gray-500 dark:text-gray-400">Intelligent support for your queries</p>
+            <h3 className="font-medium text-gray-800 dark:text-gray-200">Website Assistant</h3>
+            <p className="text-xs text-gray-500 dark:text-gray-400">Ask me anything about our services</p>
           </div>
         </div>
         <div className="flex items-center space-x-1">
@@ -306,7 +320,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={file ? "Ask about this file..." : "Type your message..."}
+            placeholder={file ? "Ask about this file..." : "Ask me anything about our website..."}
             disabled={isProcessing || isTyping}
             className="pr-10 bg-gray-50 dark:bg-gray-700 rounded-full"
             onKeyDown={(e) => {
@@ -318,6 +332,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ isOpen, onClose }) => {
               }
             }}
           />
+          {input && (
+            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <CornerDownLeft className="h-3.5 w-3.5" />
+            </span>
+          )}
         </div>
         <Button 
           type="submit" 

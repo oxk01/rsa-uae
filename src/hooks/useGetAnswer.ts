@@ -245,6 +245,73 @@ const createKnowledgeBase = (isArabic: boolean) => ({
         : 'We can analyze screenshots from social media platforms or e-commerce sites to extract reviews and analyze sentiment.',
       keywords: ['screenshot', 'screen capture', 'social media', 'e-commerce', 'extract', 'analysis']
     }
+  },
+  website: {
+    navigation: {
+      title: isArabic ? 'التنقل في الموقع' : 'Website Navigation',
+      content: isArabic
+        ? 'يمكنك التنقل في موقعنا باستخدام شريط القائمة العلوي. توجد روابط للصفحة الرئيسية ومن نحن ولوحة القيادة والعرض التوضيحي والمدونة والتسعير وصفحات الاتصال.'
+        : 'You can navigate our website using the top menu bar. There are links for Home, About, Dashboard, Demo, Blog, Pricing, and Contact pages.',
+      keywords: ['navigation', 'menu', 'links', 'pages', 'layout', 'structure', 'header']
+    },
+    chatbot: {
+      title: isArabic ? 'روبوت الدردشة' : 'Website Chatbot',
+      content: isArabic
+        ? 'روبوت الدردشة الخاص بنا مصمم لمساعدتك في العثور على إجابات لأسئلتك حول خدماتنا وميزاتنا ومحتوى موقعنا. يمكنك طرح أسئلة بلغة طبيعية والحصول على إجابات فورية.'
+        : 'Our chatbot is designed to help you find answers to your questions about our services, features, and website content. You can ask questions in natural language and get instant answers.',
+      keywords: ['chatbot', 'assistant', 'help', 'questions', 'answers', 'support']
+    },
+    login: {
+      title: isArabic ? 'تسجيل الدخول والتسجيل' : 'Login and Registration',
+      content: isArabic
+        ? 'يمكنك تسجيل الدخول إلى حسابك أو إنشاء حساب جديد من خلال النقر على زر "تسجيل الدخول" أو "التسجيل" في الزاوية العليا اليمنى من الموقع.'
+        : 'You can log in to your account or create a new account by clicking on the "Login" or "Sign up" button in the top right corner of the website.',
+      keywords: ['login', 'sign in', 'register', 'signup', 'account', 'credentials', 'password']
+    },
+    responsiveness: {
+      title: isArabic ? 'تجاوب الموقع' : 'Website Responsiveness',
+      content: isArabic
+        ? 'موقعنا متجاوب بالكامل ويعمل بشكل جيد على أجهزة الكمبيوتر والأجهزة اللوحية والهواتف المحمولة. يتكيف التصميم تلقائيًا ليناسب حجم شاشتك.'
+        : 'Our website is fully responsive and works well on desktops, tablets, and mobile phones. The layout automatically adapts to fit your screen size.',
+      keywords: ['responsive', 'mobile', 'tablet', 'desktop', 'screen size', 'adaptive']
+    },
+    darkMode: {
+      title: isArabic ? 'الوضع المظلم' : 'Dark Mode',
+      content: isArabic
+        ? 'يدعم موقعنا الوضع المظلم للاستخدام الليلي المريح. يمكنك تبديل الوضع المظلم من خلال النقر على زر التبديل في القائمة العلوية.'
+        : 'Our website supports dark mode for comfortable nighttime usage. You can toggle dark mode by clicking the toggle button in the top menu.',
+      keywords: ['dark mode', 'light mode', 'theme', 'toggle', 'night mode', 'color scheme']
+    }
+  },
+  faq: {
+    pricing: {
+      title: isArabic ? 'أسئلة شائعة حول التسعير' : 'Pricing FAQ',
+      content: isArabic
+        ? 'نقدم خطط تسعير مرنة تناسب الشركات من جميع الأحجام. تبدأ خطتنا الأساسية من $49 شهريًا وتتضمن جميع الميزات الأساسية. لمزيد من المعلومات، يرجى زيارة صفحة التسعير.'
+        : 'We offer flexible pricing plans that suit businesses of all sizes. Our basic plan starts at $49/month and includes all essential features. For more information, please visit our pricing page.',
+      keywords: ['pricing', 'cost', 'subscription', 'plans', 'payment', 'monthly', 'annual']
+    },
+    dataPrivacy: {
+      title: isArabic ? 'أسئلة شائعة حول خصوصية البيانات' : 'Data Privacy FAQ',
+      content: isArabic
+        ? 'نأخذ خصوصية البيانات على محمل الجد. جميع البيانات التي تحملها إلى نظامنا مشفرة وآمنة. لا نشارك بياناتك مع أطراف ثالثة دون موافقتك. يمكنك الاطلاع على سياسة الخصوصية الكاملة في صفحة سياسة الخصوصية.'
+        : 'We take data privacy seriously. All data you upload to our system is encrypted and secure. We do not share your data with third parties without your consent. You can view our full privacy policy on our Privacy Policy page.',
+      keywords: ['privacy', 'security', 'data', 'encryption', 'confidential', 'policy', 'protection']
+    },
+    cancellation: {
+      title: isArabic ? 'أسئلة شائعة حول الإلغاء' : 'Cancellation FAQ',
+      content: isArabic
+        ? 'يمكنك إلغاء اشتراكك في أي وقت من خلال لوحة التحكم الخاصة بحسابك. لن يتم تحصيل رسوم إضافية بعد تاريخ الإلغاء، وستستمر في الوصول إلى الخدمة حتى نهاية فترة الفوترة الحالية.'
+        : 'You can cancel your subscription at any time through your account dashboard. No additional charges will be applied after the cancellation date, and you\'ll continue to have access to the service until the end of your current billing period.',
+      keywords: ['cancel', 'subscription', 'refund', 'terminate', 'billing', 'stop']
+    },
+    support: {
+      title: isArabic ? 'أسئلة شائعة حول الدعم' : 'Support FAQ',
+      content: isArabic
+        ? 'نحن نقدم دعمًا عبر البريد الإلكتروني والدردشة المباشرة. أوقات الدعم لدينا هي من الاثنين إلى الجمعة، 9 صباحًا - 5 مساءً بالتوقيت المركزي. لأسئلة الدعم العاجلة، يرجى استخدام الدردشة المباشرة.'
+        : 'We provide support via email and live chat. Our support hours are Monday-Friday, 9 AM - 5 PM Central Time. For urgent support questions, please use the live chat.',
+      keywords: ['support', 'help', 'contact', 'assistance', 'customer service', 'chat']
+    }
   }
 });
 
@@ -291,8 +358,35 @@ export const useGetAnswer = () => {
     return imageKeywords.some(keyword => lowerQuery.includes(keyword));
   };
   
+  // Identify question type for better response formatting
+  const identifyQuestionType = (query: string): string => {
+    const lowerQuery = query.toLowerCase();
+    
+    // Define pattern groups
+    const howToPatterns = ['how to', 'how do i', 'how can i', 'steps to', 'guide for', 'instructions'];
+    const whatIsPatterns = ['what is', 'what are', 'define', 'meaning of', 'tell me about', 'explain'];
+    const comparisonPatterns = ['difference between', 'compare', 'versus', 'vs', 'or', 'better than'];
+    const locationPatterns = ['where is', 'where can i find', 'location of', 'how to find'];
+    const timePatterns = ['when is', 'when will', 'what time', 'how long', 'duration', 'schedule'];
+    
+    // Check matches
+    if (howToPatterns.some(pattern => lowerQuery.includes(pattern))) {
+      return 'how-to';
+    } else if (whatIsPatterns.some(pattern => lowerQuery.includes(pattern))) {
+      return 'what-is';
+    } else if (comparisonPatterns.some(pattern => lowerQuery.includes(pattern))) {
+      return 'comparison';
+    } else if (locationPatterns.some(pattern => lowerQuery.includes(pattern))) {
+      return 'location';
+    } else if (timePatterns.some(pattern => lowerQuery.includes(pattern))) {
+      return 'time';
+    }
+    
+    return 'general';
+  };
+  
   // Improved relevance calculation with context awareness
-  const calculateRelevance = (queryTerms: string[], topic: any, hasImage: boolean = false): number => {
+  const calculateRelevance = (queryTerms: string[], topic: any, hasImage: boolean = false, questionType: string = 'general'): number => {
     if (!topic || !topic.content) return 0;
     
     const content = topic.content.toLowerCase();
@@ -305,6 +399,20 @@ export const useGetAnswer = () => {
     // If query is image-related, boost image-related topics
     if (hasImage && topic.id && topic.id.includes('images')) {
       score += 5; // Significant boost for image topics when an image is detected
+    }
+    
+    // Boost scores for topics that match the question type
+    if (questionType === 'how-to' && topic.id && (topic.id.includes('guide') || topic.id.includes('tutorial'))) {
+      score += 3;
+    }
+    
+    if (questionType === 'what-is' && topic.id && (topic.id.includes('definition') || topic.id.includes('overview'))) {
+      score += 3;
+    }
+    
+    // Check for website-specific queries and boost website section
+    if (topic.id && topic.id.includes('website')) {
+      score += 2;
     }
     
     queryTerms.forEach(term => {
@@ -367,13 +475,47 @@ export const useGetAnswer = () => {
     return topics;
   };
   
+  // Format response based on question type
+  const formatResponse = (content: string, questionType: string): string => {
+    if (!content) return content;
+    
+    switch (questionType) {
+      case 'how-to':
+        if (!content.includes('1.') && !content.includes('Step 1')) {
+          const steps = content.split('. ').filter(Boolean);
+          if (steps.length > 2) {
+            return steps.map((step, index) => `${index + 1}. ${step}`).join('\n');
+          }
+        }
+        break;
+        
+      case 'comparison':
+        if (!content.includes('vs.') && !content.includes('versus')) {
+          // Add comparison formatting if not already present
+          if (content.includes('\n\n- ')) {
+            return content; // Already in list format
+          }
+          const parts = content.split('. ').filter(Boolean);
+          if (parts.length > 1) {
+            return parts.map(part => `• ${part}`).join('\n\n');
+          }
+        }
+        break;
+    }
+    
+    return content;
+  };
+  
   // Get combined answer from multiple topics
   const getCombinedAnswer = (matchedTopics: any[], query: string, isArabic: boolean, hasImage: boolean = false) => {
     if (matchedTopics.length === 0) {
       return isArabic 
         ? 'عذراً، لم أتمكن من العثور على معلومات حول استفسارك. هل يمكنك إعادة صياغة سؤالك بطريقة مختلفة؟'
-        : 'Sorry, I couldn\'t find information about your query. Could you rephrase your question?';
+        : "I don't have specific information about that topic yet. Could you please rephrase your question or ask about another aspect of our website or services?";
     }
+
+    // Identify the question type for better response formatting
+    const questionType = identifyQuestionType(query);
 
     // If this is an image-related query and we have a file attached
     if (hasImage) {
@@ -381,18 +523,34 @@ export const useGetAnswer = () => {
       const imageTopics = matchedTopics.filter(topic => topic.id && topic.id.includes('images'));
       
       if (imageTopics.length > 0) {
-        return imageTopics[0].content;
+        return formatResponse(imageTopics[0].content, questionType);
       }
       
       // If no specific image topics matched but we have an image, use generic image response
       return isArabic
         ? 'أرى أنك أرسلت صورة. يمكنني مساعدتك في تحليل المشاعر من المراجعات في هذه الصورة أو تفسير البيانات المرئية المتعلقة بتحليل المشاعر. ما الذي تحتاج إلى معرفته تحديداً حول هذه الصورة؟'
-        : 'I see you\'ve sent an image. I can help you analyze sentiment from reviews in this image or interpret visual data related to sentiment analysis. What specifically do you need to know about this image?';
+        : "I see you've shared an image. I can help analyze the sentiment in reviews shown in this image or interpret visual data related to sentiment analysis. What would you like to know about this image?";
+    }
+
+    // Check if the query is a greeting or a general inquiry
+    const greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
+    const generalQuestions = ['who are you', 'what can you do', 'help me'];
+    
+    if (greetings.some(g => query.toLowerCase().includes(g))) {
+      return isArabic
+        ? 'مرحباً! أنا المساعد الافتراضي لموقع تحليل المشاعر. كيف يمكنني مساعدتك اليوم؟'
+        : "Hello! I'm the virtual assistant for our sentiment analysis website. How can I help you today? You can ask me about our features, services, or how to navigate the website.";
+    }
+    
+    if (generalQuestions.some(q => query.toLowerCase().includes(q))) {
+      return isArabic
+        ? 'أنا المساعد الافتراضي المصمم لمساعدتك في استخدام موقعنا والإجابة على أسئلتك حول خدماتنا لتحليل المشاعر. يمكنني مساعدتك في فهم ميزات المنتج، وشرح تقنياتنا، وتقديم معلومات حول خطط التسعير، وتوجيهك خلال الموقع.'
+        : "I'm a virtual assistant designed to help you use our website and answer your questions about our sentiment analysis services. I can help you understand product features, explain our technologies, provide information about pricing plans, and guide you through the website.";
     }
 
     // If we have just one topic with high relevance, return it directly
     if (matchedTopics.length === 1 && matchedTopics[0].score > 5) {
-      return matchedTopics[0].content;
+      return formatResponse(matchedTopics[0].content, questionType);
     }
     
     // Check for specific query types
@@ -405,9 +563,11 @@ export const useGetAnswer = () => {
     if (isComparison && matchedTopics.length >= 2) {
       // Format a comparison answer
       const [topic1, topic2] = matchedTopics;
-      return isArabic
+      const comparisonResponse = isArabic
         ? `عند مقارنة ${topic1.title} و${topic2.title}: \n\n- ${topic1.title}: ${topic1.content}\n\n- ${topic2.title}: ${topic2.content}`
         : `When comparing ${topic1.title} and ${topic2.title}: \n\n- ${topic1.title}: ${topic1.content}\n\n- ${topic2.title}: ${topic2.content}`;
+        
+      return formatResponse(comparisonResponse, 'comparison');
     }
     
     // For general queries with multiple matches, combine the most relevant information
@@ -416,14 +576,14 @@ export const useGetAnswer = () => {
       const topMatches = matchedTopics.slice(0, 2); 
       
       if (isArabic) {
-        return `${topMatches[0].content}\n\nبالإضافة إلى ذلك: ${topMatches[1].content}`;
+        return formatResponse(`${topMatches[0].content}\n\nبالإضافة إلى ذلك: ${topMatches[1].content}`, questionType);
       } else {
-        return `${topMatches[0].content}\n\nAdditionally: ${topMatches[1].content}`;
+        return formatResponse(`${topMatches[0].content}\n\nAdditionally: ${topMatches[1].content}`, questionType);
       }
     }
     
     // Default to returning the best match
-    return matchedTopics[0].content;
+    return formatResponse(matchedTopics[0].content, questionType);
   };
 
   const getAnswer = async (question: string, hasFile: boolean = false): Promise<string> => {
@@ -448,13 +608,16 @@ export const useGetAnswer = () => {
       // Process the query to extract meaningful terms
       const queryTerms = processQuery(question);
       
+      // Identify question type for better response formatting
+      const questionType = identifyQuestionType(question);
+      
       // Get all topics from the knowledge base
       const allTopics = getAllTopics(knowledgeBase);
       
       // Calculate relevance for each topic, boosting image topics if needed
       const scoredTopics = allTopics.map(topic => ({
         ...topic,
-        score: calculateRelevance(queryTerms, topic, isImageQuery)
+        score: calculateRelevance(queryTerms, topic, isImageQuery, questionType)
       }));
       
       // Sort by relevance score (highest first)
@@ -464,7 +627,16 @@ export const useGetAnswer = () => {
       const relevantTopics = scoredTopics.filter(topic => topic.score > 0);
       
       // Generate appropriate answer based on matched topics and query context
-      return getCombinedAnswer(relevantTopics, question, isArabic, isImageQuery);
+      const response = getCombinedAnswer(relevantTopics, question, isArabic, isImageQuery);
+      
+      // If no good response was found, provide a helpful fallback
+      if (!response || response.length < 50) {
+        return isArabic 
+          ? 'لم أستطع العثور على إجابة محددة لسؤالك. هل يمكنك تقديم المزيد من التفاصيل أو طرح سؤالك بطريقة أخرى؟ أنا هنا للمساعدة في الإجابة على أسئلتك حول خدماتنا وميزاتنا ومحتوى موقعنا.'
+          : "I couldn't find a specific answer to your question. Could you provide more details or ask your question in a different way? I'm here to help with questions about our services, features, and website content.";
+      }
+      
+      return response;
     } catch (error) {
       console.error('Error processing question:', error);
       
@@ -476,7 +648,7 @@ export const useGetAnswer = () => {
       
       return isArabic 
         ? 'عذرا، حدث خطأ أثناء معالجة سؤالك. يرجى المحاولة مرة أخرى.'
-        : 'Sorry, there was an error processing your question. Please try again.';
+        : "Sorry, I encountered an error while processing your question. Please try again, or you can contact our support team if the problem persists.";
     } finally {
       setIsProcessing(false);
     }
