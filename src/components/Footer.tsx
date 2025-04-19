@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { 
-  Facebook, 
-  Instagram, 
-  Twitter, 
-  Linkedin,
+  Linkedin, 
+  Instagram,
   FileText,
   Play,
   Tag,
@@ -90,14 +88,6 @@ const Footer = () => {
                 <a href="https://www.linkedin.com/in/abdallah-rok-1b0606238" target="_blank" rel="noopener noreferrer" 
                    className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
                   <Linkedin className="h-5 w-5 text-blue-200" />
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
-                   className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
-                  <Facebook className="h-5 w-5 text-blue-200" />
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" 
-                   className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
-                  <Twitter className="h-5 w-5 text-blue-200" />
                 </a>
                 <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" 
                    className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">

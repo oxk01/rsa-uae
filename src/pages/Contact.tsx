@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
-import { Send, Mail, MapPin, Phone, ExternalLink, Clock, LinkedinIcon, Twitter } from 'lucide-react';
+import { Send, Mail, MapPin, Phone, ExternalLink, Clock, LinkedinIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -206,16 +206,6 @@ const Contact = () => {
                   >
                     <LinkedinIcon className="h-5 w-5 text-blue-600" />
                     <span>LinkedIn</span>
-                    <ExternalLink className="h-3 w-3" />
-                  </a>
-                  <a 
-                    href="https://twitter.com/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <Twitter className="h-5 w-5 text-blue-400" />
-                    <span>Twitter</span>
                     <ExternalLink className="h-3 w-3" />
                   </a>
                 </div>
