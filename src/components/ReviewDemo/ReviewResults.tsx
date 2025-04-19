@@ -10,6 +10,7 @@ interface ResultProps {
   result: any;
   onSave: () => void;
   onStartOver: () => void;
+  displayMode?: string; // Added displayMode prop as optional
 }
 
 const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
