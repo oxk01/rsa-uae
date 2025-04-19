@@ -54,7 +54,6 @@ const Footer = () => {
         <div className="absolute bottom-1/4 -right-24 w-64 h-64 rounded-full bg-indigo-600/10 blur-3xl"></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          {/* Newsletter subscription box - only shown when not on blog page */}
           {!isBlogPage && (
             <div className="max-w-3xl mx-auto mb-16 bg-blue-900 p-8 rounded-xl shadow-lg relative overflow-hidden">
               <div className="flex flex-col md:flex-row items-center justify-between gap-6">
@@ -80,7 +79,6 @@ const Footer = () => {
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
-            {/* Company Info Column */}
             <div className="flex flex-col items-start">
               <Link to="/" className="flex items-center mb-6">
                 <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">RSA</span>
@@ -89,6 +87,10 @@ const Footer = () => {
                 We help businesses leverage AI and data analytics to make informed decisions and stay ahead of the competition.
               </p>
               <div className="flex space-x-4">
+                <a href="https://www.linkedin.com/in/abdallah-rok-1b0606238" target="_blank" rel="noopener noreferrer" 
+                   className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
+                  <Linkedin className="h-5 w-5 text-blue-200" />
+                </a>
                 <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" 
                    className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
                   <Facebook className="h-5 w-5 text-blue-200" />
@@ -101,14 +103,9 @@ const Footer = () => {
                    className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
                   <Instagram className="h-5 w-5 text-blue-200" />
                 </a>
-                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" 
-                   className="bg-blue-900/30 p-2 rounded-full hover:bg-blue-800/50 transition-colors">
-                  <Linkedin className="h-5 w-5 text-blue-200" />
-                </a>
               </div>
             </div>
             
-            {/* Product Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Product
@@ -153,7 +150,6 @@ const Footer = () => {
               </ul>
             </div>
             
-            {/* Company Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Company
@@ -210,7 +206,6 @@ const Footer = () => {
               </ul>
             </div>
             
-            {/* Legal Column */}
             <div className="flex flex-col items-start">
               <h3 className="font-semibold text-xl mb-6 text-white relative after:content-[''] after:absolute after:left-0 after:-bottom-2 after:h-1 after:w-12 after:bg-blue-500 after:rounded-full">
                 Legal

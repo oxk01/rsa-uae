@@ -199,7 +199,7 @@ const Contact = () => {
                 <h3 className="text-xl font-semibold mb-4">Connect With Us</h3>
                 <div className="flex flex-wrap gap-4">
                   <a 
-                    href="https://www.linkedin.com/" 
+                    href="https://www.linkedin.com/in/abdallah-rok-1b0606238" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
