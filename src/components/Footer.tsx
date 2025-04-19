@@ -181,18 +181,6 @@ const Footer = () => {
                     <ArrowRight className="h-3.5 w-3.5 opacity-0 -ml-1 translate-x-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                   </Link>
                 </li>
-                <li>
-                  <Link 
-                    to="/contact" 
-                    className="text-blue-200 hover:text-white transition-colors flex items-center gap-3 group"
-                  >
-                    <div className="w-8 h-8 flex items-center justify-center bg-blue-900/20 rounded-md group-hover:bg-blue-800/40 transition-colors">
-                      <Mail className="h-4 w-4" />
-                    </div>
-                    <span>Contact Sales</span>
-                    <ArrowRight className="h-3.5 w-3.5 opacity-0 -ml-1 translate-x-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
-                  </Link>
-                </li>
               </ul>
             </div>
             
