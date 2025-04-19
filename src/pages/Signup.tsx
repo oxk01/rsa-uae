@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input } from '@/components/ui/input';
@@ -16,7 +15,6 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [agreedToPrivacy, setAgreedToPrivacy] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [formErrors, setFormErrors] = useState<string[]>([]);
   const { signup } = useAuth();
@@ -43,11 +41,7 @@ const Signup = () => {
     }
 
     if (!agreedToTerms) {
-      errors.push("You must agree to the Terms of Service");
-    }
-
-    if (!agreedToPrivacy) {
-      errors.push("You must agree to the Privacy Policy");
+      errors.push("You must agree to the Terms of Service and Privacy Policy");
     }
 
     if (errors.length > 0) {
@@ -176,12 +170,12 @@ const Signup = () => {
 
             <div className="flex items-center space-x-2 mt-4">
               <Checkbox 
-                id="terms" 
+                id="terms-and-privacy" 
                 checked={agreedToTerms}
                 onCheckedChange={(checked) => setAgreedToTerms(!!checked)}
               />
               <Label 
-                htmlFor="terms" 
+                htmlFor="terms-and-privacy" 
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
               >
                 I agree to the{' '}
@@ -192,20 +186,7 @@ const Signup = () => {
                 >
                   Terms of Service
                 </Link>
-              </Label>
-            </div>
-
-            <div className="flex items-center space-x-2 mt-4">
-              <Checkbox 
-                id="privacy" 
-                checked={agreedToPrivacy}
-                onCheckedChange={(checked) => setAgreedToPrivacy(!!checked)}
-              />
-              <Label 
-                htmlFor="privacy" 
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                I agree to the{' '}
+                {' '}and{' '}
                 <Link 
                   to="/privacy" 
                   className="text-blue-600 hover:underline"
