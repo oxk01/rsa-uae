@@ -1,16 +1,8 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Check, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
-import { useLanguage } from '@/contexts/LanguageContext';
-import {
   Card,
   CardHeader,
   CardContent,
@@ -18,12 +10,12 @@ import {
   CardTitle,
   CardDescription
 } from "@/components/ui/card";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const PricingPlan = () => {
   const { language } = useLanguage();
   const [billingCycle, setBillingCycle] = useState('monthly');
 
-  // Pricing data with updated plans
   const plans = [
     {
       name: "Basic",
@@ -156,7 +148,6 @@ const PricingPlan = () => {
   return (
     <div className={`min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 py-16 ${language === 'ar' ? 'rtl' : ''}`}>
       <div className="container mx-auto px-4">
-        {/* Header Section */}
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-blue-800 dark:from-blue-400 dark:to-blue-600">
             Enterprise-Grade Review Analysis
@@ -165,7 +156,6 @@ const PricingPlan = () => {
             Choose the perfect plan for your business needs. All plans include core review analysis features with different capacities.
           </p>
           
-          {/* Billing Toggle */}
           <div className="flex justify-center items-center mb-8 space-x-4">
             <span className={`text-sm font-medium ${billingCycle === 'monthly' ? 'text-blue-700 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'}`}>
               Monthly
@@ -193,7 +183,6 @@ const PricingPlan = () => {
           </div>
         </div>
         
-        {/* Pricing Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {plans.map((plan, index) => (
             <div 
@@ -235,8 +224,9 @@ const PricingPlan = () => {
                   <Button 
                     className={`w-full ${plan.highlight ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600' : ''}`} 
                     variant={plan.buttonVariant as "default" | "outline"}
+                    asChild
                   >
-                    {plan.buttonText}
+                    <Link to="/contact">{plan.buttonText}</Link>
                   </Button>
                 </CardFooter>
               </Card>
@@ -244,7 +234,6 @@ const PricingPlan = () => {
           ))}
         </div>
         
-        {/* Add-ons Section */}
         <div className="mt-20 max-w-5xl mx-auto">
           <Card>
             <CardHeader className="bg-gray-50 dark:bg-gray-800/50 border-b">
@@ -269,7 +258,6 @@ const PricingPlan = () => {
           </Card>
         </div>
         
-        {/* Plan comparison table */}
         <div className="mt-12 max-w-5xl mx-auto">
           <Card>
             <CardHeader className="bg-gray-50 dark:bg-gray-800/50 border-b">
@@ -300,7 +288,6 @@ const PricingPlan = () => {
           </Card>
         </div>
         
-        {/* FAQ section */}
         <div className="mt-16 text-left max-w-3xl mx-auto">
           <Card>
             <CardHeader className="text-center">
@@ -323,7 +310,6 @@ const PricingPlan = () => {
           </Card>
         </div>
         
-        {/* Call to action */}
         <div className="mt-16 text-center">
           <h3 className="text-2xl md:text-3xl font-semibold mb-4">Ready to get started?</h3>
           <p className="text-gray-600 dark:text-gray-300 mb-6 max-w-lg mx-auto">
@@ -342,4 +328,3 @@ const PricingPlan = () => {
 };
 
 export default PricingPlan;
-
