@@ -1,4 +1,3 @@
-
 interface KnowledgeSection {
   title: string;
   content: string;
@@ -103,11 +102,27 @@ export const createKnowledgeBase = (isArabic: boolean) => ({
       keywords: ['privacy', 'security', 'data protection', 'anonymization']
     },
     demo: {
-      title: isArabic ? 'تجربة النظام' : 'Try the System',
-      content: isArabic
-        ? 'نعم! انتقل إلى صفحة "العرض التوضيحي"، وأدخل مراجعتك، وسيقوم النظام بتحليل المشاعر لكل جانب.'
-        : 'Yes! Go to the "Demo" page, enter your review, and the system will analyze the sentiment of each aspect using our trained model.',
-      keywords: ['demo', 'try', 'test', 'analyze', 'review']
+      tryDemo: {
+        title: isArabic ? 'تجربة التحليل' : 'Try the Analysis',
+        content: isArabic 
+          ? 'نعم! فقط اكتب أو الصق مراجعة العميل - على سبيل المثال: "الشاشة جميلة، ولكن البطارية لا تدوم طويلاً." سيحدد نظامنا الجوانب (مثل "الشاشة" و "البطارية") ويخبرك بالمشاعر تجاه كل منها.'
+          : 'Sure! Just type or paste a customer review — for example: "The screen is beautiful, but the battery doesn\'t last long." Our system will identify the aspects (like "screen" and "battery") and tell you the sentiment for each one.',
+        keywords: ['demo', 'try', 'analysis', 'example', 'review']
+      },
+      bertExplanation: {
+        title: isArabic ? 'كيف يعمل BERT و ABSA' : 'How BERT and ABSA Work',
+        content: isArabic
+          ? 'BERT هو نموذج تعلم عميق طوره Google. يفهم معنى الكلمات في سياقها - وليس فقط في اتجاه واحد مثل النماذج القديمة. ABSA يحدد الميزات المحددة المذكورة في المراجعة ويكتشف ما إذا كانت المشاعر تجاه كل منها إيجابية أو سلبية أو محايدة. معًا، يسمح BERT + ABSA لنظامنا بتجاوز المشاعر الأساسية وتقديم تحليل تفصيلي للرأي لكل ميزة في المراجعة.'
+          : 'BERT (Bidirectional Encoder Representations from Transformers) is a deep learning model developed by Google. It understands the meaning of words in context — not just in one direction like older models. ABSA (Aspect-Based Sentiment Analysis) identifies specific features (aspects) mentioned in a review and detects whether the sentiment toward each one is positive, negative, or neutral. Together, BERT + ABSA allow our system to go beyond basic sentiment and give a detailed opinion breakdown for each feature in a review.',
+        keywords: ['BERT', 'ABSA', 'explanation', 'how it works', 'technology']
+      },
+      analytics: {
+        title: isArabic ? 'التحليلات المرئية' : 'Visual Analytics',
+        content: isArabic
+          ? 'بالتأكيد! في صفحة لوحة التحكم، يمكنك استكشاف: الجوانب الأكثر تداولًا للمنتج، اتجاهات المشاعر مع مرور الوقت، الرسوم البيانية الدائرية والشريطية التي تظهر الإيجابية أو السلبية لكل جانب، والتحليل في الوقت الفعلي إذا قمت بتوصيل مجموعة بيانات أو تدفق. ما عليك سوى الانتقال إلى قسم لوحة التحكم للغوص في البيانات!'
+          : 'Of course! On the Dashboard page, you can explore: Which product aspects are most talked about, Sentiment trends over time, Pie charts and bar graphs showing positivity or negativity per aspect, Real-time analysis if you connect a dataset or stream. Just head to the Dashboard section to dive into the data!',
+        keywords: ['analytics', 'dashboard', 'visualization', 'charts', 'trends']
+      }
     }
   }
 });
