@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { FileSpreadsheet, FileText, Download, BarChart3 } from 'lucide-react';
 import { Separator } from "@/components/ui/separator";
@@ -37,10 +36,9 @@ interface Review {
 interface RecentReviewsProps {
   reviews?: Review[];
   onExport?: () => void;
-  displayMode?: 'cards' | 'table';
 }
 
-const RecentReviews = ({ reviews, onExport, displayMode = 'cards' }: RecentReviewsProps) => {
+const RecentReviews = ({ reviews, onExport }: RecentReviewsProps) => {
   const hasData = reviews && reviews.length > 0;
   
   // Sample data for demonstration only when no real data is available
@@ -102,9 +100,7 @@ const RecentReviews = ({ reviews, onExport, displayMode = 'cards' }: RecentRevie
     }
   ];
   
-  const displayReviews = hasData ? 
-    (displayMode === 'cards' ? reviews.slice(0, 5) : reviews.slice(0, 100)) : 
-    sampleReviews;
+  const displayReviews = hasData ? reviews.slice(0, 5) : sampleReviews;
   
   // Helper function to render star ratings
   const renderStarRating = (rating: string) => {
@@ -215,66 +211,6 @@ const RecentReviews = ({ reviews, onExport, displayMode = 'cards' }: RecentRevie
     );
   };
   
-  // Table display mode
-  const renderTable = () => {
-    return (
-      <div className="border rounded-lg overflow-hidden">
-        <Table>
-          <TableCaption>Total Reviews: {totalReviews}</TableCaption>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ProductID</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Sentiment</TableHead>
-              <TableHead>Rating</TableHead>
-              <TableHead>Accuracy</TableHead>
-              <TableHead>Keywords</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {displayReviews.map((review) => (
-              <TableRow key={review.id}>
-                <TableCell className="font-medium">{review.title}</TableCell>
-                <TableCell>{review.date}</TableCell>
-                <TableCell>
-                  <span className={`px-2 py-1 rounded text-xs font-medium ${getBadgeColor(review.sentimentLabel || '')}`}>
-                    {review.sentimentLabel}
-                  </span>
-                </TableCell>
-                <TableCell>{review.rating && renderStarRating(review.rating)}</TableCell>
-                <TableCell>
-                  {review.accuracyScore && (
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${getAccuracyBadgeColor(review.accuracyScore)}`}>
-                      {review.accuracyScore}%
-                    </span>
-                  )}
-                </TableCell>
-                <TableCell>
-                  <div className="flex flex-wrap gap-1">
-                    {review.keywords?.slice(0, 3).map((keyword, idx) => (
-                      <span 
-                        key={idx} 
-                        className={`px-2 py-1 rounded-full text-xs ${
-                          keyword.sentiment === 'positive' 
-                            ? 'bg-green-100 text-green-800' 
-                            : keyword.sentiment === 'negative'
-                              ? 'bg-red-100 text-red-800'
-                              : 'bg-gray-100 text-gray-800'
-                        }`}
-                      >
-                        {keyword.word}
-                      </span>
-                    ))}
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-    );
-  };
-  
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
@@ -289,41 +225,21 @@ const RecentReviews = ({ reviews, onExport, displayMode = 'cards' }: RecentRevie
         </div>
         <div className="flex flex-wrap gap-2">
           {hasData && (
-            <>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => onExport?.()}
-                className="flex items-center gap-1"
-              >
-                <Download className="h-4 w-4" />
-                Export to Excel
-              </Button>
-              {reviews && reviews.length > 5 && (
-                <div className="flex items-center gap-2">
-                  <Button 
-                    variant={displayMode === 'cards' ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => displayMode !== 'cards' && window.location.reload()}
-                  >
-                    Cards
-                  </Button>
-                  <Button 
-                    variant={displayMode === 'table' ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => displayMode !== 'table' && window.location.reload()}
-                  >
-                    Table
-                  </Button>
-                </div>
-              )}
-            </>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => onExport?.()}
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              Export to Excel
+            </Button>
           )}
         </div>
       </div>
       
       {hasData ? (
-        displayMode === 'cards' ? renderCards() : renderTable()
+        renderCards()
       ) : (
         <div className="text-center p-8">
           <p className="text-gray-500">No reviews available yet.</p>

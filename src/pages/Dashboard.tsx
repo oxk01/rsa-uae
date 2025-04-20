@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { BarChart3, Trash2, Calendar, RefreshCw, XCircle, Download, FileText } from 'lucide-react';
+import { Trash2, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import SentimentTrend from '@/components/SentimentTrend';
 import GenerateReportButton from '@/components/GenerateReportButton';
@@ -49,11 +49,6 @@ const Dashboard = () => {
   const [savedAnalyses, setSavedAnalyses] = useState<Analysis[]>([]);
   const { toast } = useToast();
   const { t } = useLanguage();
-  const currentDate = new Date().toLocaleDateString('en-US', {
-    month: 'short', 
-    day: 'numeric', 
-    year: 'numeric'
-  });
   const [trendData, setTrendData] = useState<any[]>([]);
 
   useEffect(() => {
@@ -393,20 +388,12 @@ const Dashboard = () => {
               <p className="text-gray-600">Analyze and visualize customer sentiment data</p>
             </div>
             <div className="flex flex-wrap gap-2 mt-4 md:mt-0">
-              <Button variant="outline" size="sm" className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                {currentDate}
-              </Button>
-              <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={refreshData}>
-                <RefreshCw className="h-4 w-4" />
-                Refresh
-              </Button>
               <Button variant="outline" size="sm" className="flex items-center gap-1" onClick={handleExportData}>
                 <FileText className="h-4 w-4" />
                 Export to Excel
               </Button>
               <Button variant="destructive" size="sm" className="flex items-center gap-1" onClick={deleteLastReview}>
-                <XCircle className="h-4 w-4" />
+                <Trash2 className="h-4 w-4" />
                 Delete All Reviews
               </Button>
             </div>
