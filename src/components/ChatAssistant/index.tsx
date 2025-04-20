@@ -13,7 +13,7 @@ const ChatAssistant: React.FC = () => {
   return (
     <>
       <ChatButton onClick={toggleChat} isOpen={isOpen} />
-      <ChatInterface isOpen={isOpen} onClose={() => setIsOpen(false)} />
+      {isOpen && <ChatInterface isOpen={isOpen} onClose={() => setIsOpen(false)} />}
     </>
   );
 };
