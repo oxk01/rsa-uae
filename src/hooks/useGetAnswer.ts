@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useToast } from "@/components/ui/use-toast";
 
-// Define a more extensive and structured knowledge base with answers to common questions
 const createKnowledgeBase = (isArabic: boolean) => ({
   home: {
     title: isArabic ? 'الصفحة الرئيسية' : 'Home Page',
@@ -26,7 +25,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
     },
     nlp: {
       title: isArabic ? 'معالجة اللغة الطبيعية' : 'Natural Language Processing',
-      content: isArabic 
+      content: isArabic
         ? 'معالجة اللغة الطبيعية (NLP) هي فرع من الذكاء الاصطناعي يركز على تفاعل الكمبيوتر مع اللغة البشرية. تتضمن تقنياتنا خوارزميات متقدمة للتعلم الآلي التي تحلل النص لاستخراج المعنى والمشاعر والسياق.'
         : 'Natural Language Processing (NLP) is a branch of AI focused on computer interaction with human language. Our techniques involve advanced machine learning algorithms that analyze text to extract meaning, sentiment, and context.',
       keywords: ['nlp', 'natural language', 'processing', 'ai', 'machine learning', 'text analysis']
@@ -149,7 +148,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
     },
     functionalities: {
       content: isArabic 
-        ? 'يمكنني مساعدتك في فهم خدماتنا وتقنياتنا وكيفية استخدام النظام. يمكنني أيضاً توجيهك إلى الموارد ذات الصلة وتقديم دعم أساسي.'
+        ? 'يمكنني مسا��دتك في فهم خدماتنا وتقنياتنا وكيفية استخدام النظام. يمكنني أيضاً توجيهك إلى الموارد ذات الصلة وتقديم دعم أساسي.'
         : 'I can help you understand our services, technologies, and how to use the system. I can also direct you to relevant resources and provide basic support.'
     },
     imageAnalysis: {
@@ -312,6 +311,71 @@ const createKnowledgeBase = (isArabic: boolean) => ({
         : 'We provide support via email and live chat. Our support hours are Monday-Friday, 9 AM - 5 PM Central Time. For urgent support questions, please use the live chat.',
       keywords: ['support', 'help', 'contact', 'assistance', 'customer service', 'chat']
     }
+  },
+  website: {
+    about: {
+      title: isArabic ? 'حول الموقع' : 'About the Website',
+      content: isArabic 
+        ? 'هذا الموقع يحلل مراجعات العملاء باستخدام الذكاء الاصطناعي والبيانات الضخمة. نستخدم نماذج متقدمة مثل BERT وتحليل المشاعر القائم على الجوانب (ABSA) لفهم أي أجزاء من المنتج أعجبت المستخدم أو لم تعجبه.'
+        : 'This website analyzes customer reviews using Artificial Intelligence and Big Data. We use advanced models like BERT and Aspect-Based Sentiment Analysis (ABSA) to understand which parts of the product users liked or disliked.',
+      keywords: ['about', 'website', 'purpose', 'analysis', 'reviews', 'ai']
+    },
+    contextualAnalysis: {
+      title: isArabic ? 'تحليل المشاعر السياقي' : 'Contextual Sentiment Analysis',
+      content: isArabic
+        ? 'تحليل المشاعر السياقي يحدد المشاعر (إيجابية أو سلبية أو محايدة) في النص مع مراعاة سياق الكلمات. يستخدم نماذج لغوية مثل BERT لفهم المعنى العميق.'
+        : 'Contextual sentiment analysis identifies the sentiment (positive, negative, or neutral) expressed in a text while taking into account the context of the words, not just keywords. It uses language models like BERT to understand the deeper meaning.',
+      keywords: ['contextual', 'sentiment', 'analysis', 'context', 'bert']
+    },
+    bert: {
+      title: isArabic ? 'ما هو BERT' : 'What is BERT',
+      content: isArabic
+        ? 'BERT هو نموذج معالجة لغة طبيعية مطور من قبل Google. يفهم سياق اللغة من كلا الاتجاهين. في هذا المشروع، تم تدريبه لتحليل المراجعات وكشف المشاعر بدقة أكبر.'
+        : 'BERT (Bidirectional Encoder Representations from Transformers) is a pre-trained NLP model developed by Google. It understands language context from both directions. In this project, it is fine-tuned to analyze reviews and detect sentiment more accurately.',
+      keywords: ['bert', 'nlp', 'google', 'model', 'transformer']
+    },
+    absa: {
+      title: isArabic ? 'ما هو ABSA' : 'What is ABSA',
+      content: isArabic
+        ? 'ABSA يعني تحليل المشاعر القائم على الجوانب. يركز على تحديد جوانب معينة (مثل "عمر البطارية" أو "خدمة العملاء") في المراجعة ويحدد المشاعر لكل جانب على حدة.'
+        : 'ABSA stands for Aspect-Based Sentiment Analysis. It focuses on identifying specific aspects (like "battery life" or "customer service") in a review and determines the sentiment for each aspect individually.',
+      keywords: ['absa', 'aspect', 'analysis', 'sentiment']
+    },
+    benefits: {
+      title: isArabic ? 'فوائد للأعمال' : 'Benefits for Business',
+      content: isArabic
+        ? 'يمكن للشركات مراقبة آراء العملاء في الوقت الفعلي، وتحسين ميزات المنتج بناءً على التعليقات، وتحديد مخاوف العملاء الشائعة، وأتمتة تحليل رضا العملاء.'
+        : 'Businesses can monitor customer feedback in real-time, improve product features based on aspect feedback, identify common customer concerns, and automate customer satisfaction analysis.',
+      keywords: ['business', 'benefits', 'monitoring', 'feedback', 'improvements']
+    },
+    privacy: {
+      title: isArabic ? 'خصوصية المستخدم' : 'User Privacy',
+      content: isArabic
+        ? 'يتم تحليل المراجعات المتاحة للجمهور فقط. يتم إخفاء هوية البيانات الشخصية أو إزالتها أثناء المعالجة المسبقة.'
+        : 'Only publicly available reviews are analyzed. Personal data is anonymized or removed during preprocessing.',
+      keywords: ['privacy', 'security', 'data protection', 'anonymization']
+    },
+    demo: {
+      title: isArabic ? 'تجربة النظام' : 'Try the System',
+      content: isArabic
+        ? 'نعم! انتقل إلى صفحة "العرض التوضيحي"، وأدخل مراجعتك، وسيقوم النظام بتحليل مشاعر كل جانب باستخدام نموذج BERT-ABSA المدرب.'
+        : 'Yes! Go to the "Demo" page, enter your review, and the system will analyze the sentiment of each aspect using the trained BERT-ABSA model.',
+      keywords: ['demo', 'try', 'test', 'analyze', 'review']
+    },
+    technologies: {
+      title: isArabic ? 'التقنيات المستخدمة' : 'Technologies Used',
+      content: isArabic
+        ? 'نستخدم Python، Hugging Face Transformers، TensorFlow/PyTorch، NLTK/SpaCy، وApache Spark لمعالجة البيانات الكبيرة، وFlask/Django للتكامل مع الويب.'
+        : 'We use Python, Hugging Face Transformers, TensorFlow/PyTorch, NLTK/SpaCy, Apache Spark for Big Data processing, and Flask/Django for web integration.',
+      keywords: ['technology', 'stack', 'tools', 'frameworks', 'languages']
+    },
+    futureScope: {
+      title: isArabic ? 'النطاق المستقبلي' : 'Future Scope',
+      content: isArabic
+        ? 'نخطط لإضافة تحليل المشاعر متعدد اللغات، والتكامل مع وسائل التواصل الاجتماعي، وأنظمة التغذية المرتدة للدردشة في الوقت الفعلي، وتحليل عاطفي أعمق.'
+        : 'Future plans include multilingual sentiment analysis, integration with social media feeds, real-time chatbot feedback systems, and deeper emotional analysis beyond polarity.',
+      keywords: ['future', 'roadmap', 'plans', 'development', 'features']
+    }
   }
 });
 
@@ -321,21 +385,17 @@ export const useGetAnswer = () => {
   const { toast } = useToast();
   const isArabic = currentLanguage === 'ar';
   
-  // Advanced text processing: tokenize, remove stop words, normalize
   const processQuery = (query: string): string[] => {
     const stopWords = ['and', 'the', 'for', 'what', 'how', 'when', 'who', 'where', 'why', 'can', 'you', 
                       'about', 'with', 'this', 'that', 'tell', 'me', 'please', 'would', 'could', 'should'];
     
-    // Lowercase and remove punctuation
     const normalizedText = query.toLowerCase()
       .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, '')
       .replace(/\s{2,}/g, ' ');
     
-    // Tokenize and filter stop words
     const tokens = normalizedText.split(' ')
       .filter(word => word.length > 2 && !stopWords.includes(word));
     
-    // Extract n-grams (phrases of 2-3 words) that might be important
     const ngrams: string[] = [];
     for (let i = 0; i < tokens.length - 1; i++) {
       ngrams.push(`${tokens[i]} ${tokens[i+1]}`);
@@ -347,7 +407,6 @@ export const useGetAnswer = () => {
     return [...tokens, ...ngrams];
   };
   
-  // Check if query potentially relates to an image
   const isImageRelatedQuery = (query: string): boolean => {
     const imageKeywords = [
       'image', 'picture', 'photo', 'screenshot', 'scan', 'visual', 'chart', 
@@ -358,18 +417,15 @@ export const useGetAnswer = () => {
     return imageKeywords.some(keyword => lowerQuery.includes(keyword));
   };
   
-  // Identify question type for better response formatting
   const identifyQuestionType = (query: string): string => {
     const lowerQuery = query.toLowerCase();
     
-    // Define pattern groups
     const howToPatterns = ['how to', 'how do i', 'how can i', 'steps to', 'guide for', 'instructions'];
     const whatIsPatterns = ['what is', 'what are', 'define', 'meaning of', 'tell me about', 'explain'];
     const comparisonPatterns = ['difference between', 'compare', 'versus', 'vs', 'or', 'better than'];
     const locationPatterns = ['where is', 'where can i find', 'location of', 'how to find'];
     const timePatterns = ['when is', 'when will', 'what time', 'how long', 'duration', 'schedule'];
     
-    // Check matches
     if (howToPatterns.some(pattern => lowerQuery.includes(pattern))) {
       return 'how-to';
     } else if (whatIsPatterns.some(pattern => lowerQuery.includes(pattern))) {
@@ -385,7 +441,6 @@ export const useGetAnswer = () => {
     return 'general';
   };
   
-  // Improved relevance calculation with context awareness
   const calculateRelevance = (queryTerms: string[], topic: any, hasImage: boolean = false, questionType: string = 'general'): number => {
     if (!topic || !topic.content) return 0;
     
@@ -396,12 +451,10 @@ export const useGetAnswer = () => {
     let keywordMatches = 0;
     let exactMatches = 0;
     
-    // If query is image-related, boost image-related topics
     if (hasImage && topic.id && topic.id.includes('images')) {
-      score += 5; // Significant boost for image topics when an image is detected
+      score += 5;
     }
     
-    // Boost scores for topics that match the question type
     if (questionType === 'how-to' && topic.id && (topic.id.includes('guide') || topic.id.includes('tutorial'))) {
       score += 3;
     }
@@ -410,17 +463,14 @@ export const useGetAnswer = () => {
       score += 3;
     }
     
-    // Check for website-specific queries and boost website section
     if (topic.id && topic.id.includes('website')) {
       score += 2;
     }
     
     queryTerms.forEach(term => {
-      // Check content match
       if (content.includes(term)) {
         score += 1;
         
-        // Bonus for exact word matches
         const regex = new RegExp('\\b' + term + '\\b', 'i');
         if (regex.test(content)) {
           score += 0.5;
@@ -428,43 +478,36 @@ export const useGetAnswer = () => {
         }
       }
       
-      // Check keyword match (higher weight)
       if (keywords.some((keyword: string) => keyword.includes(term) || term.includes(keyword))) {
         score += 2;
         keywordMatches++;
       }
       
-      // Title match has highest weight
       if (topic.title && topic.title.toLowerCase().includes(term)) {
         score += 3;
       }
     });
     
-    // Bonus for multiple matches - indicates higher relevance
     if (exactMatches > 1) score += exactMatches * 0.5;
     if (keywordMatches > 1) score += keywordMatches;
     
     return score;
   };
-
-  // Extract all topics from the knowledge base
+  
   const getAllTopics = (kb: any) => {
     const topics: any[] = [];
     
-    // Helper function to recursively extract topics
     const extractTopics = (obj: any, parentKey = '') => {
       if (!obj) return;
       
       Object.entries(obj).forEach(([key, value]: [string, any]) => {
         if (value && typeof value === 'object') {
           if (value.content) {
-            // This is a topic with content
             topics.push({
               id: parentKey ? `${parentKey}.${key}` : key,
               ...value
             });
           } else {
-            // This is a category, recurse
             extractTopics(value, parentKey ? `${parentKey}.${key}` : key);
           }
         }
@@ -475,7 +518,6 @@ export const useGetAnswer = () => {
     return topics;
   };
   
-  // Format response based on question type
   const formatResponse = (content: string, questionType: string): string => {
     if (!content) return content;
     
@@ -491,10 +533,6 @@ export const useGetAnswer = () => {
         
       case 'comparison':
         if (!content.includes('vs.') && !content.includes('versus')) {
-          // Add comparison formatting if not already present
-          if (content.includes('\n\n- ')) {
-            return content; // Already in list format
-          }
           const parts = content.split('. ').filter(Boolean);
           if (parts.length > 1) {
             return parts.map(part => `• ${part}`).join('\n\n');
@@ -506,7 +544,6 @@ export const useGetAnswer = () => {
     return content;
   };
   
-  // Get combined answer from multiple topics
   const getCombinedAnswer = (matchedTopics: any[], query: string, isArabic: boolean, hasImage: boolean = false) => {
     if (matchedTopics.length === 0) {
       return isArabic 
@@ -514,25 +551,20 @@ export const useGetAnswer = () => {
         : "I don't have specific information about that topic yet. Could you please rephrase your question or ask about another aspect of our website or services?";
     }
 
-    // Identify the question type for better response formatting
     const questionType = identifyQuestionType(query);
 
-    // If this is an image-related query and we have a file attached
     if (hasImage) {
-      // Find image-specific topics
       const imageTopics = matchedTopics.filter(topic => topic.id && topic.id.includes('images'));
       
       if (imageTopics.length > 0) {
         return formatResponse(imageTopics[0].content, questionType);
       }
       
-      // If no specific image topics matched but we have an image, use generic image response
       return isArabic
         ? 'أرى أنك أرسلت صورة. يمكنني مساعدتك في تحليل المشاعر من المراجعات في هذه الصورة أو تفسير البيانات المرئية المتعلقة بتحليل المشاعر. ما الذي تحتاج إلى معرفته تحديداً حول هذه الصورة؟'
         : "I see you've shared an image. I can help analyze the sentiment in reviews shown in this image or interpret visual data related to sentiment analysis. What would you like to know about this image?";
     }
 
-    // Check if the query is a greeting or a general inquiry
     const greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
     const generalQuestions = ['who are you', 'what can you do', 'help me'];
     
@@ -544,24 +576,20 @@ export const useGetAnswer = () => {
     
     if (generalQuestions.some(q => query.toLowerCase().includes(q))) {
       return isArabic
-        ? 'أنا المساعد الافتراضي المصمم لمساعدتك في استخدام موقعنا والإجابة على أسئلتك حول خدماتنا لتحليل المشاعر. يمكنني مساعدتك في فهم ميزات المنتج، وشرح تقنياتنا، وتقديم معلومات حول خطط التسعير، وتوجيهك خلال الموقع.'
+        ? 'أنا المساعد الافتراضي ا��مصمم لمساعدتك في استخدام موقعنا والإجابة على أسئلتك حول خدماتنا لتحليل المشاعر. يمكنني مساعدتك في فهم ميزات المنتج، وشرح تقنياتنا، وتقديم معلومات حول خطط التسعير، وتوجيهك خلال الموقع.'
         : "I'm a virtual assistant designed to help you use our website and answer your questions about our sentiment analysis services. I can help you understand product features, explain our technologies, provide information about pricing plans, and guide you through the website.";
     }
 
-    // If we have just one topic with high relevance, return it directly
     if (matchedTopics.length === 1 && matchedTopics[0].score > 5) {
       return formatResponse(matchedTopics[0].content, questionType);
     }
     
-    // Check for specific query types
     const lowerQuery = query.toLowerCase();
     
-    // Check if this is a comparison question
     const comparisonTerms = ['versus', 'vs', 'compared to', 'difference between', 'better than'];
     const isComparison = comparisonTerms.some(term => lowerQuery.includes(term));
     
     if (isComparison && matchedTopics.length >= 2) {
-      // Format a comparison answer
       const [topic1, topic2] = matchedTopics;
       const comparisonResponse = isArabic
         ? `عند مقارنة ${topic1.title} و${topic2.title}: \n\n- ${topic1.title}: ${topic1.content}\n\n- ${topic2.title}: ${topic2.content}`
@@ -570,9 +598,7 @@ export const useGetAnswer = () => {
       return formatResponse(comparisonResponse, 'comparison');
     }
     
-    // For general queries with multiple matches, combine the most relevant information
     if (matchedTopics.length > 1) {
-      // Take top 2-3 matches maximum to avoid too much text
       const topMatches = matchedTopics.slice(0, 2); 
       
       if (isArabic) {
@@ -582,7 +608,6 @@ export const useGetAnswer = () => {
       }
     }
     
-    // Default to returning the best match
     return formatResponse(matchedTopics[0].content, questionType);
   };
 
@@ -590,46 +615,35 @@ export const useGetAnswer = () => {
     setIsProcessing(true);
     
     try {
-      // Simulate API delay for realistic feel
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const knowledgeBase = createKnowledgeBase(isArabic);
       const lowerQuestion = question.toLowerCase();
 
-      // Handle greeting patterns directly
       const greetings = ['hello', 'hi', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening'];
       if (greetings.some(g => lowerQuestion.includes(g)) && !hasFile) {
         return knowledgeBase.general.welcome.content;
       }
       
-      // Detect if this is likely an image-related query
       const isImageQuery = hasFile || isImageRelatedQuery(question);
       
-      // Process the query to extract meaningful terms
       const queryTerms = processQuery(question);
       
-      // Identify question type for better response formatting
       const questionType = identifyQuestionType(question);
       
-      // Get all topics from the knowledge base
       const allTopics = getAllTopics(knowledgeBase);
       
-      // Calculate relevance for each topic, boosting image topics if needed
       const scoredTopics = allTopics.map(topic => ({
         ...topic,
         score: calculateRelevance(queryTerms, topic, isImageQuery, questionType)
       }));
       
-      // Sort by relevance score (highest first)
       scoredTopics.sort((a, b) => b.score - a.score);
       
-      // Get top relevant topics (those with non-zero scores)
       const relevantTopics = scoredTopics.filter(topic => topic.score > 0);
       
-      // Generate appropriate answer based on matched topics and query context
       const response = getCombinedAnswer(relevantTopics, question, isArabic, isImageQuery);
       
-      // If no good response was found, provide a helpful fallback
       if (!response || response.length < 50) {
         return isArabic 
           ? 'لم أستطع العثور على إجابة محددة لسؤالك. هل يمكنك تقديم المزيد من التفاصيل أو طرح سؤالك بطريقة أخرى؟ أنا هنا للمساعدة في الإجابة على أسئلتك حول خدماتنا وميزاتنا ومحتوى موقعنا.'
