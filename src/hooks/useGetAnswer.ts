@@ -77,7 +77,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
   },
   features: {
     realtime: {
-      title: isArabic ? 'التحليلات في الوقت الحقيقي' : 'Real-time Analytics',
+      title: isArabic ? 'التحليلات في الوقت ��لحقيقي' : 'Real-time Analytics',
       content: isArabic
         ? 'يوفر نظامنا تحليلات في الوقت الحقيقي تقريباً، مما يتيح لك الاستجابة بسرعة للتغييرات في آراء العملاء.'
         : 'Our system provides near real-time analytics, allowing you to respond quickly to changes in customer opinions.',
@@ -148,7 +148,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
     },
     functionalities: {
       content: isArabic 
-        ? 'يمكنني مسا��دتك في فهم خدماتنا وتقنياتنا وكيفية استخدام النظام. يمكنني أيضاً توجيهك إلى الموارد ذات الصلة وتقديم دعم أساسي.'
+        ? 'يمكنني مساعدتك في فهم خدماتنا وتقنياتنا وكيفية استخدام النظام. يمكنني أيضاً توجيهك إلى الموارد ذات الصلة وتقديم دعم أساسي.'
         : 'I can help you understand our services, technologies, and how to use the system. I can also direct you to relevant resources and provide basic support.'
     },
     imageAnalysis: {
@@ -245,7 +245,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
       keywords: ['screenshot', 'screen capture', 'social media', 'e-commerce', 'extract', 'analysis']
     }
   },
-  website: {
+  siteNavigation: {
     navigation: {
       title: isArabic ? 'التنقل في الموقع' : 'Website Navigation',
       content: isArabic
@@ -286,7 +286,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
     pricing: {
       title: isArabic ? 'أسئلة شائعة حول التسعير' : 'Pricing FAQ',
       content: isArabic
-        ? 'نقدم خطط تسعير مرنة تناسب الشركات من جميع الأحجام. تبدأ خطتنا الأساسية من $49 شهريًا وتتضمن جميع الميزات الأساسية. لمزيد من المعلومات، يرجى زيارة صفحة التسعير.'
+        ? 'نقدم خطط تسعير مرنة تناسب الشركات من جميع الأحجام. تبد�� خطتنا الأساسية من $49 شهريًا وتتضمن جميع الميزات الأساسية. لمزيد من المعلومات، يرجى زيارة صفحة التسعير.'
         : 'We offer flexible pricing plans that suit businesses of all sizes. Our basic plan starts at $49/month and includes all essential features. For more information, please visit our pricing page.',
       keywords: ['pricing', 'cost', 'subscription', 'plans', 'payment', 'monthly', 'annual']
     },
@@ -312,7 +312,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
       keywords: ['support', 'help', 'contact', 'assistance', 'customer service', 'chat']
     }
   },
-  website: {
+  websiteInfo: {
     about: {
       title: isArabic ? 'حول الموقع' : 'About the Website',
       content: isArabic 
@@ -323,7 +323,7 @@ const createKnowledgeBase = (isArabic: boolean) => ({
     contextualAnalysis: {
       title: isArabic ? 'تحليل المشاعر السياقي' : 'Contextual Sentiment Analysis',
       content: isArabic
-        ? 'تحليل المشاعر السياقي يحدد المشاعر (إيجابية أو سلبية أو محايدة) في النص مع مراعاة سياق الكلمات. يستخدم نماذج لغوية مثل BERT لفهم المعنى العميق.'
+        ? 'تحليل المشاعر السياقي يحدد المشاعر (إيجابية أو سلبية أو محايدة) في النص مع مراعاة سياق الكلما��. يستخدم نماذج لغوية مثل BERT لفهم المعنى العميق.'
         : 'Contextual sentiment analysis identifies the sentiment (positive, negative, or neutral) expressed in a text while taking into account the context of the words, not just keywords. It uses language models like BERT to understand the deeper meaning.',
       keywords: ['contextual', 'sentiment', 'analysis', 'context', 'bert']
     },
