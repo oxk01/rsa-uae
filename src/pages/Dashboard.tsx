@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import SentimentTrend from '@/components/SentimentTrend';
 import GenerateReportButton from '@/components/GenerateReportButton';
 import RecentReviews from '@/components/RecentReviews';
+import { extractAspects } from '@/utils/excelParser';
 import {
   LineChart,
   Line,
@@ -43,6 +44,12 @@ interface Analysis {
   }[];
   reviewText?: string;
   source?: string;
+  aspects?: { 
+    name: string; 
+    sentiment: 'positive' | 'negative' | 'neutral'; 
+    confidence: number; 
+    context: string; 
+  }[];
 }
 
 const Dashboard = () => {
@@ -50,6 +57,7 @@ const Dashboard = () => {
   const { toast } = useToast();
   const { t } = useLanguage();
   const [trendData, setTrendData] = useState<any[]>([]);
+  const [aspectData, setAspectData] = useState<any[]>([]);
 
   useEffect(() => {
     const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
@@ -59,56 +67,98 @@ const Dashboard = () => {
       
       if (analyses.length > 0) {
         generateTrendData(analyses);
+        generateAspectData(analyses);
       }
     }
   }, []);
   
   const generateTrendData = (analyses: Analysis[]) => {
-    if (analyses.length > 1) {
+    if (analyses.length >= 1) {
       const sortedAnalyses = [...analyses].sort((a, b) => 
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
       const trend = sortedAnalyses.map(analysis => {
         let formattedDate;
+        let originalDate = analysis.date;
+        
         try {
           const dateObj = new Date(analysis.date);
-          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+          if (!isNaN(dateObj.getTime())) {
+            formattedDate = dateObj.toLocaleDateString('en-US', { 
+              year: 'numeric',
+              month: 'short', 
+              day: 'numeric'
+            });
+            originalDate = dateObj.toISOString().split('T')[0];
+          } else {
+            formattedDate = analysis.date;
+          }
         } catch (e) {
           console.error("Error parsing date:", e);
           formattedDate = "Unknown";
         }
         
+        const reviewSnippet = analysis.reviewText 
+          ? (analysis.reviewText.length > 100 
+              ? analysis.reviewText.substring(0, 100) + '...' 
+              : analysis.reviewText)
+          : undefined;
+        
         return {
           date: formattedDate,
+          originalDate,
           positive: analysis.sentiment.positive,
           neutral: analysis.sentiment.neutral,
-          negative: analysis.sentiment.negative
+          negative: analysis.sentiment.negative,
+          reviewSnippet
         };
       });
       
       setTrendData(trend);
-    } else if (analyses.length === 1) {
-      try {
-        const dateObj = new Date(analyses[0].date);
-        const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
-        
-        setTrendData([{
-          date: formattedDate,
-          positive: analyses[0].sentiment.positive,
-          neutral: analyses[0].sentiment.neutral,
-          negative: analyses[0].sentiment.negative
-        }]);
-      } catch (e) {
-        console.error("Error parsing single date:", e);
-        setTrendData([{
-          date: "Latest",
-          positive: analyses[0].sentiment.positive,
-          neutral: analyses[0].sentiment.neutral,
-          negative: analyses[0].sentiment.negative
-        }]);
-      }
     }
+  };
+
+  const generateAspectData = (analyses: Analysis[]) => {
+    const aspectMap: Record<string, { positive: number, neutral: number, negative: number }> = {};
+    
+    analyses.forEach(analysis => {
+      if (analysis.aspects && analysis.aspects.length > 0) {
+        analysis.aspects.forEach(aspect => {
+          const aspectName = aspect.name.toLowerCase();
+          
+          if (!aspectMap[aspectName]) {
+            aspectMap[aspectName] = { positive: 0, neutral: 0, negative: 0 };
+          }
+          
+          aspectMap[aspectName][aspect.sentiment]++;
+        });
+      } 
+      else if (analysis.reviewText) {
+        const extractedAspects = extractAspects(
+          analysis.reviewText, 
+          analysis.sentiment.positive > analysis.sentiment.negative ? 'positive' : 
+            analysis.sentiment.negative > analysis.sentiment.positive ? 'negative' : 'neutral'
+        );
+        
+        extractedAspects.forEach(aspect => {
+          const aspectName = aspect.name.toLowerCase();
+          
+          if (!aspectMap[aspectName]) {
+            aspectMap[aspectName] = { positive: 0, neutral: 0, negative: 0 };
+          }
+          
+          aspectMap[aspectName][aspect.sentiment]++;
+        });
+      }
+    });
+    
+    const aspectData = Object.entries(aspectMap).map(([aspect, sentiments]) => ({
+      aspect: aspect.charAt(0).toUpperCase() + aspect.slice(1),
+      ...sentiments
+    }));
+    
+    setAspectData(aspectData);
   };
   
   const deleteAnalysis = (id: number) => {
@@ -120,6 +170,7 @@ const Dashboard = () => {
       description: "The analysis has been removed from your dashboard.",
     });
     generateTrendData(updatedAnalyses);
+    generateAspectData(updatedAnalyses);
   };
 
   const refreshData = () => {
@@ -128,6 +179,7 @@ const Dashboard = () => {
       const analyses = JSON.parse(savedAnalysesStr);
       setSavedAnalyses(analyses);
       generateTrendData(analyses);
+      generateAspectData(analyses);
       toast({
         title: "Data refreshed",
         description: "Dashboard data has been updated.",
@@ -140,6 +192,7 @@ const Dashboard = () => {
       setSavedAnalyses([]);
       localStorage.setItem('rsa_saved_analyses', JSON.stringify([]));
       setTrendData([]);
+      setAspectData([]);
       toast({
         title: "All reviews deleted",
         description: "All analyses have been removed from the dashboard.",
@@ -147,26 +200,6 @@ const Dashboard = () => {
     }
   };
 
-  const prepareSentimentData = () => {
-    if (savedAnalyses.length === 0) return [];
-    
-    let totalPositive = 0;
-    let totalNeutral = 0; 
-    let totalNegative = 0;
-    
-    savedAnalyses.forEach(analysis => {
-      totalPositive += analysis.sentiment.positive;
-      totalNeutral += analysis.sentiment.neutral;
-      totalNegative += analysis.sentiment.negative;
-    });
-    
-    return [
-      { name: 'Positive', value: totalPositive },
-      { name: 'Neutral', value: totalNeutral },
-      { name: 'Negative', value: totalNegative }
-    ];
-  };
-  
   const prepareVolumeData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -210,7 +243,7 @@ const Dashboard = () => {
       .sort((a, b) => b.count - a.count)
       .slice(0, 5);
   };
-
+  
   const prepareAspectData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -520,7 +553,7 @@ const Dashboard = () => {
             </div>
 
             <div className="mb-6">
-              <SentimentTrend trendData={trendData} />
+              <SentimentTrend trendData={trendData} aspectData={aspectData} />
             </div>
             
             <div className="mb-6 bg-white rounded-lg border shadow-sm p-6">

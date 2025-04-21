@@ -13,6 +13,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { extractAspects } from '@/utils/excelParser';
 
 interface Analysis {
   id: number;
@@ -31,6 +32,7 @@ interface Analysis {
   rating?: string;
   reviewText?: string;
   source?: string;
+  aspects?: { name: string; sentiment: 'positive' | 'negative' | 'neutral'; confidence: number; context: string; }[];
 }
 
 const Index = () => {
@@ -38,6 +40,7 @@ const Index = () => {
   const [hasData, setHasData] = useState(false);
   const [sentimentOverviewData, setSentimentOverviewData] = useState<any[]>([]);
   const [trendData, setTrendData] = useState<any[]>([]);
+  const [aspectData, setAspectData] = useState<any[]>([]);
   const { t } = useLanguage();
   const { toast } = useToast();
   
@@ -71,31 +74,93 @@ const Index = () => {
       { name: 'Negative', value: totalNegative }
     ]);
     
-    if (analyses.length > 1) {
+    if (analyses.length >= 1) {
       const sortedAnalyses = [...analyses].sort((a, b) => 
         new Date(a.date).getTime() - new Date(b.date).getTime()
       );
       
       const trend = sortedAnalyses.map(analysis => {
         let formattedDate;
+        let originalDate = analysis.date;
+        
         try {
           const dateObj = new Date(analysis.date);
-          formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short' });
+          if (!isNaN(dateObj.getTime())) {
+            formattedDate = dateObj.toLocaleDateString('en-US', { 
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+            originalDate = dateObj.toISOString().split('T')[0];
+          } else {
+            formattedDate = analysis.date;
+          }
         } catch (e) {
           console.error("Error parsing date:", e);
           formattedDate = "Unknown";
         }
         
+        const reviewSnippet = analysis.reviewText 
+          ? (analysis.reviewText.length > 100 
+              ? analysis.reviewText.substring(0, 100) + '...' 
+              : analysis.reviewText)
+          : undefined;
+        
         return {
           date: formattedDate,
+          originalDate,
           positive: analysis.sentiment.positive,
           neutral: analysis.sentiment.neutral,
-          negative: analysis.sentiment.negative
+          negative: analysis.sentiment.negative,
+          reviewSnippet
         };
       });
       
       setTrendData(trend);
     }
+    
+    processAspectData(analyses);
+  };
+  
+  const processAspectData = (analyses: Analysis[]) => {
+    const aspectMap: Record<string, { positive: number, neutral: number, negative: number }> = {};
+    
+    analyses.forEach(analysis => {
+      if (analysis.aspects && analysis.aspects.length > 0) {
+        analysis.aspects.forEach(aspect => {
+          const aspectName = aspect.name.toLowerCase();
+          
+          if (!aspectMap[aspectName]) {
+            aspectMap[aspectName] = { positive: 0, neutral: 0, negative: 0 };
+          }
+          
+          aspectMap[aspectName][aspect.sentiment]++;
+        });
+      } 
+      else if (analysis.reviewText) {
+        const extractedAspects = extractAspects(
+          analysis.reviewText, 
+          analysis.sentimentLabel?.toLowerCase() || 'neutral'
+        );
+        
+        extractedAspects.forEach(aspect => {
+          const aspectName = aspect.name.toLowerCase();
+          
+          if (!aspectMap[aspectName]) {
+            aspectMap[aspectName] = { positive: 0, neutral: 0, negative: 0 };
+          }
+          
+          aspectMap[aspectName][aspect.sentiment]++;
+        });
+      }
+    });
+    
+    const aspectData = Object.entries(aspectMap).map(([aspect, sentiments]) => ({
+      aspect: aspect.charAt(0).toUpperCase() + aspect.slice(1),
+      ...sentiments
+    }));
+    
+    setAspectData(aspectData);
   };
   
   const calculateAverageRating = () => {
@@ -305,7 +370,7 @@ const Index = () => {
             </div>
             
             <div className="mt-8">
-              <SentimentTrend trendData={trendData} />
+              <SentimentTrend trendData={trendData} aspectData={aspectData} />
             </div>
             
             <div className="mt-8 bg-white rounded-lg border shadow-sm p-6">
