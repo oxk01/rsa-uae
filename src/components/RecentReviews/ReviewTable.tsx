@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Review } from '../RecentReviews'; // or import type if available
+import { Review } from './types'; // Fixed import path to get Review from types.ts
 import {
   Table,
   TableBody,
@@ -110,4 +109,3 @@ const ReviewTable = ({ reviews, totalReviews }: ReviewTableProps) => (
 );
 
 export default ReviewTable;
-
