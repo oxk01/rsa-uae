@@ -15,6 +15,7 @@ const Home = () => {
     <div className={`min-h-screen bg-white ${language === 'ar' ? 'rtl' : ''}`}>
       {/* Hero section with background */}
       <section className="bg-gradient-to-r from-blue-900 to-blue-950 text-white py-20 relative overflow-hidden">
+        {/* Hero section with background */}
         <div className="container mx-auto px-6 grid md:grid-cols-2 gap-12 items-center relative z-10">
           {/* Left column with text */}
           <div className="space-y-6">
@@ -164,32 +165,32 @@ const Home = () => {
         </div>
       </section>
       
-      {/* Testimonial section */}
+      {/* Testimonial section - UPDATED to light color */}
       <section className="py-16 bg-gray-100">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Why Choose RSA</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Why Choose RSA</h2>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-gradient-to-r from-blue-500 to-blue-600 dark:from-blue-600 dark:to-blue-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
-              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+            <div className="bg-white p-6 rounded-2xl shadow-md text-gray-900 transform transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="h-2 bg-blue-500 rounded-full w-1/4 mb-6"></div>
               <h3 className="text-xl font-semibold mb-3">Comprehensive Reports</h3>
-              <p className="text-blue-50">
+              <p>
                 Get detailed breakdowns of sentiment across different aspects of your product or service.
               </p>
             </div>
             
-            <div className="bg-gradient-to-r from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
-              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+            <div className="bg-white p-6 rounded-2xl shadow-md text-gray-900 transform transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="h-2 bg-teal-500 rounded-full w-1/4 mb-6"></div>
               <h3 className="text-xl font-semibold mb-3">Trend Analysis</h3>
-              <p className="text-teal-50">
+              <p>
                 Track sentiment changes over time to measure the impact of your improvements.
               </p>
             </div>
             
-            <div className="bg-gradient-to-r from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 p-6 rounded-lg shadow-lg text-white transform transition-all hover:-translate-y-1 hover:shadow-xl">
-              <div className="h-2 bg-white/30 rounded-full w-1/4 mb-6"></div>
+            <div className="bg-white p-6 rounded-2xl shadow-md text-gray-900 transform transition-all hover:-translate-y-1 hover:shadow-lg">
+              <div className="h-2 bg-amber-500 rounded-full w-1/4 mb-6"></div>
               <h3 className="text-xl font-semibold mb-3">Keyword Extraction</h3>
-              <p className="text-amber-50">
+              <p>
                 Identify the most important terms in your reviews and their associated sentiment.
               </p>
             </div>
