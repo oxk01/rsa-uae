@@ -5,7 +5,11 @@ import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Trash2, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LabelList } from 'recharts';
+import SentimentTrend from '@/components/SentimentTrend';
+import RecentReviews from '@/components/RecentReviews';
+import GenerateReportButton from '@/components/GenerateReportButton';
+import { extractAspects } from '@/utils/excelParser';
 
 interface Analysis {
   id: number;
@@ -494,7 +498,7 @@ const Dashboard = () => {
                         ))}
                       </Pie>
                       <Tooltip
-                        formatter={(value, name) => [`${value} (${Math.round((value/(sentimentData.reduce((a,b)=>a+b.value,0)))*100)}%)`, name]}
+                        formatter={(value, name) => [`${value} (${Math.round((Number(value)/(sentimentData.reduce((a,b)=>a+b.value,0)))*100)}%)`, name]}
                         contentStyle={{
                           background: "#fff",
                           borderRadius: "8px",
@@ -554,7 +558,6 @@ const Dashboard = () => {
                         {keywordsData.map((entry, idx) =>
                           <Cell key={entry.word} fill={KEYWORD_COLORS[idx % KEYWORD_COLORS.length]} />
                         )}
-                        <LabelList dataKey="count" position="right" style={{ fill: "#373737", fontWeight: 600, fontSize: 15 }} />
                       </Bar>
                     </BarChart>
                   </ResponsiveContainer>
