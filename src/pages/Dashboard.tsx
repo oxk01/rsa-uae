@@ -5,25 +5,7 @@ import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Trash2, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import SentimentTrend from '@/components/SentimentTrend';
-import GenerateReportButton from '@/components/GenerateReportButton';
-import RecentReviews from '@/components/RecentReviews';
-import { extractAspects } from '@/utils/excelParser';
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
-  BarChart,
-  Bar,
-} from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 interface Analysis {
   id: number;
@@ -50,6 +32,34 @@ interface Analysis {
     confidence: number; 
     context: string; 
   }[];
+}
+
+const COLORS_PASTEL = ['#A5EDC5', '#FFDDC1', '#C1DFFF'];
+const KEYWORD_COLORS = ['#93B5FF', '#B0FFBC', '#FFD6E0', '#FFD6A5', '#CAACFF'];
+
+function AnimatedAccuracy({ value }: { value: number }) {
+  const [display, setDisplay] = React.useState(0);
+
+  React.useEffect(() => {
+    let start = 0;
+    if (value === 0) return;
+    const step = () => {
+      start += 2;
+      if (start < value) {
+        setDisplay(start);
+        requestAnimationFrame(step);
+      } else {
+        setDisplay(value);
+      }
+    };
+    step();
+  }, [value]);
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <span className="text-5xl font-extrabold text-primary transition-all">{display}%</span>
+      <span className="text-sm text-gray-500">Avg. Accuracy</span>
+    </div>
+  );
 }
 
 const Dashboard = () => {
@@ -406,10 +416,7 @@ const Dashboard = () => {
   const chartAspectData = prepareAspectData();
   const accuracyData = prepareAccuracyData();
   const averageAccuracy = calculateAverageAccuracy();
-  
-  const COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
-  const ASPECT_COLORS = ['#3b82f6', '#6b7280', '#ef4444'];
-  
+
   const enhancedReviews = savedAnalyses.map(analysis => {
     let sentimentLabel = "Neutral";
     if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
@@ -430,9 +437,9 @@ const Dashboard = () => {
       source: analysis.source || (analysis.title.includes('.') ? 'excel' : 'text')
     };
   });
-  
+
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className="min-h-screen bg-[#f9fafb] p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col mb-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
@@ -454,7 +461,7 @@ const Dashboard = () => {
         </div>
 
         {savedAnalyses.length === 0 ? (
-          <div className="bg-white border rounded-lg p-8 text-center">
+          <div className="bg-white border rounded-2xl p-8 text-center">
             <p className="text-gray-500 mb-4">No analysis data available yet.</p>
             <Button asChild className="bg-blue-600 hover:bg-blue-700">
               <Link to="/demo">Analyze New Reviews</Link>
@@ -462,11 +469,11 @@ const Dashboard = () => {
           </div>
         ) : (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <Card className="p-4 shadow-sm">
-                <h2 className="font-semibold mb-1">Overall Sentiment</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl duration-200 p-6 transition-card group">
+                <h2 className="font-bold text-lg mb-2 tracking-tight">Overall Sentiment</h2>
                 <p className="text-xs text-gray-500 mb-4">Distribution of sentiment in reviews</p>
-                <div className="h-64">
+                <div className="h-64 flex flex-col justify-center items-center">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie
@@ -474,83 +481,114 @@ const Dashboard = () => {
                         cx="50%"
                         cy="50%"
                         outerRadius={80}
+                        innerRadius={50}
+                        labelLine={false}
+                        label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
                         fill="#8884d8"
                         dataKey="value"
-                        label={false}
+                        animationDuration={1000}
+                        isAnimationActive
                       >
-                        {sentimentData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        {sentimentData.map((entry, idx) => (
+                          <Cell key={entry.name} fill={COLORS_PASTEL[idx % COLORS_PASTEL.length]} />
                         ))}
                       </Pie>
+                      <Tooltip
+                        formatter={(value, name) => [`${value} (${Math.round((value/(sentimentData.reduce((a,b)=>a+b.value,0)))*100)}%)`, name]}
+                        contentStyle={{
+                          background: "#fff",
+                          borderRadius: "8px",
+                          border: "1px solid #eee",
+                          fontSize: "0.95em"
+                        }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
+                  <div className="flex justify-center gap-4 mt-4">
+                    <div className="flex items-center">
+                      <span className="inline-block w-3 h-3 rounded-full mr-1" style={{ background: COLORS_PASTEL[0] }}></span>
+                      <span className="text-xs font-medium">Positive</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="inline-block w-3 h-3 rounded-full mr-1" style={{ background: COLORS_PASTEL[1] }}></span>
+                      <span className="text-xs font-medium">Neutral</span>
+                    </div>
+                    <div className="flex items-center">
+                      <span className="inline-block w-3 h-3 rounded-full mr-1" style={{ background: COLORS_PASTEL[2] }}></span>
+                      <span className="text-xs font-medium">Negative</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex justify-center gap-4 mt-2">
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-1"></div>
-                    <span className="text-xs">Positive</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-gray-500 mr-1"></div>
-                    <span className="text-xs">Neutral</span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-3 h-3 rounded-full bg-red-500 mr-1"></div>
-                    <span className="text-xs">Negative</span>
-                  </div>
-                </div>
-              </Card>
+              </div>
 
-              <Card className="p-4 shadow-sm">
-                <h2 className="font-semibold mb-1">Top Keywords</h2>
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl duration-200 p-6 transition-card group">
+                <h2 className="font-bold text-lg mb-2 tracking-tight">Top Keywords</h2>
                 <p className="text-xs text-gray-500 mb-4">Most mentioned topics in reviews</p>
-                <div className="h-64">
+                <div className="h-64 flex items-center">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       layout="vertical"
                       data={keywordsData}
-                      margin={{ top: 5, right: 20, left: 40, bottom: 5 }}
+                      margin={{ top: 16, right: 28, left: 60, bottom: 16 }}
+                      barCategoryGap={12}
                     >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} horizontal={false} />
-                      <XAxis type="number" />
-                      <YAxis dataKey="word" type="category" />
-                      <Tooltip />
-                      <Bar dataKey="count" fill="#3b82f6" barSize={20} />
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.12} vertical={false} />
+                      <XAxis type="number" tick={{ fontSize: 13 }} axisLine={false} />
+                      <YAxis 
+                        dataKey="word" 
+                        type="category" 
+                        tick={{ fontWeight: 700, fontSize: 14 }}
+                        axisLine={false}
+                      />
+                      <Tooltip
+                        formatter={value => `${value} mentions`}
+                        contentStyle={{ background: '#fff', borderRadius: '8px', border: '1px solid #eee' }}
+                      />
+                      <Bar 
+                        dataKey="count" 
+                        fill="#93B5FF" 
+                        barSize={28}
+                        radius={[12,12,12,12]}
+                        isAnimationActive
+                      >
+                        {keywordsData.map((entry, idx) =>
+                          <Cell key={entry.word} fill={KEYWORD_COLORS[idx % KEYWORD_COLORS.length]} />
+                        )}
+                        <LabelList dataKey="count" position="right" style={{ fill: "#373737", fontWeight: 600, fontSize: 15 }} />
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </Card>
-              
-              <Card className="p-4 shadow-sm">
-                <h2 className="font-semibold mb-1">Analysis Accuracy</h2>
-                <p className="text-xs text-gray-500 mb-4">Precision score of the analysis</p>
-                <div className="flex justify-center items-center mb-4">
-                  <div className="text-center">
-                    <div className="text-4xl font-bold text-blue-600">{averageAccuracy}%</div>
-                    <p className="text-sm text-gray-500">Average Accuracy</p>
-                  </div>
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg hover:shadow-xl duration-200 p-6 transition-card group flex flex-col justify-between">
+                <h2 className="font-bold text-lg mb-2 tracking-tight">Analysis Accuracy</h2>
+                <p className="text-xs text-gray-500 mb-4">Precision score of the analyses</p>
+                <div className="flex-1 flex flex-col items-center justify-center mb-3">
+                  <AnimatedAccuracy value={averageAccuracy} />
                 </div>
-                <div className="h-40">
+                <div className="h-28 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={accuracyData}
-                      margin={{ top: 5, right: 20, left: 10, bottom: 25 }}
+                      margin={{ top: 5, right: 16, left: 10, bottom: 20 }}
                     >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
+                      <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                       <XAxis 
-                        dataKey="name" 
+                        dataKey="name"
                         tick={{ fontSize: 10 }}
-                        angle={-45}
+                        angle={-30}
                         textAnchor="end"
-                        height={60}
+                        height={50}
+                        axisLine={false}
                       />
-                      <YAxis domain={[0, 100]} />
-                      <Tooltip />
-                      <Bar dataKey="score" fill="#3b82f6" barSize={20} />
+                      <YAxis domain={[0, 100]} axisLine={false} />
+                      <Tooltip contentStyle={{ background: "#fff", borderRadius: "8px", border: "1px solid #eee" }} />
+                      <Bar dataKey="score" fill="#A5EDC5" barSize={18} radius={[8,8,0,0]} isAnimationActive />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </Card>
+              </div>
             </div>
 
             <div className="mb-6">
