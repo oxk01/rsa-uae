@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -380,10 +381,32 @@ const Dashboard = () => {
     });
   };
   
+  // Define prepareSentimentData function
+  const prepareSentimentData = () => {
+    if (savedAnalyses.length === 0) return [];
+    
+    let totalPositive = 0;
+    let totalNeutral = 0;
+    let totalNegative = 0;
+    
+    savedAnalyses.forEach(analysis => {
+      totalPositive += analysis.sentiment.positive;
+      totalNeutral += analysis.sentiment.neutral;
+      totalNegative += analysis.sentiment.negative;
+    });
+    
+    return [
+      { name: 'Positive', value: totalPositive },
+      { name: 'Neutral', value: totalNeutral },
+      { name: 'Negative', value: totalNegative }
+    ];
+  };
+  
   const sentimentData = prepareSentimentData();
   const volumeData = prepareVolumeData();
   const keywordsData = prepareKeywordsData();
-  const aspectData = prepareAspectData();
+  // Renamed to avoid variable redeclaration
+  const chartAspectData = prepareAspectData();
   const accuracyData = prepareAccuracyData();
   const averageAccuracy = calculateAverageAccuracy();
   
@@ -576,3 +599,4 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
