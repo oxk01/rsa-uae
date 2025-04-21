@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -381,7 +380,6 @@ const Dashboard = () => {
     });
   };
   
-  // Define prepareSentimentData function
   const prepareSentimentData = () => {
     if (savedAnalyses.length === 0) return [];
     
@@ -405,7 +403,6 @@ const Dashboard = () => {
   const sentimentData = prepareSentimentData();
   const volumeData = prepareVolumeData();
   const keywordsData = prepareKeywordsData();
-  // Renamed to avoid variable redeclaration
   const chartAspectData = prepareAspectData();
   const accuracyData = prepareAccuracyData();
   const averageAccuracy = calculateAverageAccuracy();
@@ -505,25 +502,6 @@ const Dashboard = () => {
               </Card>
 
               <Card className="p-4 shadow-sm">
-                <h2 className="font-semibold mb-1">Review Volume</h2>
-                <p className="text-xs text-gray-500 mb-4">Number of reviews over time</p>
-                <div className="h-64">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart
-                      data={volumeData}
-                      margin={{ top: 5, right: 20, left: 10, bottom: 5 }}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" opacity={0.2} />
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <Tooltip />
-                      <Line type="monotone" dataKey="reviews" stroke="#3b82f6" strokeWidth={2} dot={{ r: 4 }} />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </Card>
-
-              <Card className="p-4 shadow-sm">
                 <h2 className="font-semibold mb-1">Top Keywords</h2>
                 <p className="text-xs text-gray-500 mb-4">Most mentioned topics in reviews</p>
                 <div className="h-64">
@@ -599,4 +577,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
