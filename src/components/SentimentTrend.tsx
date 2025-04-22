@@ -1,6 +1,5 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -13,6 +12,7 @@ interface SentimentTrendProps {
     negative: number;
     originalDate?: string;
     reviewSnippet?: string;
+    reviewCount?: number;
   }>;
   aspectData?: Array<{
     aspect: string;
@@ -22,50 +22,54 @@ interface SentimentTrendProps {
   }>;
 }
 
-const pastelCardGradient = "bg-gradient-to-br from-[#f5f7fa] via-[#e5deff] to-[#e8f0fe]";
-const softShadow = "shadow-lg hover:shadow-xl transition-shadow duration-300";
-const pastelBorder = "border border-[#e2e8f0]";
+const pastelCardGradient = "bg-gradient-to-r from-[#fdfcfb] via-[#e0f4ff] to-[#e5deff]";
+const softShadow = "shadow-2xl hover:shadow-amber-100/30 transition-shadow duration-400";
+const pastelBorder = "border border-blue-100";
 const sectionPadding = "p-6 md:p-8";
 
 const SentimentTrend = ({ trendData, aspectData: providedAspectData }: SentimentTrendProps) => {
   const hasData = trendData && trendData.length > 0;
-  const [chartHeight] = useState(300);
+  const [chartHeight] = useState(310);
   const [showLegend] = useState(true);
   const [selectedAspect, setSelectedAspect] = useState<string>("all");
-  
+
   const processedData = useMemo(() => {
     if (!hasData) return [];
-    // Map through all data points (real graph, not just one date!)
-    return trendData.map(item => {
-      let formattedDate = item.date;
-      let originalDate = item.originalDate || item.date;
-      try {
-        const dateObj = new Date(item.date);
-        if (!isNaN(dateObj.getTime())) {
-          formattedDate = dateObj.toLocaleDateString('en-US', { 
-            year: 'numeric',
-            month: 'short',
-            day: 'numeric'
-          });
-          originalDate = item.originalDate || dateObj.toISOString().split('T')[0];
+    const seen: any = {};
+    return trendData
+      .map(item => {
+        let formattedDate = item.date;
+        let originalDate = item.originalDate || item.date;
+        try {
+          const dateObj = new Date(item.date);
+          if (!isNaN(dateObj.getTime())) {
+            formattedDate = dateObj.toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric'
+            });
+            originalDate = item.originalDate || dateObj.toISOString().split('T')[0];
+          }
+        } catch {
+          // fallback
         }
-      } catch (e) {
-        // use fallback
-      }
-      return {
-        ...item,
-        date: formattedDate,
-        originalDate,
-        reviewSnippet: item.reviewSnippet || "No review snippet available"
-      };
-    });
+        const key = originalDate;
+        if (seen[key]) return null;
+        seen[key] = true;
+        return {
+          ...item,
+          date: formattedDate,
+          originalDate,
+          reviewSnippet: item.reviewSnippet || "No review snippet available"
+        };
+      })
+      .filter(Boolean)
+      .sort((a: any, b: any) => new Date(a.originalDate).getTime() - new Date(b.originalDate).getTime());
   }, [trendData, hasData]);
-  
-  // Use provided aspect data or generate sample data if not provided
+
   const aspectData = useMemo(() => {
     if (providedAspectData && providedAspectData.length > 0) return providedAspectData;
     if (!hasData) return [];
-    // fallback sample
     return [
       { aspect: 'Quality', positive: 65, neutral: 20, negative: 15 },
       { aspect: 'Price', positive: 40, neutral: 30, negative: 30 },
@@ -96,104 +100,155 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
         </div>
       ) : (
         <Tabs defaultValue="sentiment-trends">
-          <TabsList className="mb-4 bg-gradient-to-r from-white via-[#ecebfc]/70 to-[#f5f7fa]/95 rounded-xl p-1 w-full shadow-inner backdrop-blur-[2px]">
+          <TabsList className="mb-4 bg-gradient-to-r from-white via-[#e0f4ff]/90 to-[#e5deff]/80 rounded-xl p-1 w-full shadow-inner backdrop-blur-[2px]">
             <TabsTrigger value="aspect-analysis" className="flex-1 rounded-lg text-sm font-semibold ring-offset-violet-200 data-[state=active]:bg-[#e5deff] data-[state=active]:text-violet-800">
               Aspect Analysis
             </TabsTrigger>
-            <TabsTrigger value="sentiment-trends" className="flex-1 rounded-lg text-sm font-semibold ring-offset-blue-200 data-[state=active]:bg-[#e8f0fe] data-[state=active]:text-blue-800">
+            <TabsTrigger value="sentiment-trends" className="flex-1 rounded-lg text-sm font-semibold ring-offset-blue-200 data-[state=active]:bg-[#d3e4fd] data-[state=active]:text-blue-800">
               Sentiment Trends
             </TabsTrigger>
           </TabsList>
 
-          {/* Sentiment Trends Tab */}
           <TabsContent value="sentiment-trends" className="animate-fade-in">
             <div>
               <div className="flex justify-between items-center mb-4">
                 <div>
-                  <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-900/90 via-violet-700/70 to-blue-400/75 bg-clip-text text-transparent tracking-tight mb-1">Sentiment Trends Over Time</h2>
-                  <p className="text-sm text-gray-500">How sentiment has changed over the selected time period</p>
+                  <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-900/90 via-violet-700/70 to-blue-400/75 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
+                    <span>Sentiment Trends Over Time</span>
+                    <span className="bg-[#fef7cd] text-xs font-bold text-yellow-700 px-2 py-1 rounded-full shadow-sm">
+                      {processedData.length} Analyses
+                    </span>
+                  </h2>
+                  <p className="text-sm text-gray-500">How sentiment changed over your analysis periods</p>
                 </div>
               </div>
-              
-              {/* Graph Card */}
-              <div className={`mt-8 rounded-xl overflow-hidden ${softShadow} bg-gradient-to-bl from-white via-[#d3e4fd]/60 to-[#f1f0fb]/80 ring-1 ring-inset ring-blue-100/70`}>
-                <div className="p-2" style={{height: `${chartHeight}px`}}>
+
+              <div className={`mt-8 rounded-2xl overflow-visible ${softShadow} bg-gradient-to-bl from-white via-[#e0f4ff]/90 to-[#f8fbfe]/75 ring-[2.5px] ring-blue-200/80`}>
+                <div className="pt-6 pb-8 px-1 relative" style={{height: `${chartHeight}px`}}>
+                  <div className="absolute z-10 w-full" style={{top: 2, left: 0, pointerEvents: "none"}}>
+                    <div className="flex justify-between px-8">
+                      {processedData.map((d, i) =>
+                        <div key={i} className="flex flex-col items-center" style={{width: '60px', minWidth: '60px'}}>
+                          {d.reviewCount ? (
+                            <span className="text-[11px] font-semibold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full shadow hover:shadow-lg animate-fade-in transition-all mb-2">
+                              {d.reviewCount} reviews
+                            </span>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={processedData}
-                      margin={{ top: 18, right: 32, left: 12, bottom: 16 }}
+                      margin={{ top: 40, right: 40, left: 25, bottom: 20 }}
                     >
-                      <CartesianGrid strokeDasharray="4 4" stroke="#e2e8f0" opacity={0.25} />
+                      <CartesianGrid strokeDasharray="4 6" stroke="#bae6fd" opacity={0.16} />
                       <XAxis 
-                        dataKey="date" 
-                        tick={{ fontSize: 12, fill: "#333" }}
+                        dataKey="date"
+                        tick={{ fontSize: 13, fill: "#2353a2", fontWeight: 600 }}
                         angle={-35}
-                        height={58}
+                        height={66}
                         textAnchor="end"
-                        axisLine={{stroke: "#e2e8f0"}}
+                        axisLine={{stroke: "#bae6fd", strokeWidth:2}}
                         tickLine={false}
                       />
                       <YAxis 
-                        width={42}
-                        tick={{ fontSize: 12, fill: "#333" }} 
-                        axisLine={{stroke: "#e2e8f0"}} 
+                        width={46}
+                        tick={{ fontSize: 12, fill: "#234880" }} 
+                        axisLine={{stroke: "#bae6fd", strokeWidth:2}} 
                         tickLine={false}
                       />
                       <Tooltip content={<CustomTooltip />} />
-                      {showLegend && <Legend wrapperStyle={{ paddingTop: 16 }} iconSize={16} iconType="circle"/>}
+                      {showLegend && (
+                        <Legend wrapperStyle={{ paddingTop: 10 }} iconSize={16} iconType="plainline"
+                          formatter={(value) =>
+                            <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
+                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                            </span>
+                          }
+                        />
+                      )}
                       <Line 
                         type="monotone" 
                         dataKey="positive" 
-                        stroke="#10b981"
-                        fill="#d1fae5"
-                        strokeWidth={3}
-                        dot={{ r: 5, fill: '#10b981', strokeWidth: 1, stroke: "#fff"}}
-                        name="Positive"
-                        animationDuration={900}
-                      />
+                        stroke="#22d3ee"
+                        fill="url(#linePositiveGrad)"
+                        strokeWidth={4}
+                        dot={{ r: 7, fill: '#10b981', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        name="positive"
+                        animationDuration={1200}
+                        isAnimationActive
+                      >
+                        <defs>
+                          <linearGradient id="linePositiveGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="20%" stopColor="#10b981" stopOpacity={0.6} />
+                            <stop offset="100%" stopColor="#d1fae5" stopOpacity={0.04} />
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="positive" position="top" className="text-green-700 font-bold"/>
+                      </Line>
                       <Line 
                         type="monotone" 
                         dataKey="neutral" 
-                        stroke="#6b7280" 
-                        fill="#e5e7eb"
-                        strokeWidth={3}
-                        dot={{ r: 5, fill: '#6b7280', strokeWidth: 1, stroke: "#fff" }}
-                        name="Neutral"
-                        animationDuration={900}
-                      />
+                        stroke="#818cf8" 
+                        fill="url(#lineNeutralGrad)"
+                        strokeWidth={4}
+                        dot={{ r: 7, fill: '#6b7280', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        name="neutral"
+                        animationDuration={1200}
+                        isAnimationActive
+                      >
+                        <defs>
+                          <linearGradient id="lineNeutralGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="20%" stopColor="#818cf8" stopOpacity={0.6}/>
+                            <stop offset="100%" stopColor="#e5e7eb" stopOpacity={0.04}/>
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="neutral" position="top" className="text-gray-700 font-bold"/>
+                      </Line>
                       <Line 
                         type="monotone" 
                         dataKey="negative" 
-                        stroke="#ef4444" 
-                        fill="#fff1f2"
-                        strokeWidth={3}
-                        dot={{ r: 5, fill: '#ef4444', strokeWidth: 1, stroke: "#fff" }}
-                        name="Negative"
-                        animationDuration={900}
-                      />
+                        stroke="#f87171" 
+                        fill="url(#lineNegativeGrad)"
+                        strokeWidth={4}
+                        dot={{ r: 7, fill: '#ef4444', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        name="negative"
+                        animationDuration={1200}
+                        isAnimationActive
+                      >
+                        <defs>
+                          <linearGradient id="lineNegativeGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="20%" stopColor="#ef4444" stopOpacity={0.6}/>
+                            <stop offset="100%" stopColor="#fff1f2" stopOpacity={0.04}/>
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="negative" position="top" className="text-red-700 font-bold"/>
+                      </Line>
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
               </div>
               
-              <div className="flex justify-center gap-6 mt-5 mb-2">
+              <div className="flex justify-center gap-8 mt-7 mb-3">
                 <LegendDot color="#10b981" label="Positive" />
                 <LegendDot color="#6b7280" label="Neutral" />
                 <LegendDot color="#ef4444" label="Negative" />
-                <LegendDot color="#f59e0b" label="Mixed" />
               </div>
             </div>
           </TabsContent>
 
-          {/* Aspect Analysis Tab */}
           <TabsContent value="aspect-analysis" className="animate-fade-in">
             <div>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <div>
-                  <h2 className="text-xl font-extrabold bg-gradient-to-r from-violet-700 via-purple-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-1">Aspect-Based Analysis</h2>
-                  <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
+                  <h2 className="text-xl font-extrabold bg-gradient-to-r from-violet-700 via-purple-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
+                    <span>Aspect-Based Analysis</span>
+                    <span className="bg-[#ffd6e0] text-xs font-bold text-pink-700 px-2 py-1 rounded-full shadow-sm">{aspectData.length} Aspects</span>
+                  </h2>
+                  <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service you analyzed</p>
                 </div>
-                
                 {availableAspects.length > 1 && (
                   <div className="w-full md:w-auto">
                     <Select value={selectedAspect} onValueChange={setSelectedAspect}>
@@ -212,50 +267,81 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                 )}
               </div>
               
-              {/* Aspect Chart Card */}
-              <div className="mt-8 rounded-xl overflow-hidden bg-gradient-to-br from-[#fff4f9] via-[#e0f4ff]/60 to-[#fdfcfb]/70 ring-1 ring-inset ring-violet-100/80 shadow-lg">
-                <div className="p-2" style={{height: `${chartHeight}px`}}>
+              <div className="mt-8 rounded-2xl overflow-visible bg-gradient-to-r from-[#fff4f9] via-[#e0f4ff]/60 to-[#e5deff]/60 ring-[2.5px] ring-violet-100/80 shadow-xl">
+                <div className="pt-6 pb-8 px-2 relative" style={{height: `${chartHeight}px`}}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={filteredAspectData}
                       layout="vertical"
-                      margin={{ top: 12, right: 30, left: 24, bottom: 12 }}
+                      margin={{ top: 16, right: 40, left: 32, bottom: 16 }}
+                      barCategoryGap={18}
                     >
-                      <CartesianGrid strokeDasharray="3 6" stroke="#e3e3e3" opacity={0.16} horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 12, fill: "#444" }} axisLine={{stroke:'#e3e3e3'}}  tickLine={false}/>
-                      <YAxis dataKey="aspect" type="category" tick={{ fontWeight: 700, fontSize: 14, fill: "#444" }} axisLine={{stroke:'#e3e3e3'}} tickLine={false}/>
+                      <CartesianGrid strokeDasharray="3 6" stroke="#d1fae5" opacity={0.11} horizontal={false} />
+                      <XAxis type="number" tick={{ fontSize: 12, fill: "#444" }} axisLine={{stroke:'#e5deff'}} tickLine={false}/>
+                      <YAxis dataKey="aspect" type="category" tick={{ fontWeight: 700, fontSize: 15, fill: "#6d28d9" }} axisLine={{stroke:'#e5deff'}} tickLine={false}/>
                       <Tooltip content={<AspectTooltip />} />
-                      {showLegend && <Legend wrapperStyle={{paddingTop:20}} iconSize={16} iconType="circle"/>}
+                      {showLegend && (
+                        <Legend wrapperStyle={{paddingTop:18}} iconSize={15} iconType="square"
+                          formatter={(value) =>
+                            <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
+                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                            </span>
+                          }/>
+                      )}
                       <Bar 
                         dataKey="positive" 
                         stackId="a" 
-                        fill="#b1faea" 
-                        name="Positive" 
-                        animationDuration={900}
-                        radius={[10,10,10,10]}
-                      />
+                        fill="url(#barPositiveGrad)" 
+                        name="positive"
+                        radius={[20,20,20,20]}
+                        animationDuration={950}
+                      >
+                        <defs>
+                          <linearGradient id="barPositiveGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="2%" stopColor="#a7f3d0" stopOpacity={0.8} />
+                            <stop offset="100%" stopColor="#10b981" stopOpacity={0.7} />
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="positive" position="right" className="text-green-700 font-bold"/>
+                      </Bar>
                       <Bar 
                         dataKey="neutral" 
                         stackId="a" 
-                        fill="#deddfa" 
-                        name="Neutral" 
-                        animationDuration={900}
-                        radius={[10,10,10,10]}
-                      />
+                        fill="url(#barNeutralGrad)" 
+                        name="neutral"
+                        radius={[20,20,20,20]}
+                        animationDuration={950}
+                      >
+                        <defs>
+                          <linearGradient id="barNeutralGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="2%" stopColor="#e0e7ef" stopOpacity={0.9} />
+                            <stop offset="100%" stopColor="#818cf8" stopOpacity={0.7} />
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="neutral" position="right" className="text-indigo-700 font-bold"/>
+                      </Bar>
                       <Bar 
                         dataKey="negative" 
                         stackId="a" 
-                        fill="#ffd6e0" 
-                        name="Negative" 
-                        animationDuration={900}
-                        radius={[10,10,10,10]}
-                      />
+                        fill="url(#barNegativeGrad)" 
+                        name="negative"
+                        radius={[20,20,20,20]}
+                        animationDuration={950}
+                      >
+                        <defs>
+                          <linearGradient id="barNegativeGrad" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="2%" stopColor="#fda4af" stopOpacity={0.85} />
+                            <stop offset="100%" stopColor="#f87171" stopOpacity={0.7} />
+                          </linearGradient>
+                        </defs>
+                        <LabelList dataKey="negative" position="right" className="text-red-700 font-bold"/>
+                      </Bar>
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              <div className="flex justify-center gap-6 mt-5 mb-2">
+              <div className="flex justify-center gap-8 mt-7 mb-3">
                 <LegendDot color="#10b981" label="Positive" />
                 <LegendDot color="#6b7280" label="Neutral" />
                 <LegendDot color="#ef4444" label="Negative" />
@@ -270,19 +356,18 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
 
 const LegendDot = ({ color, label }: { color: string; label: string }) => (
   <div className="flex items-center">
-    <div className="w-3 h-3 rounded-full" style={{ background: color, boxShadow: "0 1px 3px rgba(0,0,0,0.10)" }} />
-    <span className="text-xs font-medium ml-1 text-gray-600">{label}</span>
+    <div className="w-3 h-3 rounded-full shadow-md" style={{ background: color, boxShadow: "0 2px 5px rgba(0,0,0,0.12)" }} />
+    <span className="text-xs font-bold ml-2 text-gray-700">{label}</span>
   </div>
 );
 
-// Styled tooltip for line chart
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     const originalDate = data.originalDate || label;
     const reviewSnippet = data.reviewSnippet || '';
     return (
-      <div className="bg-white/95 shadow-xl p-4 border border-blue-100 rounded-xl max-w-xs ring-1 ring-violet-100">
+      <div className="bg-white/95 shadow-xl p-4 border border-blue-100 rounded-xl max-w-xs ring-1 ring-violet-100 animate-fade-in">
         <p className="font-semibold mb-1 text-blue-700">{originalDate}</p>
         <div className="flex flex-col gap-0.5">
           <span className="text-[#10b981] flex justify-between text-xs"><span>Positive:</span><span className="font-mono">{payload[0]?.value || 0}</span></span>
@@ -295,27 +380,31 @@ const CustomTooltip = ({ active, payload, label }: any) => {
             <p className="text-xs text-gray-600 italic mt-1 line-clamp-3">{reviewSnippet}</p>
           </>
         )}
+        {data?.reviewCount ? (
+          <div className="mt-2 px-2 py-1 text-[11px] bg-yellow-50 text-yellow-800 rounded-lg font-semibold inline-block">
+            {data.reviewCount} reviews
+          </div>
+        ) : null}
       </div>
     );
   }
   return null;
 };
 
-// Styled tooltip for aspect chart
 const AspectTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
     return (
-      <div className="bg-white/95 shadow-xl p-4 border border-violet-100 rounded-xl ring-1 ring-violet-100">
-        <p className="font-semibold mb-2 text-violet-700">{label}</p>
+      <div className="bg-white/95 shadow-xl p-4 border border-pink-100 rounded-xl ring-1 ring-violet-100 animate-fade-in">
+        <p className="font-semibold mb-2 text-pink-700">{label}</p>
         {payload.map((entry: any, index: number) => (
           <div 
             key={`item-${index}`}
             className="flex justify-between text-xs"
-            style={{ color: entry.color }}
+            style={{ color: entry.color, fontWeight: 600 }}
           >
             <span>{entry.name}:</span>
-            <span className="font-mono ml-4">{entry.value} ({Math.round(entry.value / total * 100)}%)</span>
+            <span className="font-mono ml-4">{entry.value} ({total!==0?Math.round(entry.value / total * 100):0}%)</span>
           </div>
         ))}
       </div>
@@ -325,4 +414,3 @@ const AspectTooltip = ({ active, payload, label }: any) => {
 };
 
 export default SentimentTrend;
-
