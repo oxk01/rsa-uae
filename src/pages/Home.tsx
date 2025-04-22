@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart, Brain, Database, Lightbulb, Send } from 'lucide-react';
+import { BarChart3, MessageSquare, Share2, PieChart, TrendingUp, Clock, BarChart, Brain, Database, Lightbulb, Send, Book, FileText, Sparkles } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -199,49 +199,49 @@ const Home = () => {
       </section>
       
       {/* Our Approach section */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16 bg-white">
         <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Approach</h2>
+          <h2 className="text-3xl font-bold text-center mb-12 text-gray-800">Our Approach</h2>
           <p className="text-center text-gray-600 mb-12 max-w-2xl mx-auto">
             Our platform combines advanced AI, machine learning, and intuitive interfaces to deliver actionable insights.
           </p>
           
           <div className="grid md:grid-cols-3 gap-8">
             {/* Contextual AI */}
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-2">
+            <div className="bg-blue-50 rounded-2xl shadow-md p-8 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
               <div className="flex items-center mb-6">
                 <div className="bg-blue-100 p-3 rounded-full mr-4">
                   <Book className="h-8 w-8 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-blue-800">Contextual AI</h3>
               </div>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 State-of-the-art language models that understand context and nuance of professional language.
               </p>
             </div>
             
             {/* Big Data Processing */}
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-2">
+            <div className="bg-teal-50 rounded-2xl shadow-md p-8 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
               <div className="flex items-center mb-6">
                 <div className="bg-teal-100 p-3 rounded-full mr-4">
                   <FileText className="h-8 w-8 text-teal-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-teal-800">Big Data Processing</h3>
               </div>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 Distributed infrastructure to handle massive volumes of customer feedback at scale.
               </p>
             </div>
             
             {/* Contextual Understanding */}
-            <div className="bg-white rounded-2xl shadow-md p-8 hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-2">
+            <div className="bg-amber-50 rounded-2xl shadow-md p-8 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-2">
               <div className="flex items-center mb-6">
                 <div className="bg-amber-100 p-3 rounded-full mr-4">
                   <Sparkles className="h-8 w-8 text-amber-600" />
                 </div>
                 <h3 className="text-xl font-semibold text-amber-800">Contextual Understanding</h3>
               </div>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 Domain-specific insights provide accurate and precise sentiment analysis.
               </p>
             </div>
