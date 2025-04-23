@@ -1,8 +1,17 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+// Helper: Capitalizes first letter.
+const capitalizeFirstLetter = (value: string | number): string => {
+  if (typeof value === 'string') {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  return String(value);
+};
 
 interface SentimentTrendProps {
   trendData?: Array<{
@@ -27,44 +36,104 @@ const softShadow = "shadow-2xl hover:shadow-amber-100/30 transition-shadow durat
 const pastelBorder = "border border-blue-100";
 const sectionPadding = "p-6 md:p-8";
 
+// Returns array of unique month-year between min/max in data (fills blanks)
+function getAllMonthLabels(data: { date: string }[]): string[] {
+  if (!data || data.length === 0) return [];
+  // Parse original dates, format to YYYY-MM, sort
+  const parsed = data
+    .map(d => {
+      const dt = new Date(d.date);
+      if (!isNaN(dt.getTime())) {
+        return { date: dt, year: dt.getFullYear(), month: dt.getMonth() };
+      }
+      return null;
+    })
+    .filter(Boolean) as { date: Date; year: number; month: number }[];
+  if (parsed.length === 0) return [];
+
+  parsed.sort((a, b) => a.date.getTime() - b.date.getTime());
+  const min = parsed[0];
+  const max = parsed[parsed.length - 1];
+
+  const res: string[] = [];
+  let y = min.year,
+    m = min.month;
+  while (y < max.year || (y === max.year && m <= max.month)) {
+    // Add as "MMM YYYY" (Apr 2025)
+    res.push(
+      new Date(y, m, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' })
+    );
+    if (++m > 11) {
+      m = 0;
+      y++;
+    }
+  }
+  return res;
+}
+
+// Assign each data to its month bucket for aggregation
+function aggregateByMonth(trendData: any[]): Record<string, any> {
+  const map: Record<string, any> = {};
+  trendData.forEach(item => {
+    // Find "MMM YYYY" for this item
+    let dt: Date;
+    try {
+      dt = item.originalDate ? new Date(item.originalDate) : new Date(item.date);
+    } catch {
+      dt = new Date(item.date);
+    }
+    if (isNaN(dt.getTime())) return;
+    const key = dt.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+    if (!map[key]) {
+      map[key] = {
+        date: key,
+        positive: 0,
+        neutral: 0,
+        negative: 0,
+        reviewCount: 0,
+        labelDate: key
+      };
+    }
+    map[key].positive += item.positive || 0;
+    map[key].neutral += item.neutral || 0;
+    map[key].negative += item.negative || 0;
+    map[key].reviewCount += item.reviewCount || 0;
+    map[key].reviewSnippet = item.reviewSnippet || "";
+  });
+  return map;
+}
+
 const SentimentTrend = ({ trendData, aspectData: providedAspectData }: SentimentTrendProps) => {
   const hasData = trendData && trendData.length > 0;
   const [chartHeight] = useState(310);
   const [showLegend] = useState(true);
   const [selectedAspect, setSelectedAspect] = useState<string>("all");
 
+  // Normalized and organized data
   const processedData = useMemo(() => {
     if (!hasData) return [];
-    const seen: any = {};
-    return trendData
-      .map(item => {
-        let formattedDate = item.date;
-        let originalDate = item.originalDate || item.date;
-        try {
-          const dateObj = new Date(item.date);
-          if (!isNaN(dateObj.getTime())) {
-            formattedDate = dateObj.toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric'
-            });
-            originalDate = item.originalDate || dateObj.toISOString().split('T')[0];
-          }
-        } catch {
-          // fallback
-        }
-        const key = originalDate;
-        if (seen[key]) return null;
-        seen[key] = true;
+
+    // Fill all months between min & max
+    const allMonths = getAllMonthLabels(trendData || []);
+    const byMonth = aggregateByMonth(trendData || []);
+    // For each month, fill in the aggregated value (or 0/blank if none)
+    return allMonths.map(month => {
+      if (byMonth[month]) {
         return {
-          ...item,
-          date: formattedDate,
-          originalDate,
-          reviewSnippet: item.reviewSnippet || "No review snippet available"
+          ...byMonth[month],
+          // Make sure reviewCount & snippets are handled
+          reviewCount: byMonth[month].reviewCount,
+          reviewSnippet: byMonth[month].reviewSnippet
         };
-      })
-      .filter(Boolean)
-      .sort((a: any, b: any) => new Date(a.originalDate).getTime() - new Date(b.originalDate).getTime());
+      }
+      return {
+        date: month,
+        positive: 0,
+        neutral: 0,
+        negative: 0,
+        reviewCount: 0
+      };
+    });
   }, [trendData, hasData]);
 
   const aspectData = useMemo(() => {
@@ -116,7 +185,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                   <h2 className="text-xl font-extrabold bg-gradient-to-r from-blue-900/90 via-violet-700/70 to-blue-400/75 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
                     <span>Sentiment Trends Over Time</span>
                     <span className="bg-[#fef7cd] text-xs font-bold text-yellow-700 px-2 py-1 rounded-full shadow-sm">
-                      {processedData.length} Analyses
+                      {processedData.length} {processedData.length === 1 ? "Month" : "Months"}
                     </span>
                   </h2>
                   <p className="text-sm text-gray-500">How sentiment changed over your analysis periods</p>
@@ -125,10 +194,11 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
 
               <div className={`mt-8 rounded-2xl overflow-visible ${softShadow} bg-gradient-to-bl from-white via-[#e0f4ff]/90 to-[#f8fbfe]/75 ring-[2.5px] ring-blue-200/80`}>
                 <div className="pt-6 pb-8 px-1 relative" style={{height: `${chartHeight}px`}}>
+                  {/* Top review counts aligned above each x-axis tick */}
                   <div className="absolute z-10 w-full" style={{top: 2, left: 0, pointerEvents: "none"}}>
                     <div className="flex justify-between px-8">
                       {processedData.map((d, i) =>
-                        <div key={i} className="flex flex-col items-center" style={{width: '60px', minWidth: '60px'}}>
+                        <div key={i} className="flex flex-col items-center w-[72px] min-w-[72px]">
                           {d.reviewCount ? (
                             <span className="text-[11px] font-semibold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full shadow hover:shadow-lg animate-fade-in transition-all mb-2">
                               {d.reviewCount} reviews
@@ -141,17 +211,18 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart
                       data={processedData}
-                      margin={{ top: 40, right: 40, left: 25, bottom: 20 }}
+                      margin={{ top: 40, right: 40, left: 25, bottom: 30 }}
                     >
                       <CartesianGrid strokeDasharray="4 6" stroke="#bae6fd" opacity={0.16} />
                       <XAxis 
                         dataKey="date"
                         tick={{ fontSize: 13, fill: "#2353a2", fontWeight: 600 }}
-                        angle={-35}
-                        height={66}
+                        angle={-25}
+                        height={56}
                         textAnchor="end"
                         axisLine={{stroke: "#bae6fd", strokeWidth:2}}
                         tickLine={false}
+                        interval={0} // Show all month-labels
                       />
                       <YAxis 
                         width={46}
@@ -162,9 +233,9 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                       <Tooltip content={<CustomTooltip />} />
                       {showLegend && (
                         <Legend wrapperStyle={{ paddingTop: 10 }} iconSize={16} iconType="plainline"
-                          formatter={(value) =>
+                          formatter={value =>
                             <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
-                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                              {capitalizeFirstLetter(value)}
                             </span>
                           }
                         />
@@ -175,10 +246,18 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         stroke="#22d3ee"
                         fill="url(#linePositiveGrad)"
                         strokeWidth={4}
-                        dot={{ r: 7, fill: '#10b981', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        dot={{ r: 8, fill: '#10b981', strokeWidth: 2, stroke: "#f5f7fa" }}
                         name="positive"
                         animationDuration={1200}
                         isAnimationActive
+                        label={({ x, y, value }) => (
+                          value ? (
+                            <text x={x} y={y - 18} textAnchor="middle"
+                              className="font-semibold" fill="#059669" fontSize="13">
+                              {value}
+                            </text>
+                          ) : null
+                        )}
                       >
                         <defs>
                           <linearGradient id="linePositiveGrad" x1="0" y1="0" x2="0" y2="1">
@@ -186,7 +265,6 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                             <stop offset="100%" stopColor="#d1fae5" stopOpacity={0.04} />
                           </linearGradient>
                         </defs>
-                        <LabelList dataKey="positive" position="top" className="text-green-700 font-bold"/>
                       </Line>
                       <Line 
                         type="monotone" 
@@ -194,10 +272,18 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         stroke="#818cf8" 
                         fill="url(#lineNeutralGrad)"
                         strokeWidth={4}
-                        dot={{ r: 7, fill: '#6b7280', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        dot={{ r: 8, fill: '#6b7280', strokeWidth: 2, stroke: "#f5f7fa" }}
                         name="neutral"
                         animationDuration={1200}
                         isAnimationActive
+                        label={({ x, y, value }) => (
+                          value ? (
+                            <text x={x} y={y - 5} textAnchor="middle"
+                              className="font-semibold" fill="#6366f1" fontSize="13">
+                              {value}
+                            </text>
+                          ) : null
+                        )}
                       >
                         <defs>
                           <linearGradient id="lineNeutralGrad" x1="0" y1="0" x2="0" y2="1">
@@ -205,7 +291,6 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                             <stop offset="100%" stopColor="#e5e7eb" stopOpacity={0.04}/>
                           </linearGradient>
                         </defs>
-                        <LabelList dataKey="neutral" position="top" className="text-gray-700 font-bold"/>
                       </Line>
                       <Line 
                         type="monotone" 
@@ -213,10 +298,18 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         stroke="#f87171" 
                         fill="url(#lineNegativeGrad)"
                         strokeWidth={4}
-                        dot={{ r: 7, fill: '#ef4444', strokeWidth: 2, stroke: "#f5f7fa" }}
+                        dot={{ r: 8, fill: '#ef4444', strokeWidth: 2, stroke: "#f5f7fa" }}
                         name="negative"
                         animationDuration={1200}
                         isAnimationActive
+                        label={({ x, y, value }) => (
+                          value ? (
+                            <text x={x} y={y + 14} textAnchor="middle"
+                              className="font-semibold" fill="#b91c1c" fontSize="13">
+                              {value}
+                            </text>
+                          ) : null
+                        )}
                       >
                         <defs>
                           <linearGradient id="lineNegativeGrad" x1="0" y1="0" x2="0" y2="1">
@@ -224,7 +317,6 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                             <stop offset="100%" stopColor="#fff1f2" stopOpacity={0.04}/>
                           </linearGradient>
                         </defs>
-                        <LabelList dataKey="negative" position="top" className="text-red-700 font-bold"/>
                       </Line>
                     </LineChart>
                   </ResponsiveContainer>
@@ -258,7 +350,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                       <SelectContent>
                         {availableAspects.map((aspect) => (
                           <SelectItem key={aspect} value={aspect}>
-                            {aspect === "all" ? "All Aspects" : aspect.charAt(0).toUpperCase() + aspect.slice(1)}
+                            {aspect === "all" ? "All Aspects" : capitalizeFirstLetter(aspect)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -282,9 +374,9 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                       <Tooltip content={<AspectTooltip />} />
                       {showLegend && (
                         <Legend wrapperStyle={{paddingTop:18}} iconSize={15} iconType="square"
-                          formatter={(value) =>
+                          formatter={value =>
                             <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
-                              {value.charAt(0).toUpperCase() + value.slice(1)}
+                              {capitalizeFirstLetter(value)}
                             </span>
                           }/>
                       )}
@@ -364,7 +456,7 @@ const LegendDot = ({ color, label }: { color: string; label: string }) => (
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
-    const originalDate = data.originalDate || label;
+    const originalDate = data.date || label;
     const reviewSnippet = data.reviewSnippet || '';
     return (
       <div className="bg-white/95 shadow-xl p-4 border border-blue-100 rounded-xl max-w-xs ring-1 ring-violet-100 animate-fade-in">
@@ -403,7 +495,7 @@ const AspectTooltip = ({ active, payload, label }: any) => {
             className="flex justify-between text-xs"
             style={{ color: entry.color, fontWeight: 600 }}
           >
-            <span>{entry.name}:</span>
+            <span>{capitalizeFirstLetter(entry.name)}:</span>
             <span className="font-mono ml-4">{entry.value} ({total!==0?Math.round(entry.value / total * 100):0}%)</span>
           </div>
         ))}
@@ -414,3 +506,4 @@ const AspectTooltip = ({ active, payload, label }: any) => {
 };
 
 export default SentimentTrend;
+
