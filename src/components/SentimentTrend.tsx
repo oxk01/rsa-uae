@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList } from 'recharts';
 import { AlertCircle } from 'lucide-react';
@@ -291,14 +290,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         name="positive"
                         animationDuration={1200}
                         isAnimationActive
-                        label={({ x, y, value }) => (
-                          value ? (
-                            <text x={x} y={y - 18} textAnchor="middle"
-                              className="font-semibold" fill="#059669" fontSize="13">
-                              {value}
-                            </text>
-                          ) : null
-                        )}
+                        
                       >
                         <defs>
                           <linearGradient id="linePositiveGrad" x1="0" y1="0" x2="0" y2="1">
@@ -317,14 +309,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         name="neutral"
                         animationDuration={1200}
                         isAnimationActive
-                        label={({ x, y, value }) => (
-                          value ? (
-                            <text x={x} y={y - 5} textAnchor="middle"
-                              className="font-semibold" fill="#6366f1" fontSize="13">
-                              {value}
-                            </text>
-                          ) : null
-                        )}
+                        
                       >
                         <defs>
                           <linearGradient id="lineNeutralGrad" x1="0" y1="0" x2="0" y2="1">
@@ -343,14 +328,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         name="negative"
                         animationDuration={1200}
                         isAnimationActive
-                        label={({ x, y, value }) => (
-                          value ? (
-                            <text x={x} y={y + 14} textAnchor="middle"
-                              className="font-semibold" fill="#b91c1c" fontSize="13">
-                              {value}
-                            </text>
-                          ) : null
-                        )}
+                        
                       >
                         <defs>
                           <linearGradient id="lineNegativeGrad" x1="0" y1="0" x2="0" y2="1">
