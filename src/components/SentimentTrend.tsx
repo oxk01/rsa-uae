@@ -39,18 +39,24 @@ const sectionPadding = "p-6 md:p-8";
 // Returns array of unique month-year between min/max in data (fills blanks)
 function getAllMonthLabels(data: { date: string }[]): string[] {
   if (!data || data.length === 0) return [];
+  
   // Parse original dates, format to YYYY-MM, sort
   const parsed = data
     .map(d => {
-      const dt = new Date(d.date);
-      if (!isNaN(dt.getTime())) {
-        return { date: dt, year: dt.getFullYear(), month: dt.getMonth() };
+      try {
+        const dt = new Date(d.date);
+        if (!isNaN(dt.getTime())) {
+          return { date: dt, year: dt.getFullYear(), month: dt.getMonth() };
+        }
+      } catch (e) {
+        console.error("Error parsing date:", d.date, e);
       }
       return null;
     })
     .filter(Boolean) as { date: Date; year: number; month: number }[];
-  if (parsed.length === 0) return [];
-
+  
+  if (parsed.length === 0) return data.map(d => d.date); // Fallback to original strings
+  
   parsed.sort((a, b) => a.date.getTime() - b.date.getTime());
   const min = parsed[0];
   const max = parsed[parsed.length - 1];
@@ -58,8 +64,9 @@ function getAllMonthLabels(data: { date: string }[]): string[] {
   const res: string[] = [];
   let y = min.year,
     m = min.month;
+  
+  // Fill in all months between first and last date
   while (y < max.year || (y === max.year && m <= max.month)) {
-    // Add as "MMM YYYY" (Apr 2025)
     res.push(
       new Date(y, m, 1).toLocaleString('en-US', { month: 'short', year: 'numeric' })
     );
@@ -68,38 +75,68 @@ function getAllMonthLabels(data: { date: string }[]): string[] {
       y++;
     }
   }
+  
+  // Ensure we have at least one entry
+  if (res.length === 0) {
+    res.push(new Date().toLocaleString('en-US', { month: 'short', year: 'numeric' }));
+  }
+  
   return res;
 }
 
 // Assign each data to its month bucket for aggregation
 function aggregateByMonth(trendData: any[]): Record<string, any> {
   const map: Record<string, any> = {};
+  
   trendData.forEach(item => {
     // Find "MMM YYYY" for this item
     let dt: Date;
     try {
       dt = item.originalDate ? new Date(item.originalDate) : new Date(item.date);
     } catch {
-      dt = new Date(item.date);
+      dt = new Date();
     }
-    if (isNaN(dt.getTime())) return;
-    const key = dt.toLocaleString('en-US', { month: 'short', year: 'numeric' });
-    if (!map[key]) {
-      map[key] = {
-        date: key,
-        positive: 0,
-        neutral: 0,
-        negative: 0,
-        reviewCount: 0,
-        labelDate: key
-      };
+    
+    if (isNaN(dt.getTime())) {
+      // Handle invalid dates, use the string as key
+      const key = String(item.date);
+      if (!map[key]) {
+        map[key] = {
+          date: key,
+          positive: 0,
+          neutral: 0,
+          negative: 0,
+          reviewCount: 0,
+          labelDate: key
+        };
+      }
+    } else {
+      // Format date as "MMM YYYY"
+      const key = dt.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+      if (!map[key]) {
+        map[key] = {
+          date: key,
+          positive: 0,
+          neutral: 0,
+          negative: 0,
+          reviewCount: 0,
+          labelDate: key
+        };
+      }
     }
+    
+    // For the current bucket, add the sentiment values
+    const key = isNaN(dt.getTime()) ? 
+      String(item.date) : 
+      dt.toLocaleString('en-US', { month: 'short', year: 'numeric' });
+      
     map[key].positive += item.positive || 0;
     map[key].neutral += item.neutral || 0;
     map[key].negative += item.negative || 0;
     map[key].reviewCount += item.reviewCount || 0;
     map[key].reviewSnippet = item.reviewSnippet || "";
   });
+  
   return map;
 }
 
@@ -116,6 +153,10 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
     // Fill all months between min & max
     const allMonths = getAllMonthLabels(trendData || []);
     const byMonth = aggregateByMonth(trendData || []);
+    
+    console.log('All months:', allMonths);
+    console.log('Aggregated data:', byMonth);
+    
     // For each month, fill in the aggregated value (or 0/blank if none)
     return allMonths.map(month => {
       if (byMonth[month]) {
@@ -198,7 +239,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                   <div className="absolute z-10 w-full" style={{top: 2, left: 0, pointerEvents: "none"}}>
                     <div className="flex justify-between px-8">
                       {processedData.map((d, i) =>
-                        <div key={i} className="flex flex-col items-center w-[72px] min-w-[72px]">
+                        <div key={i} className="flex flex-col items-center" style={{width: `${100 / processedData.length}%`}}>
                           {d.reviewCount ? (
                             <span className="text-[11px] font-semibold bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full shadow hover:shadow-lg animate-fade-in transition-all mb-2">
                               {d.reviewCount} reviews
@@ -222,7 +263,7 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                         textAnchor="end"
                         axisLine={{stroke: "#bae6fd", strokeWidth:2}}
                         tickLine={false}
-                        interval={0} // Show all month-labels
+                        interval={0} // Show all months
                       />
                       <YAxis 
                         width={46}
@@ -233,9 +274,9 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                       <Tooltip content={<CustomTooltip />} />
                       {showLegend && (
                         <Legend wrapperStyle={{ paddingTop: 10 }} iconSize={16} iconType="plainline"
-                          formatter={value =>
+                          formatter={(value) =>
                             <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
-                              {capitalizeFirstLetter(value)}
+                              {capitalizeFirstLetter(String(value))}
                             </span>
                           }
                         />
@@ -374,9 +415,9 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                       <Tooltip content={<AspectTooltip />} />
                       {showLegend && (
                         <Legend wrapperStyle={{paddingTop:18}} iconSize={15} iconType="square"
-                          formatter={value =>
+                          formatter={(value) =>
                             <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
-                              {capitalizeFirstLetter(value)}
+                              {capitalizeFirstLetter(String(value))}
                             </span>
                           }/>
                       )}
@@ -495,7 +536,7 @@ const AspectTooltip = ({ active, payload, label }: any) => {
             className="flex justify-between text-xs"
             style={{ color: entry.color, fontWeight: 600 }}
           >
-            <span>{capitalizeFirstLetter(entry.name)}:</span>
+            <span>{capitalizeFirstLetter(String(entry.name))}:</span>
             <span className="font-mono ml-4">{entry.value} ({total!==0?Math.round(entry.value / total * 100):0}%)</span>
           </div>
         ))}
@@ -506,4 +547,3 @@ const AspectTooltip = ({ active, payload, label }: any) => {
 };
 
 export default SentimentTrend;
-

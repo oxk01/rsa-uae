@@ -20,14 +20,14 @@ import {
 } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 
-// Sample data for charts - now with more generalized trends rather than overfitted points
+// Sample data for charts - now with clearer monthly progression
 const sentimentTrendData = [
-  { month: 'Jan', positive: 65, neutral: 25, negative: 10, total: 100 },
-  { month: 'Feb', positive: 59, neutral: 22, negative: 19, total: 100 },
-  { month: 'Mar', positive: 70, neutral: 20, negative: 10, total: 100 },
-  { month: 'Apr', positive: 58, neutral: 27, negative: 15, total: 100 },
-  { month: 'May', positive: 63, neutral: 22, negative: 15, total: 100 },
-  { month: 'Jun', positive: 75, neutral: 15, negative: 10, total: 100 },
+  { month: 'Jan', positive: 65, neutral: 25, negative: 10, total: 100, reviewCount: 42 },
+  { month: 'Feb', positive: 59, neutral: 22, negative: 19, total: 100, reviewCount: 38 },
+  { month: 'Mar', positive: 70, neutral: 20, negative: 10, total: 100, reviewCount: 51 },
+  { month: 'Apr', positive: 58, neutral: 27, negative: 15, total: 100, reviewCount: 44 },
+  { month: 'May', positive: 63, neutral: 22, negative: 15, total: 100, reviewCount: 47 },
+  { month: 'Jun', positive: 75, neutral: 15, negative: 10, total: 100, reviewCount: 53 },
 ];
 
 // Average out the sentiment distribution to avoid overfitting
@@ -64,7 +64,9 @@ const DashboardCharts = () => {
   const aggregatedTrendData = useMemo(() => {
     return sentimentTrendData.map(item => ({
       ...item,
-      // Smooth the values slightly by adding minor adjustments to avoid perfect fits
+      // Add month and year for better labeling
+      monthYear: `${item.month} 2025`,
+      // Create slight variations in the data for more natural visualization
       positive: Math.round(item.positive * (1 + (Math.random() * 0.04 - 0.02))),
       neutral: Math.round(item.neutral * (1 + (Math.random() * 0.04 - 0.02))),
       negative: Math.round(item.negative * (1 + (Math.random() * 0.04 - 0.02))),
@@ -80,7 +82,7 @@ const DashboardCharts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart
               data={aggregatedTrendData}
-              margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+              margin={{ top: 35, right: 30, left: 0, bottom: 40 }}
             >
               <defs>
                 <linearGradient id="colorPositive" x1="0" y1="0" x2="0" y2="1">
@@ -96,11 +98,22 @@ const DashboardCharts = () => {
                   <stop offset="95%" stopColor="#ef4444" stopOpacity={0.1} />
                 </linearGradient>
               </defs>
+              
+              {/* Review count visualization above chart */}
+              <text x="50%" y="15" textAnchor="middle" className="text-sm font-medium text-blue-800">
+                Reviews by Month
+              </text>
+              
               <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
               <XAxis 
-                dataKey="month" 
+                dataKey="monthYear" 
                 tick={{ fontSize: 13, fill: "#2353a2" }}
                 axisLine={{ stroke: "#bae6fd", strokeWidth: 1 }}
+                textAnchor="end"
+                height={60}
+                angle={-30}
+                minTickGap={0}
+                interval={0} // Show all labels
                 padding={{ left: 20, right: 20 }}
               />
               <YAxis 
@@ -118,6 +131,7 @@ const DashboardCharts = () => {
                 formatter={(value, name) => {
                   return [`${value}%`, capitalizeFirstLetter(name)];
                 }}
+                labelFormatter={(label) => `${label}`}
               />
               <Area
                 type="monotone"
@@ -126,7 +140,7 @@ const DashboardCharts = () => {
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorPositive)"
-                activeDot={{ r: 6, strokeWidth: 1, stroke: '#fff' }}
+                activeDot={{ r: 8, strokeWidth: 2, stroke: '#fff' }}
               />
               <Area
                 type="monotone"
@@ -135,7 +149,7 @@ const DashboardCharts = () => {
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorNeutral)"
-                activeDot={{ r: 6, strokeWidth: 1, stroke: '#fff' }}
+                activeDot={{ r: 8, strokeWidth: 2, stroke: '#fff' }}
               />
               <Area
                 type="monotone"
@@ -144,7 +158,7 @@ const DashboardCharts = () => {
                 strokeWidth={2}
                 fillOpacity={1}
                 fill="url(#colorNegative)"
-                activeDot={{ r: 6, strokeWidth: 1, stroke: '#fff' }}
+                activeDot={{ r: 8, strokeWidth: 2, stroke: '#fff' }}
               />
               <Legend 
                 verticalAlign="top" 
@@ -153,10 +167,24 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {capitalizeFirstLetter(value)}
+                    {capitalizeFirstLetter(String(value))}
                   </span>
                 )}
               />
+              
+              {/* Add text labels for review counts */}
+              {aggregatedTrendData.map((entry, index) => (
+                <text
+                  key={`review-count-${index}`}
+                  x={`${8 + (index * (100 / (aggregatedTrendData.length - 1)))}%`}
+                  y={25}
+                  textAnchor="middle"
+                  className="text-xs font-semibold"
+                  fill="#4b5563"
+                >
+                  {entry.reviewCount} reviews
+                </text>
+              ))}
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -191,7 +219,7 @@ const DashboardCharts = () => {
                 innerRadius={40}
                 paddingAngle={2}
                 dataKey="value"
-                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                label={({ name, percent }) => `${String(name)}: ${(percent * 100).toFixed(0)}%`}
               >
                 {sentimentDistribution.map((entry, index) => (
                   <Cell 
@@ -218,7 +246,7 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {value}
+                    {String(value)}
                   </span>
                 )}
               />
@@ -241,7 +269,7 @@ const DashboardCharts = () => {
                 innerRadius={40}
                 paddingAngle={2}
                 dataKey="value"
-                label={({ name, value }) => `${name}: ${value}%`}
+                label={({ name, value }) => `${String(name)}: ${value}%`}
               >
                 {reviewSourceData.map((entry, index) => (
                   <Cell 
@@ -268,7 +296,7 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {value}
+                    {String(value)}
                   </span>
                 )}
               />
@@ -284,15 +312,19 @@ const DashboardCharts = () => {
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={aggregatedTrendData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
               barGap={0}
               barCategoryGap="10%"
             >
               <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
               <XAxis 
-                dataKey="month" 
+                dataKey="monthYear" 
                 tick={{ fontSize: 13, fill: "#2353a2" }}
                 axisLine={{ stroke: "#bae6fd", strokeWidth: 1 }}
+                textAnchor="end"
+                height={60}
+                angle={-30}
+                interval={0}
                 padding={{ left: 20, right: 20 }}
               />
               <YAxis 
@@ -307,7 +339,7 @@ const DashboardCharts = () => {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
                 formatter={(value, name) => {
-                  return [`${value}%`, capitalizeFirstLetter(name)];
+                  return [`${value}%`, capitalizeFirstLetter(String(name))];
                 }}
                 cursor={{ opacity: 0.5 }}
               />
@@ -318,7 +350,7 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {capitalizeFirstLetter(value)}
+                    {capitalizeFirstLetter(String(value))}
                   </span>
                 )}
               />
