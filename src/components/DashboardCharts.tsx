@@ -49,6 +49,14 @@ const reviewSourceData = [
 const COLORS = ['#93B5FF', '#B0FFBC', '#FFD6E0', '#CAACFF'];
 const PASTEL_COLORS = ['#F2FCE2', '#FEF7CD', '#E5DEFF', '#D3E4FD'];
 
+// Helper function to safely capitalize the first letter of a string
+const capitalizeFirstLetter = (value: string | number): string => {
+  if (typeof value === 'string') {
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
+  return String(value);
+};
+
 const DashboardCharts = () => {
   const { t } = useLanguage();
   
@@ -108,7 +116,7 @@ const DashboardCharts = () => {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
                 formatter={(value, name) => {
-                  return [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)];
+                  return [`${value}%`, capitalizeFirstLetter(name)];
                 }}
               />
               <Area
@@ -145,7 +153,7 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                    {capitalizeFirstLetter(value)}
                   </span>
                 )}
               />
@@ -299,7 +307,7 @@ const DashboardCharts = () => {
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
                 formatter={(value, name) => {
-                  return [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)];
+                  return [`${value}%`, capitalizeFirstLetter(name)];
                 }}
                 cursor={{ opacity: 0.5 }}
               />
@@ -310,7 +318,7 @@ const DashboardCharts = () => {
                 iconSize={10}
                 formatter={(value) => (
                   <span className="text-sm font-medium">
-                    {value.charAt(0).toUpperCase() + value.slice(1)}
+                    {capitalizeFirstLetter(value)}
                   </span>
                 )}
               />
