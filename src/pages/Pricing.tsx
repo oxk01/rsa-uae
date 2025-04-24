@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Check, Paypal } from 'lucide-react';
+import { Check, CreditCard } from 'lucide-react';
 import { 
   Dialog,
   DialogContent,
@@ -38,7 +39,7 @@ const PaymentDialog = ({ plan }) => {
         </div>
         <div className="space-y-4">
           <Button className="w-full" variant="outline">
-            <Paypal className="mr-2" />
+            <CreditCard className="mr-2" />
             Pay with PayPal
           </Button>
           <p className="text-xs text-center text-gray-500">
