@@ -1,7 +1,14 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { Check } from 'lucide-react';
+import { Check, Paypal } from 'lucide-react';
+import { 
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { 
   Accordion,
   AccordionContent,
@@ -17,6 +24,31 @@ import {
   CardDescription
 } from "@/components/ui/card";
 import { useLanguage } from '@/contexts/LanguageContext';
+
+const PaymentDialog = ({ plan }) => {
+  return (
+    <DialogContent className="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>PayPal Payment - {plan.name} Plan</DialogTitle>
+      </DialogHeader>
+      <div className="py-4">
+        <div className="text-center mb-6">
+          <p className="text-2xl font-bold">${plan.price.monthly}/month</p>
+          <p className="text-gray-500">{plan.description}</p>
+        </div>
+        <div className="space-y-4">
+          <Button className="w-full" variant="outline">
+            <Paypal className="mr-2" />
+            Pay with PayPal
+          </Button>
+          <p className="text-xs text-center text-gray-500">
+            You will be redirected to PayPal to complete your payment
+          </p>
+        </div>
+      </div>
+    </DialogContent>
+  );
+};
 
 const PricingPlan = () => {
   const { language } = useLanguage();
@@ -227,13 +259,17 @@ const PricingPlan = () => {
                 </CardContent>
                 
                 <CardFooter className="border-t border-gray-100 dark:border-gray-800">
-                  <Button 
-                    className={`w-full ${plan.highlight ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600' : ''}`} 
-                    variant={plan.buttonVariant as "default" | "outline"}
-                    asChild
-                  >
-                    <Link to="/contact">{plan.buttonText}</Link>
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button 
+                        className={`w-full ${plan.highlight ? 'bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600' : ''}`} 
+                        variant={plan.buttonVariant as "default" | "outline"}
+                      >
+                        {plan.buttonText}
+                      </Button>
+                    </DialogTrigger>
+                    <PaymentDialog plan={plan} />
+                  </Dialog>
                 </CardFooter>
               </Card>
             </div>
