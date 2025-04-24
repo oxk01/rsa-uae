@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award, Brain, Zap, Layers, Shield, Cpu, BarChart3, Globe, Star } from 'lucide-react';
+import { Sparkles, ArrowRight, Book, CheckCircle, FileText, Cloud, Lightbulb, Package, ChartBar, User, Target, Flag, Award, Brain, Zap, Layers, Shield, Cpu, BarChart3, Globe, Star, Database } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -74,46 +74,93 @@ const AboutPage = () => {
         </div>
       </section>
       
-      {/* Our Approach section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-900">
-        <div className="container mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center mb-12">Our Approach</h2>
+      {/* Our Approach section with enhanced dark mode */}
+      <section className="py-24 bg-white dark:bg-gray-800 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 -left-10 w-40 h-40 bg-blue-100/30 dark:bg-blue-900/20 rounded-full opacity-70 blur-xl"></div>
+          <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-amber-100/30 dark:bg-amber-900/20 rounded-full opacity-70 blur-xl"></div>
           
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-blue-900 text-white rounded-lg p-8">
-              <div className="flex items-center mb-6">
-                <div className="bg-blue-800 p-3 rounded-full">
-                  <Book className="h-8 w-8 text-blue-200" />
+          <div className="absolute left-1/4 top-1/3">
+            <div className="w-2 h-2 rounded-full bg-teal-500 dark:bg-teal-400 animate-pulse"></div>
+          </div>
+          <div className="absolute right-1/3 bottom-1/4">
+            <div className="w-3 h-3 rounded-full bg-amber-500 dark:bg-amber-400 animate-pulse"></div>
+          </div>
+          <div className="absolute right-1/4 top-1/4">
+            <div className="w-1 h-1 rounded-full bg-rose-500 dark:bg-rose-400 animate-pulse"></div>
+          </div>
+        </div>
+        
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="text-center mb-16">
+            <span className="inline-block px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 rounded-full text-sm font-medium mb-3">
+              Our Methodology
+            </span>
+            <h2 className="text-4xl font-bold mb-4 text-gray-800 dark:text-white bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-700 dark:from-white dark:to-gray-300">
+              Our Approach to Sentiment Analysis
+            </h2>
+            <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-teal-500 mx-auto mb-8"></div>
+            <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+              We combine advanced AI with intuitive interfaces to deliver actionable insights
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            {/* Card 1 - Enhanced for dark mode */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl dark:hover:shadow-blue-900/20 group-hover:scale-105">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-blue-400 to-blue-600"></div>
+                <div className="bg-gradient-to-b from-blue-50/90 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-blue-400 dark:bg-blue-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-blue-100 dark:bg-blue-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Cpu className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">Advanced AI Models</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    State-of-the-art language models that understand context and nuance in customer feedback across multiple languages and domains.
+                  </p>
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Contextual AI</h3>
-              <p className="text-blue-100">
-                State-of-the-art language models that understand context and nuance of professional language.
-              </p>
             </div>
-            
-            <div className="bg-teal-700 text-white rounded-lg p-8">
-              <div className="flex items-center mb-6">
-                <div className="bg-teal-800 p-3 rounded-full">
-                  <FileText className="h-8 w-8 text-teal-200" />
+
+            {/* Card 2 - Enhanced for dark mode */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl dark:hover:shadow-teal-900/20 group-hover:scale-105">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-teal-600"></div>
+                <div className="bg-gradient-to-b from-teal-50/90 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-teal-400 dark:bg-teal-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-teal-100 dark:bg-teal-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Brain className="h-8 w-8 text-teal-600 dark:text-teal-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 text-teal-600 dark:text-teal-400">Contextual Understanding</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    Deep learning algorithms that capture subtle nuances and context in customer feedback for more accurate sentiment analysis.
+                  </p>
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Big Data Processing</h3>
-              <p className="text-teal-100">
-                Distributed infrastructure to handle massive volumes of customer feedback at scale.
-              </p>
             </div>
-            
-            <div className="bg-amber-700 text-white rounded-lg p-8">
-              <div className="flex items-center mb-6">
-                <div className="bg-amber-800 p-3 rounded-full">
-                  <Sparkles className="h-8 w-8 text-amber-200" />
+
+            {/* Card 3 - Enhanced for dark mode */}
+            <div className="group hover:z-10">
+              <div className="relative overflow-hidden rounded-2xl transform transition-all duration-500 hover:shadow-2xl dark:hover:shadow-amber-900/20 group-hover:scale-105">
+                <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-400 to-amber-600"></div>
+                <div className="bg-gradient-to-b from-amber-50/90 to-white dark:from-gray-800 dark:to-gray-900 p-8">
+                  <div className="mb-6 relative">
+                    <div className="absolute inset-0 bg-amber-400 dark:bg-amber-600 blur-xl opacity-20 rounded-full"></div>
+                    <div className="bg-amber-100 dark:bg-amber-900/50 relative p-4 rounded-2xl transform transition-transform group-hover:scale-110 group-hover:rotate-3">
+                      <Database className="h-8 w-8 text-amber-600 dark:text-amber-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold mb-4 text-amber-600 dark:text-amber-400">Scalable Processing</h3>
+                  <p className="text-gray-700 dark:text-gray-300">
+                    High-performance infrastructure designed to process and analyze large volumes of customer feedback in real-time.
+                  </p>
                 </div>
               </div>
-              <h3 className="text-xl font-semibold mb-3">Contextual Understanding</h3>
-              <p className="text-amber-100">
-                Domain-specific insights provide accurate and precise sentiment analysis.
-              </p>
             </div>
           </div>
         </div>
