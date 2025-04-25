@@ -18,7 +18,6 @@ import {
   LabelList,
   ReferenceDot
 } from 'recharts';
-import { ChartContainer } from '@/components/ui/chart';
 
 const sentimentTrendData = [
   { month: 'Jan', positive: 65, neutral: 25, negative: 10, total: 100, reviewCount: 42 },
@@ -45,14 +44,16 @@ const reviewSourceData = [
 const COLORS = ['#93B5FF', '#B0FFBC', '#FFD6E0', '#CAACFF'];
 const PASTEL_COLORS = ['#F2FCE2', '#FEF7CD', '#E5DEFF', '#D3E4FD'];
 
-// Update the monthlyAspectData structure
 const monthlyAspectData = [
-  { aspect: 'Quality', score: 89, prevScore: 92 },
-  { aspect: 'Size', score: 75, prevScore: 78 },
-  { aspect: 'Overall', score: 82, prevScore: 85 },
-  { aspect: 'Price', score: 68, prevScore: 65 },
-  { aspect: 'Delivery', score: 72, prevScore: 70 }
-];
+  { aspect: 'Customer Support', score: 89, prevScore: 92 },
+  { aspect: 'Product Quality', score: 82, prevScore: 85 },
+  { aspect: 'Ease of Use', score: 75, prevScore: 78 },
+  { aspect: 'Value for Money', score: 72, prevScore: 70 },
+  { aspect: 'Feature Set', score: 68, prevScore: 71 },
+  { aspect: 'Documentation', score: 65, prevScore: 63 },
+  { aspect: 'Performance', score: 61, prevScore: 64 },
+  { aspect: 'Reliability', score: 58, prevScore: 60 }
+].sort((a, b) => b.score - a.score);
 
 const capitalizeFirstLetter = (value: string | number): string => {
   if (typeof value === 'string') {
@@ -390,12 +391,12 @@ const Dashboard = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
           <div>
             <h3 className="text-xl font-extrabold bg-gradient-to-r from-violet-700 via-purple-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
-              Aspect-Based Analysis
+              Monthly Aspect Analysis
               <span className="bg-[#ffd6e0] text-xs font-bold text-pink-700 px-2 py-1 rounded-full shadow-sm">
                 {monthlyAspectData.length} Aspects
               </span>
             </h3>
-            <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
+            <p className="text-sm text-gray-500">Comparison with previous month's scores</p>
           </div>
         </div>
 
@@ -405,8 +406,7 @@ const Dashboard = () => {
               data={monthlyAspectData}
               layout="vertical"
               margin={{ top: 20, right: 60, left: 40, bottom: 5 }}
-              barGap={0}
-              barCategoryGap="25%"
+              barCategoryGap={25}
             >
               <CartesianGrid 
                 strokeDasharray="3 6" 
@@ -416,61 +416,62 @@ const Dashboard = () => {
                 opacity={0.4}
               />
               <XAxis 
-                type="number"
+                type="number" 
                 domain={[0, 100]}
                 tick={{ fontSize: 12, fill: "#374151" }}
-                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
+                axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
                 tickLine={{ stroke: "#e5e7eb" }}
               />
               <YAxis
                 dataKey="aspect"
                 type="category"
-                tick={{ fontSize: 14, fill: "#4c1d95", fontWeight: 600 }}
-                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
+                tick={{ fontSize: 13, fill: "#111827", fontWeight: 500 }}
+                axisLine={{ stroke: '#e5e7eb', strokeWidth: 1 }}
                 tickLine={false}
-                width={100}
+                width={120}
               />
               <Tooltip
                 cursor={false}
-                contentStyle={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                  borderRadius: '8px',
-                  border: '1px solid #e5e7eb',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-                formatter={(value, name) => {
-                  if (name === 'score') return [`${value}%`, 'Current Score'];
-                  if (name === 'prevScore') return [`${value}%`, 'Previous Score'];
-                  return [value, name];
+                content={({ active, payload }) => {
+                  if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    return (
+                      <div className="bg-white/95 shadow-xl p-3 border border-gray-200 rounded-lg">
+                        <p className="font-semibold text-gray-900 mb-1">{data.aspect}</p>
+                        <p className="text-sm text-orange-600">Current: {data.score}%</p>
+                        <p className="text-sm text-gray-600">Previous: {data.prevScore}%</p>
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
               />
               <Bar
                 dataKey="score"
-                fill="url(#aspectGradient)"
-                radius={[20, 20, 20, 20]}
-                barSize={30}
-                name="Current Score"
+                fill="url(#gradientBar)"
+                radius={[4, 4, 4, 4]}
+                barSize={24}
               >
                 <defs>
-                  <linearGradient id="aspectGradient" x1="0" y1="0" x2="1" y2="0">
-                    <stop offset="0%" stopColor="#F97316" stopOpacity={0.8} />
-                    <stop offset="100%" stopColor="#FDBA74" stopOpacity={0.9} />
+                  <linearGradient id="gradientBar" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#F97316" stopOpacity={0.9} />
+                    <stop offset="100%" stopColor="#FB923C" stopOpacity={0.9} />
                   </linearGradient>
                 </defs>
-                <LabelList
-                  dataKey="score"
-                  position="right"
+                <LabelList 
+                  dataKey="score" 
+                  position="right" 
                   formatter={(value) => `${value}%`}
                   style={{ 
-                    fontSize: '12px', 
                     fill: '#374151',
+                    fontSize: '12px',
                     fontWeight: 600
                   }}
                 />
               </Bar>
               {monthlyAspectData.map((entry, index) => (
                 <ReferenceDot
-                  key={`prev-score-${index}`}
+                  key={`ref-dot-${index}`}
                   x={entry.prevScore}
                   y={entry.aspect}
                   r={4}
@@ -482,14 +483,14 @@ const Dashboard = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex justify-center gap-6 mt-4 text-sm text-gray-600">
-          <div className="flex items-center">
-            <div className="h-3 w-8 rounded bg-gradient-to-r from-[#F97316] to-[#FDBA74] mr-2"></div>
-            <span className="font-medium">Current Month Score</span>
+        <div className="flex justify-center gap-6 mt-4 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="h-3 w-8 rounded bg-gradient-to-r from-[#F97316] to-[#FB923C]"></div>
+            <span className="text-gray-600 font-medium">Current Month</span>
           </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 rounded-full bg-black border-2 border-white mr-2 shadow-sm"></div>
-            <span className="font-medium">Previous Month Score</span>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-black"></div>
+            <span className="text-gray-600 font-medium">Previous Month</span>
           </div>
         </div>
       </Card>
