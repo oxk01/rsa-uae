@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -140,7 +141,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         @media print {
           .report-section {
             page-break-inside: avoid;

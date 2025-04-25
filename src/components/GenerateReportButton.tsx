@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -62,7 +63,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       
       // Add title first
       const titleElement = reportElement.querySelector('#report-header');
-      if (titleElement) {
+      if (titleElement && titleElement instanceof HTMLElement) {
         const canvas = await html2canvas(titleElement, {
           scale: 2,
           logging: false,
@@ -86,26 +87,28 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         }
         
         const section = sections[i];
-        const canvas = await html2canvas(section as HTMLElement, {
-          scale: 2,
-          logging: false,
-          useCORS: true,
-          backgroundColor: '#ffffff',
-        });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margins
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Add content with margin
-        pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
-        
-        // Add page number
-        pdf.setFontSize(10);
-        pdf.setTextColor(100);
-        pdf.text(`Page ${currentPage}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 10, {
-          align: 'center'
-        });
+        if (section instanceof HTMLElement) {
+          const canvas = await html2canvas(section, {
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+          });
+          
+          const imgData = canvas.toDataURL('image/png');
+          const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margins
+          const imgHeight = (canvas.height * imgWidth) / canvas.width;
+          
+          // Add content with margin
+          pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+          
+          // Add page number
+          pdf.setFontSize(10);
+          pdf.setTextColor(100);
+          pdf.text(`Page ${currentPage}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 10, {
+            align: 'center'
+          });
+        }
       }
       
       pdf.save('sentiment_analysis_report.pdf');
