@@ -396,7 +396,12 @@ const DashboardCharts = () => {
               barGap={0}
               barCategoryGap="25%"
             >
-              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+              <CartesianGrid 
+                strokeDasharray="3 3" 
+                opacity={0.15} 
+                horizontal={true}
+                vertical={false}
+              />
               <XAxis 
                 dataKey="aspect"
                 interval={0}
@@ -404,25 +409,31 @@ const DashboardCharts = () => {
                 textAnchor="end"
                 height={100}
                 tick={{ fontSize: 12, fill: "#374151" }}
-                axisLine={{ stroke: "#e5e7eb" }}
+                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
               />
               <YAxis
                 domain={[0, 100]}
                 tick={{ fontSize: 12, fill: "#374151" }}
-                axisLine={{ stroke: "#e5e7eb" }}
+                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
+                tickLine={{ stroke: "#e5e7eb" }}
               />
               <Tooltip
+                cursor={false}
                 contentStyle={{
                   backgroundColor: 'rgba(255, 255, 255, 0.95)',
                   borderRadius: '8px',
                   border: '1px solid #e5e7eb',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
-                formatter={(value) => [`${value}%`, 'Score']}
+                formatter={(value, name) => {
+                  if (name === 'score') return [`${value}%`, 'Current Score'];
+                  if (name === 'prevScore') return [`${value}%`, 'Previous Score'];
+                  return [value, name];
+                }}
               />
               <Bar
                 dataKey="score"
-                fill="#f97316"
+                fill="#F97316"
                 radius={[4, 4, 0, 0]}
                 barSize={40}
                 name="Current Score"
@@ -431,23 +442,19 @@ const DashboardCharts = () => {
                   dataKey="score"
                   position="top"
                   formatter={(value) => `${value}%`}
-                  style={{ fontSize: '11px', fill: '#374151' }}
+                  style={{ 
+                    fontSize: '11px', 
+                    fill: '#374151',
+                    fontWeight: 500 
+                  }}
                 />
               </Bar>
-              <ReferenceDot
-                x={0}
-                y={monthlyAspectData[0].prevScore}
-                r={6}
-                fill="#000000"
-                stroke="white"
-                strokeWidth={2}
-              />
               {monthlyAspectData.map((entry, index) => (
                 <ReferenceDot
-                  key={index}
+                  key={`prev-score-${index}`}
                   x={entry.aspect}
                   y={entry.prevScore}
-                  r={6}
+                  r={5}
                   fill="#000000"
                   stroke="white"
                   strokeWidth={2}
@@ -458,11 +465,11 @@ const DashboardCharts = () => {
         </div>
         <div className="flex justify-center gap-6 mt-6 text-sm text-gray-600">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-[#f97316] rounded mr-2"></div>
+            <div className="w-4 h-4 bg-[#F97316] rounded mr-2"></div>
             <span>Current Month Score</span>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 rounded-full bg-black border-2 border-white mr-2"></div>
+            <div className="w-4 h-4 rounded-full bg-black border-2 border-white mr-2 shadow-sm"></div>
             <span>Previous Month Score</span>
           </div>
         </div>
