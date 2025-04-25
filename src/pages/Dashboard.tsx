@@ -129,10 +129,22 @@ const Dashboard = () => {
       ];
     }
     
+    const positiveValue = typeof analysisData.fileAnalysis.sentimentBreakdown.positive === 'number' 
+      ? analysisData.fileAnalysis.sentimentBreakdown.positive 
+      : 33;
+    
+    const neutralValue = typeof analysisData.fileAnalysis.sentimentBreakdown.neutral === 'number' 
+      ? analysisData.fileAnalysis.sentimentBreakdown.neutral 
+      : 34;
+    
+    const negativeValue = typeof analysisData.fileAnalysis.sentimentBreakdown.negative === 'number' 
+      ? analysisData.fileAnalysis.sentimentBreakdown.negative 
+      : 33;
+    
     return [
-      { name: 'Positive', value: analysisData.fileAnalysis.sentimentBreakdown.positive },
-      { name: 'Neutral', value: analysisData.fileAnalysis.sentimentBreakdown.neutral },
-      { name: 'Negative', value: analysisData.fileAnalysis.sentimentBreakdown.negative }
+      { name: 'Positive', value: positiveValue },
+      { name: 'Neutral', value: neutralValue },
+      { name: 'Negative', value: negativeValue }
     ];
   };
 
@@ -151,6 +163,31 @@ const Dashboard = () => {
       
       return { date, positive, neutral, negative };
     });
+  };
+
+  const handleDemoClick = () => {
+    navigate('/demo');
+  };
+  
+  const handleDeleteAllAnalyses = () => {
+    try {
+      localStorage.removeItem('rsa_saved_analyses');
+      localStorage.removeItem('rsa_current_analysis');
+      setSavedAnalyses([]);
+      setAnalysisData(null);
+      setHasData(false);
+      toast({
+        title: "Storage cleared",
+        description: "All analyses have been deleted from storage.",
+      });
+    } catch (e) {
+      console.error("Error deleting analyses:", e);
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting the analyses.",
+        variant: "destructive"
+      });
+    }
   };
 
   return (

@@ -15,6 +15,14 @@ interface SentimentTrendChartProps {
 const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
   const hasData = data && data.length > 0;
   
+  // Ensure all data values are valid numbers
+  const validatedData = hasData ? data.map(item => ({
+    date: item.date,
+    positive: typeof item.positive === 'number' ? item.positive : 0,
+    neutral: typeof item.neutral === 'number' ? item.neutral : 0,
+    negative: typeof item.negative === 'number' ? item.negative : 0
+  })) : [];
+  
   return (
     <DashboardCard 
       title="Sentiment Trends (Last 6 Months)"
@@ -28,7 +36,7 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
         <div className="h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
-              data={data}
+              data={validatedData}
               margin={{ top: 10, right: 30, left: 10, bottom: 20 }}
             >
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
