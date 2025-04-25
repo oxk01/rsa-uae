@@ -11,6 +11,7 @@ import WordCloudCard from '@/components/WordCloudCard';
 import SentimentTrendChart from '@/components/SentimentTrendChart';
 import SentimentBySource from '@/components/SentimentBySource';
 import RecentReviewsList from '@/components/RecentReviewsList';
+import HeatmapMatrix from '@/components/HeatmapMatrix';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -161,6 +162,25 @@ const Dashboard = () => {
     });
   };
 
+  const getMatrixData = () => {
+    if (!hasData || !analysisData?.fileAnalysis) {
+      return {
+        predictedPositive: 85,
+        predictedNegative: 15,
+        actualPositive: 82,
+        actualNegative: 18
+      };
+    }
+
+    // Calculate matrix data from analysis
+    return {
+      predictedPositive: Math.round(analysisData.fileAnalysis.sentimentBreakdown?.positive || 85),
+      predictedNegative: Math.round(analysisData.fileAnalysis.sentimentBreakdown?.negative || 15),
+      actualPositive: Math.round(analysisData.fileAnalysis.accuracyScore || 82),
+      actualNegative: 100 - Math.round(analysisData.fileAnalysis.accuracyScore || 82)
+    };
+  };
+
   return (
     <div className="container mx-auto px-4 py-6 bg-gray-50 min-h-screen">
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -227,7 +247,7 @@ const Dashboard = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <MostMentionedAspects data={analysisData?.fileAnalysis?.aspects || []} />
-            <WordCloudCard data={analysisData?.fileAnalysis?.keywords || []} />
+            <HeatmapMatrix data={getMatrixData()} />
           </div>
 
           <div className="grid grid-cols-1 gap-6">
