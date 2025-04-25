@@ -1,53 +1,65 @@
+
 import React from 'react';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import DashboardCard from './DashboardCard';
 
+interface AspectData {
+  aspect: string;
+  count: number;
+  positive?: number;
+  negative?: number;
+  neutral?: number;
+  sentiment?: string;
+}
+
 interface MostMentionedAspectsProps {
-  data?: Array<{
-    aspect: string;
-    count: number;
-    sentiment?: string;
-    positive?: number;
-    negative?: number;
-    neutral?: number;
-  }>;
+  data?: AspectData[];
 }
 
 const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
   const hasData = data && data.length > 0;
   
-  const sortedData = [...(data || [])]
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 7); // Reduced to 7 items to prevent overlapping
-  
-  const getBarColor = (entry: any) => {
-    if (!entry.sentiment) return '#3B82F6';
-    return entry.sentiment === 'positive' ? '#42b883' : 
-           entry.sentiment === 'negative' ? '#e64a3b' : '#f6c23e';
-  };
-    
+  // Sort and process data for visualization
+  const processedData = [...(data || [])]
+    .sort((a, b) => {
+      // Sort by positive sentiment percentage if available, otherwise by count
+      const aPositive = a.positive || 0;
+      const bPositive = b.positive || 0;
+      return bPositive - aPositive || b.count - a.count;
+    })
+    .slice(0, 7) // Keep top 7 aspects
+    .map(item => ({
+      ...item,
+      // Calculate percentages if not provided
+      positive: item.positive || 0,
+      negative: item.negative || 0,
+      neutral: item.neutral || (100 - (item.positive || 0) - (item.negative || 0))
+    }));
+
   return (
     <DashboardCard 
-      title="Most Mentioned Aspects"
-      className="bg-gradient-to-br from-white via-purple-50/30 to-purple-100/20 border-purple-100"
+      title="Aspect-Based Sentiment Analysis"
+      className="bg-gradient-to-br from-white via-amber-50/30 to-amber-100/20 border-amber-100"
     >
       {!hasData ? (
         <div className="h-[260px] flex items-center justify-center text-gray-400">
-          Upload Excel file to see aspect data
+          Upload data to see aspect-based analysis
         </div>
       ) : (
         <div className="h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={sortedData}
+              data={processedData}
               layout="vertical"
-              margin={{ top: 5, right: 60, left: 120, bottom: 5 }}
+              margin={{ top: 5, right: 30, left: 120, bottom: 5 }}
               barSize={20}
             >
               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
               <XAxis 
                 type="number"
+                domain={[0, 100]}
                 tick={{ fontSize: 11 }}
+                tickFormatter={(value) => `${value}%`}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
               />
@@ -69,22 +81,48 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
                   fontSize: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
+                formatter={(value: number, name: string) => {
+                  return [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)];
+                }}
               />
               <Bar 
-                dataKey="count" 
-                name="Mentions"
-                fill="url(#barGradient)"
-                radius={[0, 4, 4, 0]}
+                dataKey="positive" 
+                name="Positive" 
+                stackId="stack"
+                fill="#42b883"
               >
-                {sortedData.map((entry, index) => (
-                  <Cell 
-                    key={`cell-${index}`} 
-                    fill={getBarColor(entry)}
-                    style={{
-                      filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.1))'
-                    }}
-                  />
-                ))}
+                <LabelList 
+                  dataKey="positive" 
+                  position="inside"
+                  formatter={(value: number) => (value > 15 ? `${value}%` : '')}
+                  style={{ fill: 'white', fontSize: '11px' }}
+                />
+              </Bar>
+              <Bar 
+                dataKey="neutral" 
+                name="Neutral" 
+                stackId="stack"
+                fill="#f6c23e"
+              >
+                <LabelList 
+                  dataKey="neutral" 
+                  position="inside"
+                  formatter={(value: number) => (value > 15 ? `${value}%` : '')}
+                  style={{ fill: 'white', fontSize: '11px' }}
+                />
+              </Bar>
+              <Bar 
+                dataKey="negative" 
+                name="Negative" 
+                stackId="stack"
+                fill="#e64a3b"
+              >
+                <LabelList 
+                  dataKey="negative" 
+                  position="inside"
+                  formatter={(value: number) => (value > 15 ? `${value}%` : '')}
+                  style={{ fill: 'white', fontSize: '11px' }}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
