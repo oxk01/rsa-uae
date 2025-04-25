@@ -50,30 +50,62 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       const reportElement = document.getElementById('sentiment-report');
       if (!reportElement) return;
       
-      // Define PDF options
+      // Create PDF with more space
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       });
       
-      // Get all sections to process them separately for better page breaks
-      const sections = reportElement.querySelectorAll('section');
-      let pageNumber = 1;
+      // Get all sections
+      const sections = reportElement.querySelectorAll('.report-section');
       
-      // Add title to first page
+      // Add title first
       const titleElement = reportElement.querySelector('#report-header');
       if (titleElement) {
-        await addElementToPDF(pdf, titleElement, 15, pageNumber);
+        const canvas = await html2canvas(titleElement, {
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margins
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
       }
       
-      // Process each section on its own page
+      // Process each section
+      let currentPage = 1;
       for (let i = 0; i < sections.length; i++) {
-        pageNumber++;
-        pdf.addPage();
+        if (i > 0) {
+          pdf.addPage();
+          currentPage++;
+        }
         
         const section = sections[i];
-        await addElementToPDF(pdf, section, 15, pageNumber);
+        const canvas = await html2canvas(section as HTMLElement, {
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+        });
+        
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = pdf.internal.pageSize.getWidth() - 20; // 10mm margins
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Add content with margin
+        pdf.addImage(imgData, 'PNG', 10, 15, imgWidth, imgHeight);
+        
+        // Add page number
+        pdf.setFontSize(10);
+        pdf.setTextColor(100);
+        pdf.text(`Page ${currentPage}`, pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 10, {
+          align: 'center'
+        });
       }
       
       pdf.save('sentiment_analysis_report.pdf');
@@ -89,41 +121,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         description: "There was an error generating your PDF. Please try again.",
         variant: "destructive"
       });
-    }
-  };
-  
-  // Helper function to add an element to the PDF
-  const addElementToPDF = async (pdf: jsPDF, element: Element, yOffset: number, pageNumber: number) => {
-    try {
-      const canvas = await html2canvas(element as HTMLElement, {
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
-      
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const margin = 10; // Margin in mm
-      const contentWidth = pageWidth - (margin * 2);
-      
-      // Calculate image dimensions to fit within page width
-      const imgData = canvas.toDataURL('image/png');
-      const imgWidth = contentWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      
-      // Add image centered on page with proper margins
-      pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
-      
-      // Add page number
-      pdf.setFontSize(10);
-      pdf.text(`Page ${pageNumber}`, pageWidth / 2, pdf.internal.pageSize.getHeight() - 10, {
-        align: 'center'
-      });
-      
-      return yOffset + imgHeight + 10; // Return the new y-position
-    } catch (error) {
-      console.error('Error processing element for PDF:', error);
-      throw error;
     }
   };
 

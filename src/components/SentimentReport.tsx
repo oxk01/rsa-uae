@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -41,47 +40,44 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   };
 
   return (
-    <div className="p-6 bg-white" id="sentiment-report-content">
-      <div className="text-center mb-8" id="report-header">
-        <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
-        <p className="text-gray-500">Generated on {currentDate}</p>
+    <div className="p-6 bg-white space-y-8" id="sentiment-report">
+      <div id="report-header" className="text-center mb-12 pb-6 border-b">
+        <h1 className="text-3xl font-bold mb-4">Sentiment Analysis Report</h1>
+        <p className="text-gray-600 text-lg">Generated on {currentDate}</p>
       </div>
 
-      {/* Executive Summary */}
-      <section className="mb-16 page-break-after">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Executive Summary</h2>
-        <div className="space-y-4">
-          <p className="text-gray-700">
+      <div className="report-section space-y-6">
+        <h2 className="text-2xl font-semibold mb-6 text-blue-800 border-b pb-2">Executive Summary</h2>
+        <div className="grid gap-6">
+          <p className="text-gray-700 text-lg leading-relaxed">
             This report analyzes customer sentiment across multiple aspects of our product/service.
             The analysis reveals a predominantly positive sentiment (65%), with key strengths in
             product quality (87% positive) and delivery experience (83% positive).
           </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <Card className="p-4 border-l-4 border-l-blue-500">
-              <h3 className="font-medium mb-2 text-blue-700">Key Findings:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
-                <li>Quality and Delivery receive the highest positive ratings</li>
-                <li>Customer service maintains a strong 78% satisfaction rate</li>
-                <li>Shipping experience shows room for improvement at 68% positive</li>
+          <div className="grid md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4 text-blue-700">Key Findings</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center gap-2">• Quality and Delivery receive the highest positive ratings</li>
+                <li className="flex items-center gap-2">• Customer service maintains a strong 78% satisfaction rate</li>
+                <li className="flex items-center gap-2">• Shipping experience shows room for improvement at 68% positive</li>
               </ul>
             </Card>
-            <Card className="p-4 border-l-4 border-l-green-500">
-              <h3 className="font-medium mb-2 text-green-700">Recommendations:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
-                <li>Focus on improving shipping processes</li>
-                <li>Address size-related concerns</li>
-                <li>Maintain high quality standards</li>
+            <Card className="p-6">
+              <h3 className="text-xl font-semibold mb-4 text-green-700">Recommendations</h3>
+              <ul className="space-y-3 text-gray-700">
+                <li className="flex items-center gap-2">• Focus on improving shipping processes</li>
+                <li className="flex items-center gap-2">• Address size-related concerns</li>
+                <li className="flex items-center gap-2">• Maintain high quality standards</li>
               </ul>
             </Card>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Distribution of Sentiment */}
-      <section className="mb-16 page-break-after">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Distribution of Sentiment</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="report-section space-y-6">
+        <h2 className="text-2xl font-semibold mb-6 text-blue-800 border-b pb-2">Sentiment Distribution</h2>
+        <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -104,8 +100,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             </ResponsiveContainer>
           </div>
           <div className="space-y-4">
-            <h3 className="text-lg font-medium">Analysis</h3>
-            <p className="text-gray-700">
+            <h3 className="text-xl font-semibold">Analysis</h3>
+            <p className="text-gray-700 text-lg leading-relaxed">
               The sentiment distribution shows a strong positive trend with 65% of feedback being
               favorable. Neutral sentiment accounts for 20% of responses, while negative feedback
               represents 15%. This indicates overall customer satisfaction while highlighting
@@ -113,132 +109,44 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             </p>
           </div>
         </div>
-      </section>
+      </div>
 
-      {/* Aspect-Based Feedback */}
-      <section className="mb-16 page-break-after">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Aspect-Based Feedback</h2>
-        <div className="h-[400px] mb-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={aspectData}
-              layout="vertical"
-              margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis dataKey="aspect" type="category" width={100} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="positive" name="Positive" stackId="a" fill="#10b981" />
-              <Bar dataKey="neutral" name="Neutral" stackId="a" fill="#6b7280" />
-              <Bar dataKey="negative" name="Negative" stackId="a" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="space-y-4">
-          <p className="text-gray-700">
+      <div className="report-section space-y-6">
+        <h2 className="text-2xl font-semibold mb-6 text-blue-800 border-b pb-2">Aspect-Based Analysis</h2>
+        <div className="space-y-8">
+          <div className="h-[400px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={aspectData}
+                layout="vertical"
+                margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+                <XAxis type="number" domain={[0, 100]} />
+                <YAxis dataKey="aspect" type="category" width={100} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="positive" name="Positive" stackId="a" fill="#10b981" />
+                <Bar dataKey="neutral" name="Neutral" stackId="a" fill="#6b7280" />
+                <Bar dataKey="negative" name="Negative" stackId="a" fill="#ef4444" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <p className="text-gray-700 text-lg leading-relaxed">
             The aspect-based analysis reveals that Quality (87%) and Delivery (83%) are our strongest
             performing areas. Service maintains a solid performance at 78% positive feedback.
-            Shipping and Size aspects show the most room for improvement, with positive ratings
-            of 68% and 70% respectively.
+            Shipping and Size aspects show the most room for improvement.
           </p>
         </div>
-      </section>
+      </div>
 
-      {/* Model Evaluation */}
-      <section className="mb-16 page-break-after">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Model Evaluation</h2>
-        <HeatmapMatrix data={heatmapData} />
-        <div className="mt-4 space-y-4">
-          <p className="text-gray-700">
-            Our sentiment analysis model shows strong performance with:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            <li>68% True Positive rate for correctly identified positive sentiments</li>
-            <li>17% True Negative rate for correctly identified negative sentiments</li>
-            <li>Only 5% False Positive and 10% False Negative rates, indicating good reliability</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Most Mentioned Keywords */}
-      <section className="mb-16 page-break-after">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Most Mentioned Keywords</h2>
-        <div className="h-[300px] border rounded-md p-4 mb-6">
-          <WordCloudVisualization data={analysisData?.fileAnalysis?.keywords || []} />
-        </div>
-        <p className="text-gray-700">
-          The word cloud visualization highlights the most frequently mentioned terms in customer
-          feedback, with size indicating frequency and color representing sentiment. This helps
-          identify key themes and topics that matter most to our customers.
-        </p>
-      </section>
-
-      {/* Actionable Recommendations */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Actionable Recommendations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-6 bg-green-50 border-green-200">
-            <h3 className="font-semibold text-green-800 mb-3">Short-term Actions:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Establish a regular reporting cadence to track sentiment trends over time.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Address immediate concerns in shipping and delivery processes based on recent feedback.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Implement quick fixes for commonly reported size-related issues.
-                </span>
-              </li>
-            </ul>
-          </Card>
-
-          <Card className="p-6 bg-blue-50 border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-3">Long-term Strategy:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Implement targeted improvements based on the most frequently mentioned negative aspects.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Consider implementing a continuous feedback loop to monitor sentiment changes over time.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Develop a comprehensive size guide and fit recommendation system.
-                </span>
-              </li>
-            </ul>
-          </Card>
-        </div>
-        <div className="mt-4 text-gray-600 text-sm">
-          <p>These recommendations are based on the analysis of customer feedback and sentiment trends. Regular monitoring and implementation of these suggestions can help improve overall customer satisfaction.</p>
-        </div>
-      </section>
-
-      {/* Add custom CSS for better PDF printing */}
-      <style>
-        {`
+      <style jsx>{`
         @media print {
-          .page-break-after {
-            page-break-after: always;
-            break-after: page;
+          .report-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+            margin-top: 20px;
+            padding-top: 20px;
           }
           
           h2 {
@@ -246,13 +154,11 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             padding-top: 0;
           }
           
-          section {
-            page-break-inside: avoid;
+          .grid {
             break-inside: avoid;
           }
         }
-      `}
-      </style>
+      `}</style>
     </div>
   );
 };
