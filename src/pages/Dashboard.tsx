@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileBarChart2, ThumbsUp, ThumbsDown, BarChart2, Trash2 } from 'lucide-react';
@@ -119,7 +118,6 @@ const Dashboard = () => {
     }
   };
 
-  // Safely access sentiment breakdown data or use defaults
   const getSentimentData = () => {
     if (!hasData || !analysisData?.fileAnalysis?.sentimentBreakdown) {
       return [
@@ -148,7 +146,6 @@ const Dashboard = () => {
     ];
   };
 
-  // Safely get trend data from reviews
   const getTrendData = () => {
     if (!hasData || !analysisData?.fileAnalysis?.reviews || !analysisData.fileAnalysis.reviews.length) {
       return [];
@@ -156,38 +153,12 @@ const Dashboard = () => {
     
     return analysisData.fileAnalysis.reviews.slice(-10).map((review: any) => {
       const date = review.date || new Date().toISOString().split('T')[0];
-      // Ensure these are numbers to prevent passing objects
       const positive = typeof review.sentiment?.positive === 'number' ? review.sentiment.positive : 0;
       const neutral = typeof review.sentiment?.neutral === 'number' ? review.sentiment.neutral : 0; 
       const negative = typeof review.sentiment?.negative === 'number' ? review.sentiment.negative : 0;
       
       return { date, positive, neutral, negative };
     });
-  };
-
-  const handleDemoClick = () => {
-    navigate('/demo');
-  };
-  
-  const handleDeleteAllAnalyses = () => {
-    try {
-      localStorage.removeItem('rsa_saved_analyses');
-      localStorage.removeItem('rsa_current_analysis');
-      setSavedAnalyses([]);
-      setAnalysisData(null);
-      setHasData(false);
-      toast({
-        title: "Storage cleared",
-        description: "All analyses have been deleted from storage.",
-      });
-    } catch (e) {
-      console.error("Error deleting analyses:", e);
-      toast({
-        title: "Delete failed",
-        description: "There was an error deleting the analyses.",
-        variant: "destructive"
-      });
-    }
   };
 
   return (
