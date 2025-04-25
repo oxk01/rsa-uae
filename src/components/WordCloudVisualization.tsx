@@ -30,7 +30,7 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     padding: 1,
     rotations: 3,
     rotationAngles: [0, 90] as [number, number], // Explicitly type as MinMaxPair
-    scale: 'sqrt',
+    scale: 'sqrt' as const, // Use as const to specify this is a literal type
     spiral: 'archimedean',
     transitionDuration: 1000
   };
