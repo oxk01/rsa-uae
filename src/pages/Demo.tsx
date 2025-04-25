@@ -8,33 +8,6 @@ import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, extractAspects } from '@/utils/excelParser';
 import { Review, KeywordItem } from '@/types/review';
 
-interface Review {
-  id: number;
-  title: string;
-  date: string;
-  reviewCount: number;
-  sentiment: {
-    positive: number;
-    neutral: number;
-    negative: number;
-  };
-  source?: string;
-  rating?: string;
-  reviewText?: string;
-  sentimentLabel?: string;
-  accuracyScore?: number;
-  keywords?: Array<{ word: string; sentiment: string; count?: number }>;
-  aspects?: Array<{ 
-    name: string; 
-    sentiment: 'positive' | 'negative' | 'neutral';
-    confidence: number;
-    context: string;
-  }>;
-  helpfulnessRatio?: string;
-  verified?: boolean;
-  userId?: string;
-}
-
 const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, status: string) => void) => {
   try {
     onProgressUpdate?.(10, "Reading Excel file...");
