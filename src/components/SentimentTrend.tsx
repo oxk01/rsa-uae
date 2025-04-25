@@ -1,5 +1,6 @@
+
 import React, { useState, useMemo, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList, ReferenceDot } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList, ReferenceDot, Cell } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -35,6 +36,48 @@ const pastelCardGradient = "bg-gradient-to-r from-[#fdfcfb] via-[#e0f4ff] to-[#e
 const softShadow = "shadow-2xl hover:shadow-amber-100/30 transition-shadow duration-400";
 const pastelBorder = "border border-blue-100";
 const sectionPadding = "p-6 md:p-8";
+
+// Custom tooltip component for the sentiment trend chart
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/95 shadow-xl p-3 border border-blue-100 rounded-xl">
+        <p className="font-semibold text-blue-900 mb-2">{label}</p>
+        {payload.map((entry: any, index: number) => (
+          <div key={index} className="flex items-center justify-between mb-1">
+            <span className="flex items-center">
+              <div 
+                className="w-3 h-3 rounded-full mr-2"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-gray-700">{capitalizeFirstLetter(entry.name)}:</span>
+            </span>
+            <span className="font-mono font-semibold ml-4">
+              {entry.value}%
+            </span>
+          </div>
+        ))}
+        {payload[0]?.payload?.reviewSnippet && (
+          <div className="mt-2 pt-2 border-t border-gray-100">
+            <p className="text-xs italic text-gray-500">{payload[0].payload.reviewSnippet}</p>
+          </div>
+        )}
+      </div>
+    );
+  }
+  return null;
+};
+
+// Legend dot component for the chart legend
+const LegendDot = ({ color, label }: { color: string; label: string }) => (
+  <div className="flex items-center gap-1.5">
+    <div 
+      className="w-4 h-4 rounded-full shadow-sm"
+      style={{ backgroundColor: color }}
+    />
+    <span className="text-sm font-medium text-gray-700">{label}</span>
+  </div>
+);
 
 // Returns array of unique month-year between min/max in data (fills blanks)
 function getAllMonthLabels(data: { date: string }[]): string[] {
