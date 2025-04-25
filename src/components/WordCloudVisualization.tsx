@@ -24,10 +24,10 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     enableTooltip: true,
     deterministic: true,
     fontFamily: 'Inter, sans-serif',
-    fontSizes: [10, 60] as [number, number],
+    fontSizes: [12, 80] as [number, number],
     fontStyle: 'normal',
     fontWeight: 'normal',
-    padding: 1,
+    padding: 2,
     rotations: 3,
     rotationAngles: [0, 90] as [number, number],
     scale: 'sqrt' as const,
@@ -35,7 +35,6 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     transitionDuration: 1000
   };
 
-  // Custom renderer to use the sentiment color
   const getWordColor = (word: any) => word.color || '#3b82f6';
 
   return (
@@ -57,17 +56,16 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
   );
 };
 
-// Helper function to determine color based on sentiment
 function getSentimentColor(sentiment: string): string {
   switch (sentiment.toLowerCase()) {
     case 'positive':
-      return '#4ade80'; // green
+      return '#4ade80';
     case 'negative':
-      return '#f87171'; // red
+      return '#f87171';
     case 'neutral':
-      return '#94a3b8'; // gray
+      return '#94a3b8';
     default:
-      return '#3b82f6'; // blue
+      return '#3b82f6';
   }
 }
 
