@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend, LabelList, ReferenceDot } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -27,6 +27,7 @@ interface SentimentTrendProps {
     positive: number;
     neutral: number;
     negative: number;
+    prevScore?: number;
   }>;
 }
 
@@ -180,11 +181,11 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
     if (providedAspectData && providedAspectData.length > 0) return providedAspectData;
     if (!hasData) return [];
     return [
-      { aspect: 'Quality', positive: 65, neutral: 20, negative: 15 },
-      { aspect: 'Price', positive: 40, neutral: 30, negative: 30 },
-      { aspect: 'Service', positive: 70, neutral: 20, negative: 10 },
-      { aspect: 'Delivery', positive: 55, neutral: 25, negative: 20 },
-      { aspect: 'User Interface', positive: 60, neutral: 30, negative: 10 }
+      { aspect: 'Quality', positive: 65, neutral: 20, negative: 15, prevScore: 60 },
+      { aspect: 'Price', positive: 40, neutral: 30, negative: 30, prevScore: 50 },
+      { aspect: 'Service', positive: 70, neutral: 20, negative: 10, prevScore: 60 },
+      { aspect: 'Delivery', positive: 55, neutral: 25, negative: 20, prevScore: 50 },
+      { aspect: 'User Interface', positive: 60, neutral: 30, negative: 10, prevScore: 40 }
     ];
   }, [providedAspectData, hasData]);
 
@@ -355,10 +356,12 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
                 <div>
                   <h2 className="text-xl font-extrabold bg-gradient-to-r from-violet-700 via-purple-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
-                    <span>Aspect-Based Analysis</span>
-                    <span className="bg-[#ffd6e0] text-xs font-bold text-pink-700 px-2 py-1 rounded-full shadow-sm">{aspectData.length} Aspects</span>
+                    Aspect-Based Analysis
+                    <span className="bg-[#ffd6e0] text-xs font-bold text-pink-700 px-2 py-1 rounded-full shadow-sm">
+                      {aspectData.length} Aspects
+                    </span>
                   </h2>
-                  <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service you analyzed</p>
+                  <p className="text-sm text-gray-500">Monthly sentiment breakdown by different aspects</p>
                 </div>
                 {availableAspects.length > 1 && (
                   <div className="w-full md:w-auto">
@@ -378,84 +381,96 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
                 )}
               </div>
               
-              <div className="mt-8 rounded-2xl overflow-visible bg-gradient-to-r from-[#fff4f9] via-[#e0f4ff]/60 to-[#e5deff]/60 ring-[2.5px] ring-violet-100/80 shadow-xl">
+              <div className="mt-8 rounded-2xl overflow-visible bg-gradient-to-r from-[#fff4f9] via-[#fffbf7] to-[#fff9f5] ring-[2.5px] ring-orange-100/80 shadow-xl">
                 <div className="pt-6 pb-8 px-2 relative" style={{height: `${chartHeight}px`}}>
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart
                       data={filteredAspectData}
                       layout="vertical"
-                      margin={{ top: 16, right: 40, left: 32, bottom: 16 }}
+                      margin={{ top: 16, right: 60, left: 32, bottom: 16 }}
                       barCategoryGap={18}
                     >
-                      <CartesianGrid strokeDasharray="3 6" stroke="#d1fae5" opacity={0.11} horizontal={false} />
-                      <XAxis type="number" tick={{ fontSize: 12, fill: "#444" }} axisLine={{stroke:'#e5deff'}} tickLine={false}/>
-                      <YAxis dataKey="aspect" type="category" tick={{ fontWeight: 700, fontSize: 15, fill: "#6d28d9" }} axisLine={{stroke:'#e5deff'}} tickLine={false}/>
+                      <CartesianGrid 
+                        strokeDasharray="3 6" 
+                        stroke="#fde1d3" 
+                        opacity={0.3}
+                        horizontal={true}
+                        vertical={false}
+                      />
+                      <XAxis 
+                        type="number" 
+                        domain={[0, 100]}
+                        tick={{ fontSize: 12, fill: "#444" }}
+                        axisLine={{ stroke: '#fee2d5', strokeWidth: 1.5 }}
+                        tickLine={false}
+                      />
+                      <YAxis 
+                        dataKey="aspect" 
+                        type="category"
+                        tick={{ 
+                          fontSize: 13,
+                          fill: "#1e293b",
+                          fontWeight: 600
+                        }}
+                        axisLine={{ stroke: '#fee2d5', strokeWidth: 1.5 }}
+                        tickLine={false}
+                        width={140}
+                      />
                       <Tooltip content={<AspectTooltip />} />
-                      {showLegend && (
-                        <Legend wrapperStyle={{paddingTop:18}} iconSize={15} iconType="square"
-                          formatter={(value) =>
-                            <span style={{fontWeight: 700, fontSize:"13px", paddingLeft:'3px'}}>
-                              {capitalizeFirstLetter(String(value))}
-                            </span>
-                          }/>
-                      )}
                       <Bar 
                         dataKey="positive" 
                         stackId="a" 
-                        fill="url(#barPositiveGrad)" 
                         name="positive"
-                        radius={[20,20,20,20]}
+                        radius={[8, 8, 8, 8]}
+                        barSize={26}
                         animationDuration={950}
                       >
                         <defs>
-                          <linearGradient id="barPositiveGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="2%" stopColor="#a7f3d0" stopOpacity={0.8} />
-                            <stop offset="100%" stopColor="#10b981" stopOpacity={0.7} />
+                          <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
+                            <stop offset="0%" stopColor="#F97316" stopOpacity={0.85} />
+                            <stop offset="100%" stopColor="#FB923C" stopOpacity={0.75} />
                           </linearGradient>
                         </defs>
-                        <LabelList dataKey="positive" position="right" className="text-green-700 font-bold"/>
+                        {filteredAspectData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill="url(#barGradient)" />
+                        ))}
+                        <LabelList 
+                          dataKey="positive" 
+                          position="right"
+                          formatter={(value) => `${value}%`}
+                          style={{
+                            fill: '#1e293b',
+                            fontSize: '13px',
+                            fontWeight: 600
+                          }}
+                        />
                       </Bar>
-                      <Bar 
-                        dataKey="neutral" 
-                        stackId="a" 
-                        fill="url(#barNeutralGrad)" 
-                        name="neutral"
-                        radius={[20,20,20,20]}
-                        animationDuration={950}
-                      >
-                        <defs>
-                          <linearGradient id="barNeutralGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="2%" stopColor="#e0e7ef" stopOpacity={0.9} />
-                            <stop offset="100%" stopColor="#818cf8" stopOpacity={0.7} />
-                          </linearGradient>
-                        </defs>
-                        <LabelList dataKey="neutral" position="right" className="text-indigo-700 font-bold"/>
-                      </Bar>
-                      <Bar 
-                        dataKey="negative" 
-                        stackId="a" 
-                        fill="url(#barNegativeGrad)" 
-                        name="negative"
-                        radius={[20,20,20,20]}
-                        animationDuration={950}
-                      >
-                        <defs>
-                          <linearGradient id="barNegativeGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="2%" stopColor="#fda4af" stopOpacity={0.85} />
-                            <stop offset="100%" stopColor="#f87171" stopOpacity={0.7} />
-                          </linearGradient>
-                        </defs>
-                        <LabelList dataKey="negative" position="right" className="text-red-700 font-bold"/>
-                      </Bar>
+                      {/* Previous month dots */}
+                      {filteredAspectData.map((entry, index) => (
+                        <ReferenceDot
+                          key={`ref-dot-${index}`}
+                          x={entry.prevScore || 0}
+                          y={entry.aspect}
+                          r={5}
+                          fill="#000000"
+                          stroke="#FFFFFF"
+                          strokeWidth={2}
+                        />
+                      ))}
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
 
-              <div className="flex justify-center gap-8 mt-7 mb-3">
-                <LegendDot color="#10b981" label="Positive" />
-                <LegendDot color="#6b7280" label="Neutral" />
-                <LegendDot color="#ef4444" label="Negative" />
+              <div className="flex justify-center items-center gap-6 mt-6">
+                <div className="flex items-center gap-2">
+                  <div className="h-3 w-8 rounded bg-gradient-to-r from-[#F97316] to-[#FB923C]" />
+                  <span className="text-sm font-medium text-gray-700">Current Month</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-black" />
+                  <span className="text-sm font-medium text-gray-700">Previous Month</span>
+                </div>
               </div>
             </div>
           </TabsContent>
@@ -465,59 +480,35 @@ const SentimentTrend = ({ trendData, aspectData: providedAspectData }: Sentiment
   );
 };
 
-const LegendDot = ({ color, label }: { color: string; label: string }) => (
-  <div className="flex items-center">
-    <div className="w-3 h-3 rounded-full shadow-md" style={{ background: color, boxShadow: "0 2px 5px rgba(0,0,0,0.12)" }} />
-    <span className="text-xs font-bold ml-2 text-gray-700">{label}</span>
-  </div>
-);
-
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    const data = payload[0].payload;
-    const originalDate = data.date || label;
-    const reviewSnippet = data.reviewSnippet || '';
-    return (
-      <div className="bg-white/95 shadow-xl p-4 border border-blue-100 rounded-xl max-w-xs ring-1 ring-violet-100 animate-fade-in">
-        <p className="font-semibold mb-1 text-blue-700">{originalDate}</p>
-        <div className="flex flex-col gap-0.5">
-          <span className="text-[#10b981] flex justify-between text-xs"><span>Positive:</span><span className="font-mono">{payload[0]?.value || 0}</span></span>
-          <span className="text-[#6b7280] flex justify-between text-xs"><span>Neutral:</span><span className="font-mono">{payload[1]?.value || 0}</span></span>
-          <span className="text-[#ef4444] flex justify-between text-xs"><span>Negative:</span><span className="font-mono">{payload[2]?.value || 0}</span></span>
-        </div>
-        {reviewSnippet && reviewSnippet !== 'No review snippet available' && (
-          <>
-            <div className="border-t border-blue-100 my-2"></div>
-            <p className="text-xs text-gray-600 italic mt-1 line-clamp-3">{reviewSnippet}</p>
-          </>
-        )}
-        {data?.reviewCount ? (
-          <div className="mt-2 px-2 py-1 text-[11px] bg-yellow-50 text-yellow-800 rounded-lg font-semibold inline-block">
-            {data.reviewCount} reviews
-          </div>
-        ) : null}
-      </div>
-    );
-  }
-  return null;
-};
-
+// Update the AspectTooltip component
 const AspectTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
-    const total = payload.reduce((sum: number, entry: any) => sum + entry.value, 0);
+    const data = payload[0].payload;
+    const currentValue = data.positive;
+    const previousValue = data.prevScore || 0;
+    const change = currentValue - previousValue;
+    
     return (
-      <div className="bg-white/95 shadow-xl p-4 border border-pink-100 rounded-xl ring-1 ring-violet-100 animate-fade-in">
-        <p className="font-semibold mb-2 text-pink-700">{label}</p>
-        {payload.map((entry: any, index: number) => (
-          <div 
-            key={`item-${index}`}
-            className="flex justify-between text-xs"
-            style={{ color: entry.color, fontWeight: 600 }}
-          >
-            <span>{capitalizeFirstLetter(String(entry.name))}:</span>
-            <span className="font-mono ml-4">{entry.value} ({total!==0?Math.round(entry.value / total * 100):0}%)</span>
+      <div className="bg-white/95 shadow-xl p-4 border border-orange-100 rounded-xl max-w-xs">
+        <p className="font-semibold mb-2 text-gray-900">{label}</p>
+        <div className="space-y-1.5">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Current Month:</span>
+            <span className="font-mono font-medium text-orange-600">{currentValue}%</span>
           </div>
-        ))}
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-600">Previous Month:</span>
+            <span className="font-mono font-medium">{previousValue}%</span>
+          </div>
+          <div className="pt-1.5 border-t border-orange-100">
+            <div className="flex justify-between text-sm">
+              <span className="text-gray-600">Change:</span>
+              <span className={`font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {change >= 0 ? '+' : ''}{change}%
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
