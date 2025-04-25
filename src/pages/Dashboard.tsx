@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   ChartBarIcon, 
   ChartPieIcon, 
@@ -7,6 +8,22 @@ import {
   ServerIcon, 
   Hash 
 } from 'lucide-react';
+import {
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+  BarChart,
+  LineChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+  Line,
+  LabelList
+} from 'recharts';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -357,8 +374,9 @@ const Dashboard = () => {
                 >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" />
+                  <YAxis type="category" dataKey="name" width={100} />
                   <Tooltip content={<ChartTooltipContent />} />
+                  <Legend />
                   <Bar dataKey="value" fill={COLORS.blue}>
                     {mentionedAspectsData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={entry.fill} />
