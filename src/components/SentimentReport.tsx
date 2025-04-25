@@ -28,18 +28,22 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const recommendations = generateRecommendations(analysisData);
 
   const processedAspectData = useMemo(() => {
-    if (!analysisData?.fileAnalysis?.aspects || !analysisData.fileAnalysis.aspects.length) {
+    if (!analysisData?.fileAnalysis?.aspects) {
       return [];
     }
 
+    // Process all aspects without limiting to top 10
     const aspectGroups = analysisData.fileAnalysis.aspects.reduce((acc: any, aspect: any) => {
-      const name = aspect.name || 'Other';
+      const name = aspect.name || aspect.aspect || 'Other';
       if (!acc[name]) {
-        acc[name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
+        acc[name] = { positive: 0, neutral: 0, negative: 0, total: 0, mentions: [] };
       }
       
       acc[name].total++;
-      switch(aspect.sentiment?.toLowerCase()) {
+      acc[name].mentions.push(aspect);
+      
+      const sentiment = aspect.sentiment?.toLowerCase() || 'neutral';
+      switch(sentiment) {
         case 'positive':
           acc[name].positive++;
           break;
@@ -59,10 +63,10 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         positive: Math.round((counts.positive / counts.total) * 100),
         neutral: Math.round((counts.neutral / counts.total) * 100),
         negative: Math.round((counts.negative / counts.total) * 100),
-        total: counts.total
+        total: counts.total,
+        mentions: counts.mentions
       }))
-      .sort((a, b) => b.positive - a.positive)
-      .slice(0, 10);
+      .sort((a, b) => b.total - a.total); // Sort by total mentions
   }, [analysisData]);
 
   return (
@@ -157,21 +161,22 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
           <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
-          Aspect-Based Feedback
+          Aspect-Based Feedback Analysis
         </h2>
         <p className="text-gray-700 mb-4">
-          Analysis of {processedAspectData.length} key aspects from customer reviews, showing sentiment distribution for each aspect.
+          Analysis of {processedAspectData.length} aspects identified from {analysisData?.fileAnalysis?.totalReviews || 0} customer reviews,
+          showing detailed sentiment distribution for each aspect.
         </p>
         
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <div className="h-[800px] overflow-y-auto pr-4">
+          <ResponsiveContainer width="100%" height={Math.max(400, processedAspectData.length * 50)}>
             <BarChart
               data={processedAspectData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 20, right: 30, left: 160, bottom: 5 }}
               layout="vertical"
             >
               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-              <XAxis type="number" domain={[0, 100]} />
+              <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
               <YAxis 
                 dataKey="name" 
                 type="category"
@@ -181,14 +186,18 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
               <Tooltip
                 content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
-                    const total = processedAspectData.find(d => d.name === label)?.total || 0;
+                    const data = processedAspectData.find(d => d.name === label);
                     return (
-                      <div className="bg-white p-3 rounded-lg shadow border">
-                        <p className="font-medium mb-1">{label}</p>
-                        <p className="text-sm text-green-600">Positive: {payload[0].value}%</p>
-                        <p className="text-sm text-gray-600">Neutral: {payload[1].value}%</p>
-                        <p className="text-sm text-red-600">Negative: {payload[2].value}%</p>
-                        <p className="text-xs text-gray-500 mt-1">Total mentions: {total}</p>
+                      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
+                        <p className="font-medium text-gray-900 mb-2">{label}</p>
+                        <div className="space-y-1">
+                          <p className="text-sm text-green-600">Positive: {payload[0].value}%</p>
+                          <p className="text-sm text-gray-600">Neutral: {payload[1].value}%</p>
+                          <p className="text-sm text-red-600">Negative: {payload[2].value}%</p>
+                          <p className="text-sm font-medium text-gray-700 mt-2">
+                            Total mentions: {data?.total || 0}
+                          </p>
+                        </div>
                       </div>
                     );
                   }
@@ -196,33 +205,63 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
                 }}
               />
               <Legend />
-              <Bar dataKey="positive" name="Positive" stackId="a" fill="#4ade80" />
-              <Bar dataKey="neutral" name="Neutral" stackId="a" fill="#94a3b8" />
-              <Bar dataKey="negative" name="Negative" stackId="a" fill="#f87171" />
+              <Bar 
+                dataKey="positive" 
+                name="Positive" 
+                stackId="a" 
+                fill="#4ade80"
+                radius={[4, 0, 0, 4]}
+              />
+              <Bar 
+                dataKey="neutral" 
+                name="Neutral" 
+                stackId="a" 
+                fill="#94a3b8"
+              />
+              <Bar 
+                dataKey="negative" 
+                name="Negative" 
+                stackId="a" 
+                fill="#f87171"
+                radius={[0, 4, 4, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
         
-        {processedAspectData.length > 0 ? (
-          <div className="mt-4">
-            <h3 className="text-lg font-medium mb-2">Key Findings:</h3>
-            <ul className="list-disc pl-5 space-y-2 text-gray-700">
-              {processedAspectData.slice(0, 3).map((aspect, idx) => (
-                <li key={idx}>
-                  <span className="font-medium">{aspect.name}:</span>{' '}
-                  {aspect.positive > aspect.negative 
-                    ? `Received mostly positive feedback (${aspect.positive}% positive)`
-                    : `Received mostly negative feedback (${aspect.negative}% negative)`
-                  } from {aspect.total} mentions.
-                </li>
-              ))}
-            </ul>
+        <div className="mt-6 space-y-4">
+          <h3 className="text-lg font-medium">Key Insights:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="p-4 bg-green-50 border-green-200">
+              <h4 className="font-medium text-green-800 mb-2">Most Positive Aspects:</h4>
+              <ul className="list-disc pl-5 space-y-2">
+                {processedAspectData
+                  .sort((a, b) => b.positive - a.positive)
+                  .slice(0, 3)
+                  .map((aspect, idx) => (
+                    <li key={idx} className="text-gray-700">
+                      <span className="font-medium">{aspect.name}</span>:{' '}
+                      {aspect.positive}% positive feedback ({aspect.total} mentions)
+                    </li>
+                  ))}
+              </ul>
+            </Card>
+            <Card className="p-4 bg-red-50 border-red-200">
+              <h4 className="font-medium text-red-800 mb-2">Areas for Improvement:</h4>
+              <ul className="list-disc pl-5 space-y-2">
+                {processedAspectData
+                  .sort((a, b) => b.negative - a.negative)
+                  .slice(0, 3)
+                  .map((aspect, idx) => (
+                    <li key={idx} className="text-gray-700">
+                      <span className="font-medium">{aspect.name}</span>:{' '}
+                      {aspect.negative}% negative feedback ({aspect.total} mentions)
+                    </li>
+                  ))}
+              </ul>
+            </Card>
           </div>
-        ) : (
-          <div className="text-center text-gray-500 mt-4">
-            No aspect data available from the analysis
-          </div>
-        )}
+        </div>
       </section>
       
       <Separator className="my-6" />
