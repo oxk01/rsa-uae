@@ -20,13 +20,41 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
   
   const sentiment = result?.overallSentiment?.sentiment || 'neutral';
   const score = result?.overallSentiment?.score || 50;
-  const keyPhrases = result?.keyPhrases || [];
-  const aspects = result?.aspects || [];
+  const keyPhrases = result?.fileAnalysis?.keywords || [];
+  const aspects = result?.fileAnalysis?.aspects || [];
   const totalReviews = result?.fileAnalysis?.totalReviews || 1;
   const accuracyScore = result?.fileAnalysis?.accuracyScore || 80;
   
   const handleSave = () => {
     try {
+      // First, store the current analysis with all its data
+      localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
+      
+      // Then prepare and store the summary for the dashboard
+      const summary = {
+        id: Date.now(),
+        fileName: 'Analysis Result',
+        date: new Date().toISOString(),
+        totalReviews: totalReviews,
+        sentimentBreakdown: result.fileAnalysis.sentimentBreakdown,
+        overallSentiment: result.overallSentiment,
+        keywords: result.fileAnalysis.keywords,
+        aspects: result.fileAnalysis.aspects,
+        reviews: result.fileAnalysis.reviews,
+        trendData: result.fileAnalysis.reviews.map((review: any) => ({
+          date: review.date,
+          positive: review.sentiment.positive,
+          neutral: review.sentiment.neutral,
+          negative: review.sentiment.negative,
+          reviewSnippet: review.reviewText?.substring(0, 100)
+        }))
+      };
+
+      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+      const savedAnalyses = JSON.parse(savedAnalysesStr);
+      const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 9)];
+      localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+      
       onSave();
       
       toast({
