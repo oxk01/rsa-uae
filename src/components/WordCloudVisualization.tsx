@@ -28,12 +28,12 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
     enableTooltip: true,
     deterministic: false,
     fontFamily: 'Inter, system-ui, sans-serif',
-    fontSizes: [14, 60] as [number, number],
+    fontSizes: [16, 72] as [number, number],
     fontStyle: 'normal',
-    fontWeight: 'bold',
-    padding: 3,
-    rotations: 3,
-    rotationAngles: [0, 90] as [number, number],
+    fontWeight: 'normal',
+    padding: 4,
+    rotations: 2,
+    rotationAngles: [0, 45] as [number, number],
     scale: 'sqrt' as const,
     spiral: 'archimedean' as const,
     transitionDuration: 1000
@@ -51,18 +51,20 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
             callbacks={{
               getWordColor,
               onWordMouseOver: (word: any) => {
-                // Add hover effect
                 const element = document.getElementById(word.text);
                 if (element) {
-                  element.style.transform = 'scale(1.1)';
-                  element.style.transition = 'transform 0.2s ease';
+                  element.style.transform = 'scale(1.05) translateY(-2px)';
+                  element.style.filter = 'brightness(1.2)';
+                  element.style.transition = 'all 0.3s ease';
+                  element.style.textShadow = '0 2px 4px rgba(0,0,0,0.1)';
                 }
               },
               onWordMouseOut: (word: any) => {
-                // Remove hover effect
                 const element = document.getElementById(word.text);
                 if (element) {
-                  element.style.transform = 'scale(1)';
+                  element.style.transform = 'scale(1) translateY(0)';
+                  element.style.filter = 'brightness(1)';
+                  element.style.textShadow = 'none';
                 }
               }
             }}
@@ -80,13 +82,13 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
 function getSentimentColor(sentiment: string): string {
   switch (sentiment.toLowerCase()) {
     case 'positive':
-      return '#10b981'; // Green
+      return '#10b981'; // Softer green
     case 'negative':
-      return '#f43f5e'; // Red
+      return '#f43f5e'; // Softer red
     case 'neutral':
-      return '#6b7280'; // Gray
+      return '#94a3b8'; // Softer gray
     default:
-      return '#3b82f6'; // Blue
+      return '#60a5fa'; // Softer blue
   }
 }
 
