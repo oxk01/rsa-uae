@@ -51,33 +51,80 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       const reportElement = document.getElementById('sentiment-report');
       if (!reportElement) return;
       
-      const canvas = await html2canvas(reportElement, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-      
-      const imgData = canvas.toDataURL('image/png');
+      // Define PDF options
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       });
       
-      const imgWidth = 210;
-      const pageHeight = 297;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-      let heightLeft = imgHeight;
-      let position = 0;
+      // Get all sections to process them separately for better page breaks
+      const sections = reportElement.querySelectorAll('section');
+      let yOffset = 15; // Start with some margin
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const margin = 10; // margin in mm
+      const contentWidth = pageWidth - (margin * 2);
       
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= pageHeight;
+      // Add title to first page
+      const titleElement = reportElement.querySelector('h1');
+      if (titleElement) {
+        pdf.setFontSize(18);
+        pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
+        
+        pdf.setFontSize(12);
+        const dateText = `Generated on ${new Date().toLocaleDateString('en-US', { 
+          year: 'numeric', month: 'long', day: 'numeric' 
+        })}`;
+        pdf.text(dateText, pageWidth / 2, yOffset + 8, { align: 'center' });
+        yOffset += 20;
+      }
       
-      while (heightLeft > 0) {
-        position = heightLeft - imgHeight;
-        pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-        heightLeft -= pageHeight;
+      // Process each section separately
+      for (let i = 0; i < sections.length; i++) {
+        // Check if we need to add a new page
+        if (i > 0) {
+          pdf.addPage();
+          yOffset = 15; // Reset y position for new page
+        }
+        
+        const section = sections[i];
+        
+        // Add section title
+        const sectionTitle = section.querySelector('h2');
+        if (sectionTitle) {
+          pdf.setFontSize(16);
+          pdf.setFont('helvetica', 'bold');
+          pdf.text(sectionTitle.textContent || '', margin, yOffset);
+          yOffset += 10;
+          pdf.setFont('helvetica', 'normal');
+          pdf.setFontSize(12);
+        }
+        
+        // Capture each section as an image
+        const canvas = await html2canvas(section, {
+          scale: 2,
+          logging: false,
+          useCORS: true,
+          allowTaint: true,
+          // Skip title as we've already added it
+          ignoreElements: (element) => element.tagName.toLowerCase() === 'h2'
+        });
+        
+        // Calculate image dimensions to fit within page width
+        const imgData = canvas.toDataURL('image/png');
+        const imgWidth = contentWidth;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Check if image fits on current page, if not add a new page
+        if (yOffset + imgHeight > pageHeight - margin) {
+          pdf.addPage();
+          yOffset = margin;
+        }
+        
+        // Add image to page
+        pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
+        yOffset += imgHeight + 10; // Add some space after the image
       }
       
       pdf.save('sentiment_analysis_report.pdf');

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -40,14 +41,15 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   };
 
   return (
-    <div className="p-6 bg-white">
-      <div className="text-center mb-8">
+    <div className="p-6 bg-white print:p-0" id="sentiment-report-content">
+      <div className="text-center mb-8 page-break-after" id="report-header">
         <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
 
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Executive Summary</h2>
+      {/* Executive Summary - First page */}
+      <section className="mb-12 print:page-break-after">
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Executive Summary</h2>
         <div className="space-y-4">
           <p className="text-gray-700">
             This report analyzes customer sentiment across multiple aspects of our product/service.
@@ -76,10 +78,9 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Distribution of Sentiment</h2>
+      {/* Distribution of Sentiment - New page */}
+      <section className="mb-12 print:page-break-after">
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Distribution of Sentiment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="h-[300px]">
             <ResponsiveContainer width="100%" height="100%">
@@ -114,10 +115,9 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Aspect-Based Feedback</h2>
+      {/* Aspect-Based Feedback - New page */}
+      <section className="mb-12 print:page-break-after">
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Aspect-Based Feedback</h2>
         <div className="h-[400px] mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -146,10 +146,9 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Model Evaluation</h2>
+      {/* Model Evaluation - New page */}
+      <section className="mb-12 print:page-break-after">
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Model Evaluation</h2>
         <HeatmapMatrix data={heatmapData} />
         <div className="mt-4 space-y-4">
           <p className="text-gray-700">
@@ -163,10 +162,9 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      <Separator className="my-8" />
-
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Most Mentioned Keywords</h2>
+      {/* Most Mentioned Keywords - New page */}
+      <section className="mb-12 print:page-break-after">
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Most Mentioned Keywords</h2>
         <div className="h-[300px] border rounded-md p-4 mb-4">
           <WordCloudVisualization data={analysisData?.fileAnalysis?.keywords || []} />
         </div>
@@ -177,10 +175,9 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </p>
       </section>
 
-      <Separator className="my-8" />
-
+      {/* Actionable Recommendations - Final page */}
       <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Actionable Recommendations</h2>
+        <h2 className="text-xl font-semibold mb-4 text-blue-800">Actionable Recommendations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card className="p-6 bg-green-50 border-green-200">
             <h3 className="font-semibold text-green-800 mb-3">Short-term Actions:</h3>
@@ -235,6 +232,25 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
+      {/* Add custom CSS for better PDF printing */}
+      <style jsx>{`
+        @media print {
+          .print\\:page-break-after {
+            page-break-after: always;
+            break-after: page;
+          }
+          
+          h2 {
+            margin-top: 0;
+            padding-top: 0;
+          }
+          
+          section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+          }
+        }
+      `}</style>
     </div>
   );
 };
