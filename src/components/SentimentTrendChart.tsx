@@ -18,10 +18,10 @@ const formatDate = (dateInput: string): string => {
     // Try parsing the date with date-fns, which supports multiple formats
     const date = parseISO(dateInput);
     
-    // If parsing is successful, format the date
+    // If parsing is successful, format the date to "d MMMM" (e.g., "11 April")
     return format(date, 'd MMMM');
   } catch (error) {
-    console.error("Error formatting date:", error);
+    console.error("Error formatting date:", error, "for input:", dateInput);
     return dateInput; // Return original input if parsing fails
   }
 };
@@ -30,12 +30,18 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
   const hasData = data && data.length > 0;
   
   // Ensure all data values are valid numbers and format dates
-  const validatedData = hasData ? data.map(item => ({
-    date: formatDate(item.date),
-    positive: typeof item.positive === 'number' ? item.positive : 0,
-    neutral: typeof item.neutral === 'number' ? item.neutral : 0,
-    negative: typeof item.negative === 'number' ? item.negative : 0
-  })) : [];
+  const validatedData = hasData ? data.map(item => {
+    // Format the date and log for debugging
+    const formattedDate = formatDate(item.date);
+    console.log("Original date:", item.date, "Formatted date:", formattedDate);
+    
+    return {
+      date: formattedDate,
+      positive: typeof item.positive === 'number' ? item.positive : 0,
+      neutral: typeof item.neutral === 'number' ? item.neutral : 0,
+      negative: typeof item.negative === 'number' ? item.negative : 0
+    };
+  }) : [];
   
   return (
     <DashboardCard 
@@ -61,9 +67,10 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   position: 'insideBottom', 
                   offset: -10 
                 }}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, angle: 0, textAnchor: 'middle' }}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
+                height={60}
               />
               <YAxis 
                 tick={{ fontSize: 12 }}
@@ -79,6 +86,8 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   border: '1px solid #e5e7eb',
                   boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                 }}
+                formatter={(value, name) => [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)]}
+                labelFormatter={(label) => `Date: ${label}`}
               />
               <Legend wrapperStyle={{ paddingTop: 10, fontSize: 12 }} />
               <Line 
@@ -112,4 +121,3 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
 };
 
 export default SentimentTrendChart;
-
