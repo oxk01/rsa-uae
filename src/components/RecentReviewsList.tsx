@@ -2,6 +2,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import DashboardCard from './DashboardCard';
+import { format, isValid, parseISO } from 'date-fns';
 
 interface Review {
   id?: number;
@@ -30,7 +31,20 @@ interface RecentReviewsListProps {
 const RecentReviewsList = ({ reviews = [] }: RecentReviewsListProps) => {
   const hasReviews = reviews && reviews.length > 0;
 
-  // Function to determine the sentiment label based on sentiment object
+  // Format timestamp to human readable date
+  const formatTimestamp = (dateString: string) => {
+    try {
+      const date = parseISO(dateString);
+      if (isValid(date)) {
+        return format(date, 'MMM d, yyyy • h:mm a');
+      }
+      return dateString;
+    } catch {
+      return dateString;
+    }
+  };
+  
+  // Helper function to determine the sentiment label
   const getSentimentLabel = (sentiment?: {positive: number, neutral: number, negative: number}): string => {
     if (!sentiment) return "neutral";
     
@@ -73,7 +87,6 @@ const RecentReviewsList = ({ reviews = [] }: RecentReviewsListProps) => {
       {hasReviews ? (
         <div className="space-y-4">
           {reviews.map((review, idx) => {
-            // Get sentiment label safely
             const sentimentLabel = review.sentimentLabel || getSentimentLabel(review.sentiment);
             
             return (
@@ -91,7 +104,7 @@ const RecentReviewsList = ({ reviews = [] }: RecentReviewsListProps) => {
                     </span>
                     {review.rating && renderStarRating(review.rating)}
                   </div>
-                  <span className="text-sm text-gray-500">{review.date || 'No date'}</span>
+                  <span className="text-sm text-gray-500">{formatTimestamp(review.date || 'No date')}</span>
                 </div>
                 
                 <p className="font-medium mb-1">{review.title || 'Untitled Review'}</p>
