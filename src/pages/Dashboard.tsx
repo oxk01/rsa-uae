@@ -12,6 +12,7 @@ import SentimentTrendChart from '@/components/SentimentTrendChart';
 import SentimentBySource from '@/components/SentimentBySource';
 import RecentReviewsList from '@/components/RecentReviewsList';
 import HeatmapMatrix from '@/components/HeatmapMatrix';
+import GenerateReportButton from '@/components/GenerateReportButton';
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -188,7 +189,7 @@ const Dashboard = () => {
           <h1 className="text-xl font-bold mb-1">Dashboard</h1>
           <p className="text-sm text-gray-500">Real-time sentiment analysis insights</p>
         </div>
-        <div className="flex gap-2 mt-2 md:mt-0">
+        <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
           {hasData && (
             <Button 
               variant="outline" 
@@ -200,6 +201,7 @@ const Dashboard = () => {
               Clear Storage
             </Button>
           )}
+          <GenerateReportButton analysisData={analysisData} hasData={hasData} />
           <Button variant="outline" size="sm" onClick={handleDemoClick}>
             Upload New Data
           </Button>
