@@ -2,7 +2,7 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import DashboardCard from './DashboardCard';
-import { format, isValid, parseISO } from 'date-fns';
+import { format, isValid, parseISO, fromUnixTime } from 'date-fns';
 
 interface Review {
   id?: number;
@@ -34,13 +34,23 @@ const RecentReviewsList = ({ reviews = [] }: RecentReviewsListProps) => {
   // Format timestamp to human readable date
   const formatTimestamp = (dateString: string) => {
     try {
+      // Check if the dateString is a Unix timestamp (numeric string)
+      if (/^\d+$/.test(dateString)) {
+        // Convert Unix timestamp (seconds) to milliseconds and format
+        const timestamp = parseInt(dateString, 10) * 1000;
+        return format(new Date(timestamp), 'MMM d, yyyy • h:mm a');
+      }
+      
+      // Handle ISO date strings
       const date = parseISO(dateString);
       if (isValid(date)) {
         return format(date, 'MMM d, yyyy • h:mm a');
       }
-      return dateString;
-    } catch {
-      return dateString;
+      
+      return 'Invalid date';
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
     }
   };
   
