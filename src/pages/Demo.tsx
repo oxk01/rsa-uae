@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -7,7 +6,6 @@ import ReviewInput from '@/components/ReviewDemo/ReviewInput';
 import ReviewLoading from '@/components/ReviewDemo/ReviewLoading';
 import ReviewResults from '@/components/ReviewDemo/ReviewResults';
 import { parseExcelFile, analyzeSentiment, extractKeywords, extractAspects } from '@/utils/excelParser';
-import { KeywordItem } from '@/components/RecentReviews/types';
 
 interface Review {
   id: number;
@@ -268,15 +266,33 @@ const Demo = () => {
       setAnalysisResult(result);
       setAnalysisState('results');
       
-      // Save to localStorage for dashboard
-      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
-      const savedAnalyses = JSON.parse(savedAnalysesStr);
-      
-      // Add the current analysis to saved analyses
-      if (result.fileAnalysis && result.fileAnalysis.reviews) {
-        const reviews = result.fileAnalysis.reviews;
-        savedAnalyses.push(...reviews);
-        localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
+      // Save summary to localStorage instead of all reviews
+      try {
+        const summary = {
+          id: Date.now(),
+          fileName: file.name,
+          date: new Date().toISOString(),
+          totalReviews: result.fileAnalysis.totalReviews,
+          sentimentBreakdown: result.fileAnalysis.sentimentBreakdown,
+          overallSentiment: result.overallSentiment,
+          keyPhrases: result.keyPhrases,
+          aspects: result.aspects.slice(0, 5),
+          // Sample a small subset of reviews instead of all reviews
+          sampleReviews: result.fileAnalysis.reviews.slice(0, 20)
+        };
+        
+        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+        const savedAnalyses = JSON.parse(savedAnalysesStr);
+        
+        // Keep only the most recent analyses to avoid storage quota issues
+        const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 9)];
+        localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+        
+        // Also store the current analysis separately for immediate access
+        localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
+      } catch (storageError) {
+        console.warn("Could not save to localStorage:", storageError);
+        // Continue without saving to localStorage
       }
       
       toast({
@@ -323,7 +339,13 @@ const Demo = () => {
           {analysisState === 'results' && analysisResult && (
             <ReviewResults 
               result={analysisResult}
-              onSave={() => {}} 
+              onSave={() => {
+                toast({
+                  title: "Analysis saved",
+                  description: "Your analysis has been saved to the dashboard.",
+                });
+                navigate('/dashboard');
+              }} 
               onStartOver={handleStartOver}
               displayMode="table"
             />
