@@ -115,7 +115,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         <Card className="p-4">
           <h3 className="font-semibold mb-2">Key Phrases</h3>
           <div className="flex flex-wrap gap-2">
-            {keyPhrases.map((phrase: string, idx: number) => (
+            {keyPhrases.map((phrase: any, idx: number) => (
               <span 
                 key={idx} 
                 className={`px-2 py-1 rounded-full text-xs ${
@@ -126,7 +126,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
                       : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {phrase}
+                {typeof phrase === 'string' ? phrase : phrase.text || ""}
               </span>
             ))}
             {keyPhrases.length === 0 && <p className="text-gray-500 text-sm">No key phrases identified</p>}
