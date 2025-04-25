@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
@@ -26,6 +26,44 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   
   const insights = generateInsights(analysisData);
   const recommendations = generateRecommendations(analysisData);
+
+  const processedAspectData = useMemo(() => {
+    if (!analysisData?.fileAnalysis?.aspects || !analysisData.fileAnalysis.aspects.length) {
+      return [];
+    }
+
+    const aspectGroups = analysisData.fileAnalysis.aspects.reduce((acc: any, aspect: any) => {
+      const name = aspect.name || 'Other';
+      if (!acc[name]) {
+        acc[name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
+      }
+      
+      acc[name].total++;
+      switch(aspect.sentiment?.toLowerCase()) {
+        case 'positive':
+          acc[name].positive++;
+          break;
+        case 'negative':
+          acc[name].negative++;
+          break;
+        default:
+          acc[name].neutral++;
+      }
+      
+      return acc;
+    }, {});
+
+    return Object.entries(aspectGroups)
+      .map(([name, counts]: [string, any]) => ({
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        positive: Math.round((counts.positive / counts.total) * 100),
+        neutral: Math.round((counts.neutral / counts.total) * 100),
+        negative: Math.round((counts.negative / counts.total) * 100),
+        total: counts.total
+      }))
+      .sort((a, b) => b.positive - a.positive)
+      .slice(0, 10);
+  }, [analysisData]);
 
   return (
     <div className="p-6 bg-white">
@@ -122,48 +160,69 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           Aspect-Based Feedback
         </h2>
         <p className="text-gray-700 mb-4">
-          This section breaks down customer sentiment across different aspects of the product or service.
-          Understanding which aspects receive positive or negative feedback can help prioritize improvements.
+          Analysis of {processedAspectData.length} key aspects from customer reviews, showing sentiment distribution for each aspect.
         </p>
         
         <div className="h-[400px]">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={aspectData}
+              data={processedAspectData}
               margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              layout="vertical"
             >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis 
+              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
+              <XAxis type="number" domain={[0, 100]} />
+              <YAxis 
                 dataKey="name" 
-                angle={-45}
-                textAnchor="end"
-                height={60}
-                interval={0}
+                type="category"
+                width={150}
+                tick={{ fontSize: 12 }}
               />
-              <YAxis />
-              <Tooltip />
+              <Tooltip
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    const total = processedAspectData.find(d => d.name === label)?.total || 0;
+                    return (
+                      <div className="bg-white p-3 rounded-lg shadow border">
+                        <p className="font-medium mb-1">{label}</p>
+                        <p className="text-sm text-green-600">Positive: {payload[0].value}%</p>
+                        <p className="text-sm text-gray-600">Neutral: {payload[1].value}%</p>
+                        <p className="text-sm text-red-600">Negative: {payload[2].value}%</p>
+                        <p className="text-xs text-gray-500 mt-1">Total mentions: {total}</p>
+                      </div>
+                    );
+                  }
+                  return null;
+                }}
+              />
               <Legend />
-              <Bar dataKey="positive" stackId="a" fill="#4ade80" name="Positive" />
-              <Bar dataKey="neutral" stackId="a" fill="#94a3b8" name="Neutral" />
-              <Bar dataKey="negative" stackId="a" fill="#f87171" name="Negative" />
+              <Bar dataKey="positive" name="Positive" stackId="a" fill="#4ade80" />
+              <Bar dataKey="neutral" name="Neutral" stackId="a" fill="#94a3b8" />
+              <Bar dataKey="negative" name="Negative" stackId="a" fill="#f87171" />
             </BarChart>
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Key Findings:</h3>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            {aspectData.slice(0, 3).map((aspect, idx) => (
-              <li key={idx}>
-                <span className="font-medium">{aspect.name}:</span>{' '}
-                {aspect.positive > aspect.negative 
-                  ? `Received mostly positive feedback (${aspect.positive}% positive).`
-                  : `Received mostly negative feedback (${aspect.negative}% negative).`
-                }
-              </li>
-            ))}
-          </ul>
-        </div>
+        {processedAspectData.length > 0 ? (
+          <div className="mt-4">
+            <h3 className="text-lg font-medium mb-2">Key Findings:</h3>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              {processedAspectData.slice(0, 3).map((aspect, idx) => (
+                <li key={idx}>
+                  <span className="font-medium">{aspect.name}:</span>{' '}
+                  {aspect.positive > aspect.negative 
+                    ? `Received mostly positive feedback (${aspect.positive}% positive)`
+                    : `Received mostly negative feedback (${aspect.negative}% negative)`
+                  } from {aspect.total} mentions.
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <div className="text-center text-gray-500 mt-4">
+            No aspect data available from the analysis
+          </div>
+        )}
       </section>
       
       <Separator className="my-6" />
