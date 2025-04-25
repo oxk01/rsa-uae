@@ -45,13 +45,13 @@ const reviewSourceData = [
 const COLORS = ['#93B5FF', '#B0FFBC', '#FFD6E0', '#CAACFF'];
 const PASTEL_COLORS = ['#F2FCE2', '#FEF7CD', '#E5DEFF', '#D3E4FD'];
 
+// Update the monthlyAspectData structure
 const monthlyAspectData = [
-  { month: 'Jan', aspect: 'Product Quality', score: 89, prevScore: 92 },
-  { month: 'Feb', aspect: 'Customer Service', score: 75, prevScore: 78 },
-  { month: 'Mar', aspect: 'Price', score: 68, prevScore: 65 },
-  { month: 'Apr', aspect: 'Delivery', score: 62, prevScore: 64 },
-  { month: 'May', aspect: 'Website UX', score: 58, prevScore: 61 },
-  { month: 'Jun', aspect: 'Returns Process', score: 55, prevScore: 52 }
+  { aspect: 'Quality', score: 89, prevScore: 92 },
+  { aspect: 'Size', score: 75, prevScore: 78 },
+  { aspect: 'Overall', score: 82, prevScore: 85 },
+  { aspect: 'Price', score: 68, prevScore: 65 },
+  { aspect: 'Delivery', score: 72, prevScore: 70 }
 ];
 
 const capitalizeFirstLetter = (value: string | number): string => {
@@ -61,7 +61,7 @@ const capitalizeFirstLetter = (value: string | number): string => {
   return String(value);
 };
 
-const DashboardCharts = () => {
+const Dashboard = () => {
   const { t } = useLanguage();
   
   const aggregatedTrendData = useMemo(() => {
@@ -387,35 +387,48 @@ const DashboardCharts = () => {
       </Card>
 
       <Card className="col-span-1 lg:col-span-3 p-4 border-amber-100 bg-gradient-to-r from-[#fffbf2] via-[#fff8e6] to-[#fff9ed]/75">
-        <h3 className="text-lg font-medium mb-4">{t('aspectTrends')}</h3>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+          <div>
+            <h3 className="text-xl font-extrabold bg-gradient-to-r from-violet-700 via-purple-400 to-blue-400 bg-clip-text text-transparent tracking-tight mb-1 flex items-center gap-2">
+              Aspect-Based Analysis
+              <span className="bg-[#ffd6e0] text-xs font-bold text-pink-700 px-2 py-1 rounded-full shadow-sm">
+                {monthlyAspectData.length} Aspects
+              </span>
+            </h3>
+            <p className="text-sm text-gray-500">Sentiment breakdown by different aspects of the product or service</p>
+          </div>
+        </div>
+
         <div className="h-96">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={monthlyAspectData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              layout="vertical"
+              margin={{ top: 20, right: 60, left: 40, bottom: 5 }}
               barGap={0}
               barCategoryGap="25%"
             >
               <CartesianGrid 
-                strokeDasharray="3 3" 
-                opacity={0.15} 
+                strokeDasharray="3 6" 
                 horizontal={true}
                 vertical={false}
+                stroke="#e5e7eb"
+                opacity={0.4}
               />
               <XAxis 
-                dataKey="aspect"
-                interval={0}
-                angle={-45}
-                textAnchor="end"
-                height={100}
-                tick={{ fontSize: 12, fill: "#374151" }}
-                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
-              />
-              <YAxis
+                type="number"
                 domain={[0, 100]}
                 tick={{ fontSize: 12, fill: "#374151" }}
                 axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
                 tickLine={{ stroke: "#e5e7eb" }}
+              />
+              <YAxis
+                dataKey="aspect"
+                type="category"
+                tick={{ fontSize: 14, fill: "#4c1d95", fontWeight: 600 }}
+                axisLine={{ stroke: "#e5e7eb", strokeWidth: 1 }}
+                tickLine={false}
+                width={100}
               />
               <Tooltip
                 cursor={false}
@@ -433,28 +446,34 @@ const DashboardCharts = () => {
               />
               <Bar
                 dataKey="score"
-                fill="#F97316"
-                radius={[4, 4, 0, 0]}
-                barSize={40}
+                fill="url(#aspectGradient)"
+                radius={[20, 20, 20, 20]}
+                barSize={30}
                 name="Current Score"
               >
+                <defs>
+                  <linearGradient id="aspectGradient" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#F97316" stopOpacity={0.8} />
+                    <stop offset="100%" stopColor="#FDBA74" stopOpacity={0.9} />
+                  </linearGradient>
+                </defs>
                 <LabelList
                   dataKey="score"
-                  position="top"
+                  position="right"
                   formatter={(value) => `${value}%`}
                   style={{ 
-                    fontSize: '11px', 
+                    fontSize: '12px', 
                     fill: '#374151',
-                    fontWeight: 500 
+                    fontWeight: 600
                   }}
                 />
               </Bar>
               {monthlyAspectData.map((entry, index) => (
                 <ReferenceDot
                   key={`prev-score-${index}`}
-                  x={entry.aspect}
-                  y={entry.prevScore}
-                  r={5}
+                  x={entry.prevScore}
+                  y={entry.aspect}
+                  r={4}
                   fill="#000000"
                   stroke="white"
                   strokeWidth={2}
@@ -463,19 +482,20 @@ const DashboardCharts = () => {
             </BarChart>
           </ResponsiveContainer>
         </div>
-        <div className="flex justify-center gap-6 mt-6 text-sm text-gray-600">
+        <div className="flex justify-center gap-6 mt-4 text-sm text-gray-600">
           <div className="flex items-center">
-            <div className="w-4 h-4 bg-[#F97316] rounded mr-2"></div>
-            <span>Current Month Score</span>
+            <div className="h-3 w-8 rounded bg-gradient-to-r from-[#F97316] to-[#FDBA74] mr-2"></div>
+            <span className="font-medium">Current Month Score</span>
           </div>
           <div className="flex items-center">
-            <div className="w-4 h-4 rounded-full bg-black border-2 border-white mr-2 shadow-sm"></div>
-            <span>Previous Month Score</span>
+            <div className="w-3 h-3 rounded-full bg-black border-2 border-white mr-2 shadow-sm"></div>
+            <span className="font-medium">Previous Month Score</span>
           </div>
         </div>
       </Card>
+      
     </div>
   );
 };
 
-export default DashboardCharts;
+export default Dashboard;
