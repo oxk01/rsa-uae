@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import DashboardCard from './DashboardCard';
 
 interface HeatmapMatrixProps {
@@ -12,76 +11,49 @@ interface HeatmapMatrixProps {
   };
 }
 
-const COLORS = {
-  accurate: '#42b883',
-  inaccurate: '#e64a3b',
-  neutral: '#f6c23e'
-};
-
 const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
-  const accuracyData = [
-    { name: 'Accurate', value: data.actualPositive, color: COLORS.accurate },
-    { name: 'Inaccurate', value: data.actualNegative, color: COLORS.inaccurate }
-  ];
+  // Calculate confusion matrix values
+  const truePositives = Math.round((data.predictedPositive * data.actualPositive) / 100);
+  const falseNegatives = Math.round((data.predictedNegative * data.actualPositive) / 100);
+  const falsePositives = Math.round((data.predictedPositive * data.actualNegative) / 100);
+  const trueNegatives = Math.round((data.predictedNegative * data.actualNegative) / 100);
 
   return (
     <DashboardCard 
       title="Model Evaluation Matrix" 
       className="bg-gradient-to-br from-white via-green-50/30 to-green-100/20 border-green-100"
     >
-      <div className="h-[260px] relative flex flex-col items-center justify-center">
-        <ResponsiveContainer width="100%" height="80%">
-          <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
-            <defs>
-              <filter id="matrixShadow">
-                <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
-              </filter>
-            </defs>
-            <Pie
-              data={accuracyData}
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={80}
-              paddingAngle={2}
-              dataKey="value"
-              filter="url(#matrixShadow)"
-              label={({ name, value }) => (
-                <text 
-                  x={0} 
-                  y={0} 
-                  textAnchor="middle" 
-                  fill="#374151"
-                  className="text-xs font-medium"
-                >
-                  {`${name}: ${value}%`}
-                </text>
-              )}
-            >
-              {accuracyData.map((entry, index) => (
-                <Cell 
-                  key={`cell-${index}`} 
-                  fill={entry.color}
-                  style={{
-                    filter: 'drop-shadow(0px 2px 3px rgba(0, 0, 0, 0.1))'
-                  }}
-                />
-              ))}
-            </Pie>
-            <Tooltip
-              contentStyle={{ 
-                backgroundColor: 'white',
-                borderRadius: '8px',
-                border: '1px solid #e5e7eb',
-                padding: '12px',
-                fontSize: '12px',
-                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-              }}
-              formatter={(value) => [`${value}%`, 'Accuracy']}
-            />
-          </PieChart>
-        </ResponsiveContainer>
-        <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-gray-600 font-medium pt-2">
+      <div className="h-[260px] flex flex-col items-center justify-center p-4">
+        <div className="grid grid-cols-[auto,1fr,1fr] gap-2 w-full max-w-md">
+          {/* Headers */}
+          <div className=""></div>
+          <div className="text-center font-medium text-sm text-gray-600">Predicted Positive</div>
+          <div className="text-center font-medium text-sm text-gray-600">Predicted Negative</div>
+          
+          {/* Actual Positive Row */}
+          <div className="font-medium text-sm text-gray-600 self-center">Actual Positive</div>
+          <div className="bg-green-100 rounded-lg p-4 text-center">
+            <div className="font-bold text-green-700">{truePositives}%</div>
+            <div className="text-xs text-green-600">True Positive</div>
+          </div>
+          <div className="bg-red-100 rounded-lg p-4 text-center">
+            <div className="font-bold text-red-700">{falseNegatives}%</div>
+            <div className="text-xs text-red-600">False Negative</div>
+          </div>
+          
+          {/* Actual Negative Row */}
+          <div className="font-medium text-sm text-gray-600 self-center">Actual Negative</div>
+          <div className="bg-red-100 rounded-lg p-4 text-center">
+            <div className="font-bold text-red-700">{falsePositives}%</div>
+            <div className="text-xs text-red-600">False Positive</div>
+          </div>
+          <div className="bg-green-100 rounded-lg p-4 text-center">
+            <div className="font-bold text-green-700">{trueNegatives}%</div>
+            <div className="text-xs text-green-600">True Negative</div>
+          </div>
+        </div>
+        
+        <div className="text-center text-sm text-gray-600 font-medium mt-4">
           Overall Model Accuracy: {data.actualPositive}%
         </div>
       </div>
@@ -90,4 +62,3 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
 };
 
 export default HeatmapMatrix;
-
