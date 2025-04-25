@@ -24,14 +24,14 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     enableTooltip: true,
     deterministic: true,
     fontFamily: 'Inter, sans-serif',
-    fontSizes: [10, 60] as [number, number], // Explicitly type as MinMaxPair
+    fontSizes: [10, 60] as [number, number],
     fontStyle: 'normal',
     fontWeight: 'normal',
     padding: 1,
     rotations: 3,
-    rotationAngles: [0, 90] as [number, number], // Explicitly type as MinMaxPair
-    scale: 'sqrt' as const, // Use as const to specify this is a literal type
-    spiral: 'archimedean',
+    rotationAngles: [0, 90] as [number, number],
+    scale: 'sqrt' as const,
+    spiral: 'archimedean' as const,
     transitionDuration: 1000
   };
 
