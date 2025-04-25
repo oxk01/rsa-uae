@@ -41,14 +41,14 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   };
 
   return (
-    <div className="p-6 bg-white print:p-0" id="sentiment-report-content">
-      <div className="text-center mb-8 page-break-after" id="report-header">
+    <div className="p-6 bg-white" id="sentiment-report-content">
+      <div className="text-center mb-8" id="report-header">
         <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
 
-      {/* Executive Summary - First page */}
-      <section className="mb-12 print:page-break-after">
+      {/* Executive Summary */}
+      <section className="mb-16 page-break-after">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Executive Summary</h2>
         <div className="space-y-4">
           <p className="text-gray-700">
@@ -57,7 +57,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             product quality (87% positive) and delivery experience (83% positive).
           </p>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <Card className="p-4 border-l-4 border-l-blue-500">
               <h3 className="font-medium mb-2 text-blue-700">Key Findings:</h3>
               <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
@@ -78,8 +78,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      {/* Distribution of Sentiment - New page */}
-      <section className="mb-12 print:page-break-after">
+      {/* Distribution of Sentiment */}
+      <section className="mb-16 page-break-after">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Distribution of Sentiment</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           <div className="h-[300px]">
@@ -115,8 +115,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      {/* Aspect-Based Feedback - New page */}
-      <section className="mb-12 print:page-break-after">
+      {/* Aspect-Based Feedback */}
+      <section className="mb-16 page-break-after">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Aspect-Based Feedback</h2>
         <div className="h-[400px] mb-6">
           <ResponsiveContainer width="100%" height="100%">
@@ -146,8 +146,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      {/* Model Evaluation - New page */}
-      <section className="mb-12 print:page-break-after">
+      {/* Model Evaluation */}
+      <section className="mb-16 page-break-after">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Model Evaluation</h2>
         <HeatmapMatrix data={heatmapData} />
         <div className="mt-4 space-y-4">
@@ -162,10 +162,10 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      {/* Most Mentioned Keywords - New page */}
-      <section className="mb-12 print:page-break-after">
+      {/* Most Mentioned Keywords */}
+      <section className="mb-16 page-break-after">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Most Mentioned Keywords</h2>
-        <div className="h-[300px] border rounded-md p-4 mb-4">
+        <div className="h-[300px] border rounded-md p-4 mb-6">
           <WordCloudVisualization data={analysisData?.fileAnalysis?.keywords || []} />
         </div>
         <p className="text-gray-700">
@@ -175,7 +175,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </p>
       </section>
 
-      {/* Actionable Recommendations - Final page */}
+      {/* Actionable Recommendations */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-4 text-blue-800">Actionable Recommendations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -233,9 +233,10 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       </section>
 
       {/* Add custom CSS for better PDF printing */}
-      <style jsx>{`
+      <style>
+        {`
         @media print {
-          .print\\:page-break-after {
+          .page-break-after {
             page-break-after: always;
             break-after: page;
           }
@@ -250,7 +251,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             break-inside: avoid;
           }
         }
-      `}</style>
+      `}
+      </style>
     </div>
   );
 };

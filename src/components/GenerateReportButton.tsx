@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -60,71 +59,21 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       
       // Get all sections to process them separately for better page breaks
       const sections = reportElement.querySelectorAll('section');
-      let yOffset = 15; // Start with some margin
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10; // margin in mm
-      const contentWidth = pageWidth - (margin * 2);
+      let pageNumber = 1;
       
       // Add title to first page
-      const titleElement = reportElement.querySelector('h1');
+      const titleElement = reportElement.querySelector('#report-header');
       if (titleElement) {
-        pdf.setFontSize(18);
-        pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
-        
-        pdf.setFontSize(12);
-        const dateText = `Generated on ${new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', month: 'long', day: 'numeric' 
-        })}`;
-        pdf.text(dateText, pageWidth / 2, yOffset + 8, { align: 'center' });
-        yOffset += 20;
+        await addElementToPDF(pdf, titleElement, 15, pageNumber);
       }
       
-      // Process each section separately
+      // Process each section on its own page
       for (let i = 0; i < sections.length; i++) {
-        // Check if we need to add a new page
-        if (i > 0) {
-          pdf.addPage();
-          yOffset = 15; // Reset y position for new page
-        }
+        pageNumber++;
+        pdf.addPage();
         
         const section = sections[i];
-        
-        // Add section title
-        const sectionTitle = section.querySelector('h2');
-        if (sectionTitle) {
-          pdf.setFontSize(16);
-          pdf.setFont('helvetica', 'bold');
-          pdf.text(sectionTitle.textContent || '', margin, yOffset);
-          yOffset += 10;
-          pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(12);
-        }
-        
-        // Capture each section as an image
-        const canvas = await html2canvas(section, {
-          scale: 2,
-          logging: false,
-          useCORS: true,
-          allowTaint: true,
-          // Skip title as we've already added it
-          ignoreElements: (element) => element.tagName.toLowerCase() === 'h2'
-        });
-        
-        // Calculate image dimensions to fit within page width
-        const imgData = canvas.toDataURL('image/png');
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        // Check if image fits on current page, if not add a new page
-        if (yOffset + imgHeight > pageHeight - margin) {
-          pdf.addPage();
-          yOffset = margin;
-        }
-        
-        // Add image to page
-        pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
-        yOffset += imgHeight + 10; // Add some space after the image
+        await addElementToPDF(pdf, section, 15, pageNumber);
       }
       
       pdf.save('sentiment_analysis_report.pdf');
@@ -140,6 +89,41 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         description: "There was an error generating your PDF. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+  
+  // Helper function to add an element to the PDF
+  const addElementToPDF = async (pdf: jsPDF, element: Element, yOffset: number, pageNumber: number) => {
+    try {
+      const canvas = await html2canvas(element as HTMLElement, {
+        scale: 2,
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+      });
+      
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 10; // Margin in mm
+      const contentWidth = pageWidth - (margin * 2);
+      
+      // Calculate image dimensions to fit within page width
+      const imgData = canvas.toDataURL('image/png');
+      const imgWidth = contentWidth;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      
+      // Add image centered on page with proper margins
+      pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
+      
+      // Add page number
+      pdf.setFontSize(10);
+      pdf.text(`Page ${pageNumber}`, pageWidth / 2, pdf.internal.pageSize.getHeight() - 10, {
+        align: 'center'
+      });
+      
+      return yOffset + imgHeight + 10; // Return the new y-position
+    } catch (error) {
+      console.error('Error processing element for PDF:', error);
+      throw error;
     }
   };
 
