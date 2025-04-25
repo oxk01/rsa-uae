@@ -4,7 +4,8 @@ import { Tag } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 import { Badge } from '@/components/ui/badge';
 
-const keywords = [
+// Default keywords to show if there's no data
+const defaultKeywords = [
   { word: 'quality', count: 324, sentiment: 'positive' },
   { word: 'price', count: 245, sentiment: 'neutral' },
   { word: 'service', count: 198, sentiment: 'positive' },
@@ -30,21 +31,29 @@ const getSentimentVariant = (sentiment: string) => {
   }
 };
 
-const TopKeywords = () => {
+interface TopKeywordsProps {
+  keywords?: Array<{word: string, count: number, sentiment: string}>;
+  className?: string;
+}
+
+const TopKeywords = ({ keywords = defaultKeywords, className = "col-span-1" }: TopKeywordsProps) => {
+  // Make sure keywords is always an array
+  const keywordsToDisplay = Array.isArray(keywords) && keywords.length > 0 ? keywords : defaultKeywords;
+  
   return (
     <DashboardCard 
       title="Top Keywords" 
       icon={<Tag className="h-4 w-4" />}
-      className="col-span-1"
+      className={className}
     >
       <div className="flex flex-wrap gap-2">
-        {keywords.map((keyword, index) => (
+        {keywordsToDisplay.map((keyword, index) => (
           <Badge 
             key={index} 
             variant={getSentimentVariant(keyword.sentiment)}
             className="text-xs py-1 px-3"
           >
-            {keyword.word} <span className="font-semibold ml-1">({keyword.count})</span>
+            {keyword.word} <span className="font-semibold ml-1">({keyword.count || 0})</span>
           </Badge>
         ))}
       </div>

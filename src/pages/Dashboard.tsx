@@ -260,13 +260,16 @@ const Dashboard = () => {
     const keywordsMap: { [key: string]: number } = {};
     
     savedAnalyses.forEach(analysis => {
-      analysis.keywords.forEach(keyword => {
-        if (keywordsMap[keyword.word]) {
-          keywordsMap[keyword.word] += keyword.count;
-        } else {
-          keywordsMap[keyword.word] = keyword.count;
-        }
-      });
+      // Add null check for keywords property
+      if (analysis.keywords && Array.isArray(analysis.keywords)) {
+        analysis.keywords.forEach(keyword => {
+          if (keywordsMap[keyword.word]) {
+            keywordsMap[keyword.word] += keyword.count || 1;
+          } else {
+            keywordsMap[keyword.word] = keyword.count || 1;
+          }
+        });
+      }
     });
     
     return Object.entries(keywordsMap)
@@ -286,17 +289,20 @@ const Dashboard = () => {
     };
     
     savedAnalyses.forEach(analysis => {
-      analysis.keywords.forEach(keyword => {
-        if (keyword.word === 'quality' || keyword.word === 'price' || keyword.word === 'service') {
-          if (keyword.sentiment === 'positive') {
-            aspectData[keyword.word].positive += keyword.count;
-          } else if (keyword.sentiment === 'negative') {
-            aspectData[keyword.word].negative += keyword.count;
-          } else {
-            aspectData[keyword.word].neutral += keyword.count;
+      // Add null check for keywords property
+      if (analysis.keywords && Array.isArray(analysis.keywords)) {
+        analysis.keywords.forEach(keyword => {
+          if (keyword.word === 'quality' || keyword.word === 'price' || keyword.word === 'service') {
+            if (keyword.sentiment === 'positive') {
+              aspectData[keyword.word].positive += keyword.count || 1;
+            } else if (keyword.sentiment === 'negative') {
+              aspectData[keyword.word].negative += keyword.count || 1;
+            } else {
+              aspectData[keyword.word].neutral += keyword.count || 1;
+            }
           }
-        }
-      });
+        });
+      }
     });
     
     return aspects.map(aspect => ({
@@ -445,9 +451,9 @@ const Dashboard = () => {
     const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
     
     let sentimentLabel = "Neutral";
-    if (sentiment.positive > Math.max(sentiment.neutral, sentiment.negative)) {
+    if (sentiment.positive > Math.max(sentiment.neutral || 0, sentiment.negative || 0)) {
       sentimentLabel = "Positive";
-    } else if (sentiment.negative > Math.max(sentiment.neutral, sentiment.positive)) {
+    } else if (sentiment.negative > Math.max(sentiment.neutral || 0, sentiment.positive || 0)) {
       sentimentLabel = "Negative";
     }
     
