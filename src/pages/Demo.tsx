@@ -268,6 +268,17 @@ const Demo = () => {
       setAnalysisResult(result);
       setAnalysisState('results');
       
+      // Save to localStorage for dashboard
+      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+      const savedAnalyses = JSON.parse(savedAnalysesStr);
+      
+      // Add the current analysis to saved analyses
+      if (result.fileAnalysis && result.fileAnalysis.reviews) {
+        const reviews = result.fileAnalysis.reviews;
+        savedAnalyses.push(...reviews);
+        localStorage.setItem('rsa_saved_analyses', JSON.stringify(savedAnalyses));
+      }
+      
       toast({
         title: "Analysis complete",
         description: `Successfully analyzed ${result.fileAnalysis.totalReviews} reviews with ${result.fileAnalysis.accuracyScore}% accuracy.`,

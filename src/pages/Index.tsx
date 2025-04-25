@@ -1,19 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import StatsGrid from '@/components/StatsGrid';
-import SentimentOverview from '@/components/SentimentOverview';
-import TopKeywords from '@/components/TopKeywords';
-import SentimentTrend from '@/components/SentimentTrend';
-import ReviewSources from '@/components/ReviewSources';
-import RecentReviews from '@/components/RecentReviews';
-import GenerateReportButton from '@/components/GenerateReportButton';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { AlertCircle, Download } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { extractAspects } from '@/utils/excelParser';
+import DashboardGraphs from '@/components/DashboardGraphs';
 
 interface Analysis {
   id: number;
@@ -41,6 +36,10 @@ const Index = () => {
   const [sentimentOverviewData, setSentimentOverviewData] = useState<any[]>([]);
   const [trendData, setTrendData] = useState<any[]>([]);
   const [aspectData, setAspectData] = useState<any[]>([]);
+  const [wordCloudData, setWordCloudData] = useState<any[]>([]);
+  const [sourceData, setSourceData] = useState<any[]>([]);
+  const [mentionedAspectsData, setMentionedAspectsData] = useState<any[]>([]);
+  const [confusionMatrixData, setConfusionMatrixData] = useState<any[]>([]);
   const { t } = useLanguage();
   const { toast } = useToast();
   
@@ -100,19 +99,13 @@ const Index = () => {
           formattedDate = "Unknown";
         }
         
-        const reviewSnippet = analysis.reviewText 
-          ? (analysis.reviewText.length > 100 
-              ? analysis.reviewText.substring(0, 100) + '...' 
-              : analysis.reviewText)
-          : undefined;
-        
         return {
           date: formattedDate,
           originalDate,
           positive: analysis.sentiment.positive,
           neutral: analysis.sentiment.neutral,
           negative: analysis.sentiment.negative,
-          reviewSnippet
+          reviewSnippet: analysis.reviewText?.substring(0, 100) + '...'
         };
       });
       
@@ -120,6 +113,14 @@ const Index = () => {
     }
     
     processAspectData(analyses);
+    
+    processWordCloudData(analyses);
+    
+    processSourceData(analyses);
+    
+    processMentionedAspectsData(analyses);
+    
+    processConfusionMatrixData(analyses);
   };
   
   const processAspectData = (analyses: Analysis[]) => {
@@ -161,6 +162,128 @@ const Index = () => {
     }));
     
     setAspectData(aspectData);
+  };
+  
+  const processWordCloudData = (analyses: Analysis[]) => {
+    const wordCount: Record<string, {count: number, sentiment: string}> = {};
+    
+    analyses.forEach(analysis => {
+      if (analysis.keywords && analysis.keywords.length > 0) {
+        analysis.keywords.forEach(keyword => {
+          const word = keyword.word.toLowerCase();
+          
+          if (!wordCount[word]) {
+            wordCount[word] = { count: 0, sentiment: keyword.sentiment };
+          }
+          
+          wordCount[word].count += keyword.count || 1;
+        });
+      }
+    });
+    
+    const wordCloudData = Object.entries(wordCount)
+      .map(([word, data]) => ({
+        text: word,
+        value: data.count,
+        sentiment: data.sentiment
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 100);
+    
+    setWordCloudData(wordCloudData);
+  };
+  
+  const processSourceData = (analyses: Analysis[]) => {
+    const sourceCounts: Record<string, {positive: number, neutral: number, negative: number}> = {};
+    
+    analyses.forEach(analysis => {
+      const source = analysis.source || 'other';
+      
+      if (!sourceCounts[source]) {
+        sourceCounts[source] = { positive: 0, neutral: 0, negative: 0 };
+      }
+      
+      if (analysis.sentiment.positive > analysis.sentiment.negative && 
+          analysis.sentiment.positive > analysis.sentiment.neutral) {
+        sourceCounts[source].positive++;
+      } else if (analysis.sentiment.negative > analysis.sentiment.positive && 
+                 analysis.sentiment.negative > analysis.sentiment.neutral) {
+        sourceCounts[source].negative++;
+      } else {
+        sourceCounts[source].neutral++;
+      }
+    });
+    
+    const sourceData = Object.entries(sourceCounts).map(([source, counts]) => ({
+      source: source.charAt(0).toUpperCase() + source.slice(1),
+      ...counts
+    }));
+    
+    setSourceData(sourceData);
+  };
+  
+  const processMentionedAspectsData = (analyses: Analysis[]) => {
+    const aspectMentions: Record<string, number> = {};
+    
+    analyses.forEach(analysis => {
+      if (analysis.aspects && analysis.aspects.length > 0) {
+        analysis.aspects.forEach(aspect => {
+          const aspectName = aspect.name.toLowerCase();
+          
+          if (!aspectMentions[aspectName]) {
+            aspectMentions[aspectName] = 0;
+          }
+          
+          aspectMentions[aspectName]++;
+        });
+      }
+    });
+    
+    const mentionedAspectsData = Object.entries(aspectMentions)
+      .map(([aspect, count]) => ({
+        aspect: aspect.charAt(0).toUpperCase() + aspect.slice(1),
+        count
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+    
+    setMentionedAspectsData(mentionedAspectsData);
+  };
+  
+  const processConfusionMatrixData = (analyses: Analysis[]) => {
+    const confidenceBuckets: Record<string, {correct: number, total: number}> = {
+      'high': {correct: 0, total: 0},
+      'medium': {correct: 0, total: 0},
+      'low': {correct: 0, total: 0}
+    };
+    
+    analyses.forEach(analysis => {
+      if (analysis.accuracyScore !== undefined) {
+        let bucket;
+        
+        if (analysis.accuracyScore >= 80) {
+          bucket = 'high';
+        } else if (analysis.accuracyScore >= 60) {
+          bucket = 'medium';
+        } else {
+          bucket = 'low';
+        }
+        
+        confidenceBuckets[bucket].total++;
+        
+        if (analysis.accuracyScore >= 70) {
+          confidenceBuckets[bucket].correct++;
+        }
+      }
+    });
+    
+    const confusionMatrixData = Object.entries(confidenceBuckets).map(([confidence, data]) => ({
+      confidence,
+      accuracy: data.total > 0 ? (data.correct / data.total) * 100 : 0,
+      total: data.total
+    }));
+    
+    setConfusionMatrixData(confusionMatrixData);
   };
   
   const calculateAverageRating = () => {
@@ -296,27 +419,6 @@ const Index = () => {
     });
   };
   
-  const enhancedAnalyses = savedAnalyses.map(analysis => {
-    let sentimentLabel = "Neutral";
-    if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
-      sentimentLabel = "Positive";
-    } else if (analysis.sentiment.negative > Math.max(analysis.sentiment.neutral, analysis.sentiment.positive)) {
-      sentimentLabel = "Negative";
-    }
-    
-    const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
-    
-    const reviewText = analysis.reviewText || `This is a sample review for ${analysis.title}.`;
-    
-    return {
-      ...analysis,
-      sentimentLabel,
-      rating,
-      reviewText,
-      source: analysis.source || (analysis.title.includes('.') ? 'excel' : 'text')
-    };
-  });
-  
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -341,7 +443,7 @@ const Index = () => {
         
         {!hasData && (
           <Card className="mb-6 border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800">
-            <CardContent className="p-4 flex flex-col items-center gap-3">
+            <div className="p-4 flex flex-col items-center gap-3">
               <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500" />
               <p className="text-amber-700 dark:text-amber-300 mb-4">
                 You haven't saved any analyses yet. Please run some analyses in the demo section to see your actual data here.
@@ -349,7 +451,7 @@ const Index = () => {
               <Button asChild className="bg-blue-600 hover:bg-blue-700">
                 <Link to="/demo">Analyze New Reviews</Link>
               </Button>
-            </CardContent>
+            </div>
           </Card>
         )}
         
@@ -362,30 +464,15 @@ const Index = () => {
         />
         
         {hasData ? (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-              <SentimentOverview data={sentimentOverviewData} />
-              <ReviewSources />
-              <TopKeywords />
-            </div>
-            
-            <div className="mt-8">
-              <SentimentTrend trendData={trendData} aspectData={aspectData} />
-            </div>
-            
-            <div className="mt-8 bg-white rounded-lg border shadow-sm p-6">
-              <RecentReviews reviews={enhancedAnalyses} onExport={handleExportData} />
-            </div>
-            
-            <div className="mt-10 pt-6 border-t flex justify-center">
-              <GenerateReportButton 
-                hasData={hasData}
-                variant="default"
-                size="default"
-                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-md py-3 px-6 text-base"
-              />
-            </div>
-          </>
+          <DashboardGraphs
+            sentimentOverviewData={sentimentOverviewData}
+            trendData={trendData}
+            aspectData={aspectData}
+            wordCloudData={wordCloudData}
+            sourceData={sourceData}
+            mentionedAspectsData={mentionedAspectsData}
+            confusionMatrixData={confusionMatrixData}
+          />
         ) : (
           <div className="mt-8 bg-white p-8 rounded-lg shadow-sm text-center">
             <p className="text-gray-500 mb-4">No analysis data available yet.</p>
