@@ -72,21 +72,21 @@ const sampleData = {
       id: '1',
       author: 'John D.',
       text: 'The product worked exactly as described! Very elegant and quite satisfactory. Fast shipping and great customer service too!',
-      sentiment: 'positive',
+      sentiment: 'positive' as 'positive',
       date: '2023-06-10'
     },
     {
       id: '2',
       author: 'Sarah M.',
       text: 'Disappointed with the delivery time. The product was good but delivery took more than promised.',
-      sentiment: 'negative',
+      sentiment: 'negative' as 'negative',
       date: '2023-06-08'
     },
     {
       id: '3',
       author: 'Mike C.',
       text: 'Product is fine but pricing seems high when I found a similar product for less.',
-      sentiment: 'neutral',
+      sentiment: 'neutral' as 'neutral',
       date: '2023-06-07'
     }
   ]

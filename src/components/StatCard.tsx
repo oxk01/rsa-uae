@@ -7,9 +7,11 @@ interface StatCardProps {
   value: string | number;
   valueColor?: string;
   icon?: React.ReactNode;
+  change?: string;
+  positive?: boolean;
 }
 
-const StatCard = ({ title, value, valueColor = 'text-black', icon }: StatCardProps) => {
+const StatCard = ({ title, value, valueColor = 'text-black', icon, change, positive }: StatCardProps) => {
   return (
     <Card className="border">
       <div className="p-4">
@@ -18,6 +20,13 @@ const StatCard = ({ title, value, valueColor = 'text-black', icon }: StatCardPro
           {icon && <span className="text-gray-400">{icon}</span>}
           <h3 className={`text-2xl font-bold ${valueColor}`}>{value}</h3>
         </div>
+        {change && (
+          <div className="mt-2 text-xs">
+            <span className={positive ? 'text-green-600' : 'text-red-600'}>
+              {positive ? '↑' : '↓'} {change}
+            </span>
+          </div>
+        )}
       </div>
     </Card>
   );
