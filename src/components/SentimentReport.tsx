@@ -2,9 +2,9 @@ import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import WordCloudVisualization from './WordCloudVisualization';
-import { ThumbsUp, ThumbsDown, BarChart2, PieChart as PieChartIcon } from 'lucide-react';
+import { ThumbsUp, ThumbsDown, BarChart2, PieChart as PieChartIcon, TrendingUp, MessageSquare } from 'lucide-react';
 
 interface SentimentReportProps {
   analysisData: any;
@@ -17,7 +17,6 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     day: 'numeric' 
   });
   
-  // Extract data for charts
   const sentimentData = getSentimentData(analysisData);
   const aspectData = getAspectData(analysisData);
   const trendData = getTrendData(analysisData);
@@ -25,55 +24,108 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const totalReviews = analysisData?.fileAnalysis?.totalReviews || 0;
   const accuracyScore = analysisData?.fileAnalysis?.accuracyScore || 0;
   
-  // Generate insights and recommendations
   const insights = generateInsights(analysisData);
   const recommendations = generateRecommendations(analysisData);
 
+  const generateSentimentAnalysis = () => {
+    const positive = sentimentData[0].value;
+    const negative = sentimentData[2].value;
+    const trend = positive > negative ? 'positive' : 'negative';
+    const difference = Math.abs(positive - negative);
+    
+    return {
+      mainTrend: trend,
+      difference,
+      analysis: `The sentiment analysis reveals a ${trend} overall trend, with a ${difference}% difference between positive and negative sentiments. ${
+        trend === 'positive' 
+          ? 'This indicates generally favorable customer satisfaction levels.' 
+          : 'This suggests areas requiring attention and improvement.'
+      }`
+    };
+  };
+
+  const generateAspectAnalysis = () => {
+    const topAspects = aspectData.slice(0, 3);
+    const positiveAspects = topAspects.filter(a => a.positive > a.negative);
+    const negativeAspects = topAspects.filter(a => a.negative > a.positive);
+    
+    return {
+      positiveHighlights: positiveAspects.map(a => a.name),
+      negativeHighlights: negativeAspects.map(a => a.name),
+      analysis: `Analysis of specific aspects reveals that ${
+        positiveAspects.length > 0 
+          ? `${positiveAspects.map(a => a.name).join(', ')} received notably positive feedback` 
+          : 'no aspects stood out as particularly positive'
+      }. ${
+        negativeAspects.length > 0 
+          ? `However, ${negativeAspects.map(a => a.name).join(', ')} may need attention.`
+          : 'No aspects showed significant negative sentiment.'
+      }`
+    };
+  };
+
+  const generateTrendAnalysis = () => {
+    if (trendData.length < 2) return null;
+    
+    const latestPositive = trendData[trendData.length - 1].positive;
+    const earliestPositive = trendData[0].positive;
+    const trend = latestPositive > earliestPositive ? 'improving' : 'declining';
+    
+    return {
+      trend,
+      analysis: `Sentiment trends over time show an ${trend} pattern. ${
+        trend === 'improving'
+          ? 'This positive trajectory suggests that recent changes and improvements are being well-received.'
+          : 'This declining trend indicates a need for immediate attention to address growing customer concerns.'
+      }`
+    };
+  };
+
   return (
     <div className="p-6 bg-white">
-      {/* Header */}
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
+        <h1 className="text-2xl font-bold mb-2">Comprehensive Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
       
-      {/* Executive Summary */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4">Executive Summary</h2>
-        <p className="text-gray-700 mb-4">
-          This report provides an analysis of {totalReviews} customer reviews with an accuracy score of {accuracyScore}%. 
-          The analysis reveals {sentimentData[0].value}% positive sentiment, {sentimentData[2].value}% negative sentiment, 
-          and {sentimentData[1].value}% neutral sentiment across all reviews.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <Card className="p-4 border-l-4 border-l-blue-500">
-            <h3 className="font-medium mb-2 text-blue-700">Key Findings:</h3>
-            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-              {insights.map((insight, idx) => (
-                <li key={idx}>{insight}</li>
-              ))}
-            </ul>
-          </Card>
-          <Card className="p-4 border-l-4 border-l-green-500">
-            <h3 className="font-medium mb-2 text-green-700">Recommendations:</h3>
-            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-              {recommendations.map((recommendation, idx) => (
-                <li key={idx}>{recommendation}</li>
-              ))}
-            </ul>
-          </Card>
+        <div className="space-y-4">
+          <p className="text-gray-700">
+            This report analyzes {totalReviews} customer reviews with an accuracy score of {accuracyScore}%. 
+            The analysis reveals {sentimentData[0].value}% positive sentiment, {sentimentData[2].value}% negative sentiment, 
+            and {sentimentData[1].value}% neutral sentiment across all reviews.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="p-4 border-l-4 border-l-blue-500">
+              <h3 className="font-medium mb-2 text-blue-700">Key Findings:</h3>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                {insights.map((insight, idx) => (
+                  <li key={idx}>{insight}</li>
+                ))}
+              </ul>
+            </Card>
+            <Card className="p-4 border-l-4 border-l-green-500">
+              <h3 className="font-medium mb-2 text-green-700">Strategic Recommendations:</h3>
+              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
+                {recommendations.map((recommendation, idx) => (
+                  <li key={idx}>{recommendation}</li>
+                ))}
+              </ul>
+            </Card>
+          </div>
         </div>
       </section>
 
-      {/* Sentiment Distribution */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
           <PieChartIcon className="h-5 w-5 mr-2 text-blue-600" />
-          Overview of Sentiment Distribution
+          Detailed Sentiment Analysis
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium mb-4">Sentiment Distribution</h3>
+            <h3 className="text-lg font-medium mb-4">Overall Sentiment Distribution</h3>
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -91,48 +143,48 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
                       <Cell key={`cell-${index}`} fill={entry.color} />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Tooltip />
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
             </div>
           </div>
-          <div>
-            <h3 className="text-lg font-medium mb-4">Analysis</h3>
-            <p className="text-gray-700 mb-4">
-              The sentiment analysis shows that {sentimentData[0].value}% of the reviews express positive sentiments, 
-              while {sentimentData[2].value}% express negative sentiments. {sentimentData[1].value}% of reviews have a neutral tone.
+          <div className="space-y-4">
+            <h3 className="text-lg font-medium">Sentiment Analysis Insights</h3>
+            <p className="text-gray-700">
+              {generateSentimentAnalysis().analysis}
             </p>
-            {sentimentData[0].value > 50 && (
-              <p className="text-green-700 flex items-center">
-                <ThumbsUp className="h-4 w-4 mr-2" />
-                The majority of reviews are positive, indicating overall customer satisfaction.
-              </p>
-            )}
-            {sentimentData[2].value > 30 && (
-              <p className="text-red-700 flex items-center mt-2">
-                <ThumbsDown className="h-4 w-4 mr-2" />
-                A significant portion of reviews ({sentimentData[2].value}%) are negative, suggesting areas for improvement.
-              </p>
-            )}
+            <div className="space-y-2">
+              {sentimentData[0].value > 50 && (
+                <p className="text-green-700 flex items-center">
+                  <ThumbsUp className="h-4 w-4 mr-2" />
+                  Strong positive sentiment indicates successful customer satisfaction initiatives.
+                </p>
+              )}
+              {sentimentData[2].value > 30 && (
+                <p className="text-red-700 flex items-center">
+                  <ThumbsDown className="h-4 w-4 mr-2" />
+                  Significant negative sentiment ({sentimentData[2].value}%) requires attention.
+                </p>
+              )}
+            </div>
           </div>
         </div>
       </section>
-      
-      <Separator className="my-6" />
-      
-      {/* Key Insights */}
+
+      <Separator className="my-8" />
+
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
           <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
-          Aspect-Based Feedback
+          Aspect-Based Sentiment Analysis
         </h2>
-        <p className="text-gray-700 mb-4">
-          This section breaks down customer sentiment across different aspects of the product or service.
-          Understanding which aspects receive positive or negative feedback can help prioritize improvements.
+        <p className="text-gray-700 mb-6">
+          This section provides a detailed breakdown of customer sentiment across different aspects 
+          of the product or service, helping identify specific areas of strength and opportunity.
         </p>
         
-        <div className="h-[400px]">
+        <div className="h-[400px] mb-6">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={aspectData}
@@ -150,78 +202,84 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Key Findings:</h3>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            {aspectData.slice(0, 3).map((aspect, idx) => (
-              <li key={idx}>
-                <span className="font-medium">{aspect.name}:</span>{' '}
-                {aspect.positive > aspect.negative 
-                  ? `Received mostly positive feedback (${aspect.positive}% positive).`
-                  : `Received mostly negative feedback (${aspect.negative}% negative).`
-                }
-              </li>
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Detailed Aspect Analysis</h3>
+          <p className="text-gray-700">{generateAspectAnalysis().analysis}</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {aspectData.map((aspect, index) => (
+              <Card key={index} className="p-4">
+                <h4 className="font-medium mb-2">{aspect.name}</h4>
+                <p className="text-sm text-gray-600">
+                  {aspect.positive > aspect.negative
+                    ? `Shows strong positive sentiment (${aspect.positive}% positive)`
+                    : aspect.negative > aspect.positive
+                    ? `Requires attention (${aspect.negative}% negative)`
+                    : `Neutral performance (${aspect.neutral}% neutral)`}
+                </p>
+              </Card>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
-      
-      <Separator className="my-6" />
-      
-      {/* Trends Over Time */}
+
+      <Separator className="my-8" />
+
       <section className="mb-8">
-        <h2 className="text-xl font-semibold border-b pb-2 mb-4">Trends Over Time</h2>
-        <p className="text-gray-700 mb-4">
-          This chart shows how sentiment has changed over time, helping identify trends and the impact of any changes or events.
+        <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
+          <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
+          Sentiment Trends Over Time
+        </h2>
+        <p className="text-gray-700 mb-6">
+          This visualization tracks sentiment changes over time, helping identify patterns
+          and the impact of implemented changes or external events.
         </p>
         
         {trendData.length > 1 ? (
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={trendData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="positive" stroke="#4ade80" name="Positive" />
-                <Line type="monotone" dataKey="neutral" stroke="#94a3b8" name="Neutral" />
-                <Line type="monotone" dataKey="negative" stroke="#f87171" name="Negative" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+          <>
+            <div className="h-[300px] mb-6">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart
+                  data={trendData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Line type="monotone" dataKey="positive" stroke="#4ade80" name="Positive" />
+                  <Line type="monotone" dataKey="neutral" stroke="#94a3b8" name="Neutral" />
+                  <Line type="monotone" dataKey="negative" stroke="#f87171" name="Negative" />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-medium">Trend Analysis</h3>
+              <p className="text-gray-700">
+                {generateTrendAnalysis()?.analysis || 'Insufficient data for trend analysis.'}
+              </p>
+            </div>
+          </>
         ) : (
           <Card className="p-4 bg-gray-50">
             <p className="text-gray-500 text-center">Insufficient time-series data for trend analysis.</p>
           </Card>
         )}
-        
-        {trendData.length > 1 && (
-          <div className="mt-4">
-            <h3 className="text-lg font-medium mb-2">Trend Analysis:</h3>
-            <p className="text-gray-700">
-              {trendData[0].positive > trendData[trendData.length-1].positive
-                ? "The data shows a decreasing trend in positive sentiment over time, which may indicate emerging issues that need attention."
-                : "The data shows an improving trend in positive sentiment over time, suggesting that recent changes have been well-received by customers."
-              }
-            </p>
-          </div>
-        )}
       </section>
-      
-      <Separator className="my-6" />
-      
-      {/* Word Cloud Section */}
+
+      <Separator className="my-8" />
+
       <section className="mb-8">
-        <h2 className="text-xl font-semibold border-b pb-2 mb-4">Most Mentioned Keywords</h2>
-        <p className="text-gray-700 mb-4">
-          This word cloud visualizes the most frequently mentioned terms in customer reviews, with size indicating frequency.
+        <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
+          <MessageSquare className="h-5 w-5 mr-2 text-blue-600" />
+          Key Terms Analysis
+        </h2>
+        <p className="text-gray-700 mb-6">
+          The word cloud visualization highlights frequently mentioned terms in customer feedback,
+          with size indicating frequency and color representing sentiment.
         </p>
         
-        <div className="h-[300px] border rounded-md">
+        <div className="h-[300px] border rounded-md mb-6">
           {keywordsData.length > 0 ? (
             <WordCloudVisualization data={keywordsData} />
           ) : (
@@ -231,23 +289,24 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           )}
         </div>
         
-        <div className="mt-4">
-          <h3 className="text-lg font-medium mb-2">Key Term Analysis:</h3>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            {keywordsData.slice(0, 5).map((keyword, idx) => (
-              <li key={idx}>
-                <span className="font-medium">{keyword.text}:</span>{' '}
-                Mentioned {keyword.value} times with {keyword.sentiment} sentiment
-              </li>
+        <div className="space-y-4">
+          <h3 className="text-lg font-medium">Top Keywords Analysis</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {keywordsData.slice(0, 6).map((keyword, idx) => (
+              <Card key={idx} className="p-4">
+                <p className="text-sm">
+                  <span className="font-medium">{keyword.text}:</span>{' '}
+                  Mentioned {keyword.value} times with {keyword.sentiment} sentiment
+                </p>
+              </Card>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
     </div>
   );
 };
 
-// Helper function to process sentiment data
 const getSentimentData = (analysisData: any) => {
   const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown || {
     positive: 33,
@@ -262,7 +321,6 @@ const getSentimentData = (analysisData: any) => {
   ];
 };
 
-// Helper function to process aspect data
 const getAspectData = (analysisData: any) => {
   const aspects = analysisData?.fileAnalysis?.aspects || [];
   return aspects.map((aspect: any) => ({
@@ -273,7 +331,6 @@ const getAspectData = (analysisData: any) => {
   }));
 };
 
-// Helper function to process trend data with improved date handling
 const getTrendData = (analysisData: any) => {
   if (!analysisData?.fileAnalysis?.reviews) return [];
   
@@ -330,7 +387,6 @@ const getTrendData = (analysisData: any) => {
     });
 };
 
-// Helper function to process keywords data
 const getKeywordsData = (analysisData: any) => {
   return (analysisData?.fileAnalysis?.keywords || [])
     .map((keyword: any) => ({
@@ -342,7 +398,6 @@ const getKeywordsData = (analysisData: any) => {
     .slice(0, 50);
 };
 
-// Helper function to generate insights
 const generateInsights = (analysisData: any) => {
   const insights = [];
   const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown;
@@ -362,7 +417,6 @@ const generateInsights = (analysisData: any) => {
   return insights.length > 0 ? insights : ['No significant insights available.'];
 };
 
-// Helper function to generate recommendations
 const generateRecommendations = (analysisData: any) => {
   const recommendations = [];
   const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown;
