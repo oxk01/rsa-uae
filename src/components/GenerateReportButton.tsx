@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { FileText, Loader2, Download } from 'lucide-react';
@@ -582,13 +581,22 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
           const negativePercentage = Math.round((data.negative / data.total) * 100);
           const neutralPercentage = 100 - positivePercentage - negativePercentage;
           
+          // Explicitly cast as literal type to fix the type error
+          let sentimentValue: 'positive' | 'negative' | 'neutral';
+          if (positivePercentage > negativePercentage) {
+            sentimentValue = 'positive';
+          } else if (negativePercentage > positivePercentage) {
+            sentimentValue = 'negative';
+          } else {
+            sentimentValue = 'neutral';
+          }
+          
           return {
             aspect,
             positivePercentage,
             negativePercentage,
             neutralPercentage,
-            sentiment: positivePercentage > negativePercentage ? 'positive' : 
-                      negativePercentage > positivePercentage ? 'negative' : 'neutral',
+            sentiment: sentimentValue,
             total: data.total
           };
         })
