@@ -8,8 +8,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import DashboardCard from './DashboardCard';
 import { 
-  ChartPie, ChartBar, ChartBarStacked, ChartLine, 
-  WordCloud, ChartColumnStacked, HeatMap
+  PieChart as PieChartIcon, BarChart2, BarChart3, LineChart as LineChartIcon, 
+  Hash, BarChartHorizontal, Activity
 } from 'lucide-react';
 
 interface DashboardGraphsProps {
@@ -98,11 +98,11 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           <h2 className="text-xl font-semibold text-gray-800">Sentiment Analysis Insights</h2>
           <TabsList>
             <TabsTrigger value="charts" onClick={() => setViewType('charts')}>
-              <ChartBar className="h-4 w-4 mr-2" />
+              <BarChart2 className="h-4 w-4 mr-2" />
               Charts
             </TabsTrigger>
             <TabsTrigger value="details" onClick={() => setViewType('details')}>
-              <ChartColumnStacked className="h-4 w-4 mr-2" />
+              <BarChartHorizontal className="h-4 w-4 mr-2" />
               Detailed Analysis
             </TabsTrigger>
           </TabsList>
@@ -114,7 +114,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Sentiment Overview - Pie Chart */}
             <DashboardCard
               title="Overall Sentiment Distribution"
-              icon={<ChartPie className="h-4 w-4" />}
+              icon={<PieChartIcon className="h-4 w-4" />}
             >
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -159,7 +159,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Sentiment Trend - Line Chart */}
             <DashboardCard
               title="Sentiment Trends Over Time"
-              icon={<ChartLine className="h-4 w-4" />}
+              icon={<LineChartIcon className="h-4 w-4" />}
             >
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -213,7 +213,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Word Cloud */}
             <DashboardCard
               title="Frequent Words in Reviews"
-              icon={<WordCloud className="h-4 w-4" />}
+              icon={<Hash className="h-4 w-4" />}
             >
               <div className="h-[300px] relative">
                 <div className="absolute inset-0 flex flex-wrap justify-center items-center p-4">
@@ -251,7 +251,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Source Distribution - Stacked Bar Chart */}
             <DashboardCard
               title="Sentiment by Platform/Source"
-              icon={<ChartBarStacked className="h-4 w-4" />}
+              icon={<BarChart3 className="h-4 w-4" />}
             >
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -293,7 +293,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Most Mentioned Aspects - Horizontal Bar Chart */}
             <DashboardCard
               title="Most Mentioned Aspects"
-              icon={<ChartBar className="h-4 w-4" />}
+              icon={<BarChart2 className="h-4 w-4" />}
             >
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -332,7 +332,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             {/* Model Evaluation - Confusion Matrix / Heatmap */}
             <DashboardCard
               title="Model Evaluation"
-              icon={<HeatMap className="h-4 w-4" />}
+              icon={<Activity className="h-4 w-4" />}
             >
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
@@ -350,7 +350,12 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                       }} 
                     />
                     <Tooltip 
-                      formatter={(value) => [`${value.toFixed(1)}%`, 'Accuracy']}
+                      formatter={(value) => {
+                        if (typeof value === 'number') {
+                          return [`${value.toFixed(1)}%`, 'Accuracy'];
+                        }
+                        return [`${value}%`, 'Accuracy'];
+                      }}
                     />
                     <ReferenceLine y={80} label="Excellent" stroke="#10b981" strokeDasharray="3 3" />
                     <ReferenceLine y={60} label="Good" stroke="#f59e0b" strokeDasharray="3 3" />
@@ -382,7 +387,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           {/* Aspect-based Sentiment Breakdown - Grouped Bar Chart */}
           <DashboardCard
             title="Aspect-based Sentiment Breakdown"
-            icon={<ChartBarStacked className="h-4 w-4" />}
+            icon={<BarChart3 className="h-4 w-4" />}
           >
             <div className="h-[500px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -427,7 +432,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           {/* Detailed Word Analysis Table */}
           <DashboardCard
             title="Top Keywords Analysis"
-            icon={<WordCloud className="h-4 w-4" />}
+            icon={<Hash className="h-4 w-4" />}
           >
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
