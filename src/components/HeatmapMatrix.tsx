@@ -29,9 +29,9 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
       title="Model Evaluation Matrix" 
       className="bg-gradient-to-br from-white via-green-50/30 to-green-100/20 border-green-100"
     >
-      <div className="h-[260px]">
+      <div className="h-[260px] relative">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart margin={{ top: 30, right: 40, bottom: 30, left: 40 }}>
+          <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <defs>
               <filter id="matrixShadow">
                 <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
@@ -81,7 +81,7 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
             />
           </PieChart>
         </ResponsiveContainer>
-        <div className="text-center text-sm text-gray-500 mt-4">
+        <div className="absolute bottom-0 left-0 right-0 text-center text-sm text-gray-600 font-medium pt-2">
           Overall Model Accuracy: {data.actualPositive}%
         </div>
       </div>
@@ -90,3 +90,4 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
 };
 
 export default HeatmapMatrix;
+
