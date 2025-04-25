@@ -17,84 +17,169 @@ import MostMentionedAspects from '@/components/MostMentionedAspects';
 import WordCloudCard from '@/components/WordCloudCard';
 import RecentReviewsList from '@/components/RecentReviewsList';
 import { Button } from '@/components/ui/button';
-
-// Sample data for the dashboard
-const sampleData = {
-  totalReviews: 1248,
-  positivePercentage: 60,
-  negativePercentage: 15,
-  averageRating: 4.2,
-  sentimentOverview: [
-    { name: 'Positive', value: 60 },
-    { name: 'Neutral', value: 25 },
-    { name: 'Negative', value: 15 }
-  ],
-  trendData: [
-    { date: 'Jan', positive: 62, neutral: 25, negative: 13 },
-    { date: 'Feb', positive: 58, neutral: 28, negative: 14 },
-    { date: 'Mar', positive: 65, neutral: 23, negative: 12 },
-    { date: 'Apr', positive: 59, neutral: 24, negative: 17 },
-    { date: 'May', positive: 63, neutral: 22, negative: 15 },
-    { date: 'Jun', positive: 60, neutral: 25, negative: 15 }
-  ],
-  sourceData: [
-    { source: 'Website', positive: 35, neutral: 15, negative: 5 },
-    { source: 'Mobile App', positive: 25, neutral: 10, negative: 10 },
-    { source: 'Social Media', positive: 12, neutral: 8, negative: 5 },
-    { source: 'Email', positive: 8, neutral: 5, negative: 2 }
-  ],
-  aspectsData: [
-    { aspect: 'Quality', count: 120 },
-    { aspect: 'Price', count: 95 },
-    { aspect: 'Shipping', count: 80 },
-    { aspect: 'Customer Service', count: 65 },
-    { aspect: 'Features', count: 55 }
-  ],
-  wordCloudData: [
-    { text: 'great', value: 25, sentiment: 'positive' },
-    { text: 'quality', value: 18, sentiment: 'positive' },
-    { text: 'excellent', value: 16, sentiment: 'positive' },
-    { text: 'service', value: 15, sentiment: 'neutral' },
-    { text: 'slow', value: 12, sentiment: 'negative' },
-    { text: 'expensive', value: 10, sentiment: 'negative' },
-    { text: 'recommend', value: 9, sentiment: 'positive' },
-    { text: 'shipping', value: 9, sentiment: 'neutral' },
-    { text: 'helpful', value: 8, sentiment: 'positive' },
-    { text: 'easy', value: 8, sentiment: 'positive' },
-    { text: 'fast', value: 7, sentiment: 'positive' },
-    { text: 'difficult', value: 7, sentiment: 'negative' },
-    { text: 'price', value: 7, sentiment: 'neutral' },
-    { text: 'value', value: 6, sentiment: 'positive' },
-    { text: 'reliable', value: 6, sentiment: 'positive' }
-  ],
-  recentReviews: [
-    {
-      id: '1',
-      author: 'John D.',
-      text: 'The product worked exactly as described! Very elegant and quite satisfactory. Fast shipping and great customer service too!',
-      sentiment: 'positive' as 'positive',
-      date: '2023-06-10'
-    },
-    {
-      id: '2',
-      author: 'Sarah M.',
-      text: 'Disappointed with the delivery time. The product was good but delivery took more than promised.',
-      sentiment: 'negative' as 'negative',
-      date: '2023-06-08'
-    },
-    {
-      id: '3',
-      author: 'Mike C.',
-      text: 'Product is fine but pricing seems high when I found a similar product for less.',
-      sentiment: 'neutral' as 'neutral',
-      date: '2023-06-07'
-    }
-  ]
-};
+import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const navigate = useNavigate();
+  const { toast } = useToast();
+  
+  // State for storing data from Demo page
+  const [analysisData, setAnalysisData] = useState<any>(null);
+  const [hasData, setHasData] = useState(false);
+  const [sentimentOverview, setSentimentOverview] = useState<any[]>([]);
+  const [trendData, setTrendData] = useState<any[]>([]);
+  const [sourceData, setSourceData] = useState<any[]>([]);
+  const [aspectsData, setAspectsData] = useState<any[]>([]);
+  const [wordCloudData, setWordCloudData] = useState<any[]>([]);
+  const [recentReviews, setRecentReviews] = useState<any[]>([]);
+  
+  useEffect(() => {
+    // Try to load data from localStorage
+    const storedData = localStorage.getItem('rsa_current_analysis');
+    
+    if (storedData) {
+      try {
+        const parsedData = JSON.parse(storedData);
+        setAnalysisData(parsedData);
+        setHasData(true);
+        
+        // Process data for different chart components
+        processData(parsedData);
+        
+        toast({
+          title: "Analysis data loaded",
+          description: `Loaded analysis with ${parsedData.fileAnalysis.totalReviews} reviews.`,
+        });
+      } catch (e) {
+        console.error("Error parsing stored data:", e);
+        setHasData(false);
+      }
+    } else {
+      setHasData(false);
+    }
+  }, [toast]);
+  
+  const processData = (data: any) => {
+    if (!data || !data.fileAnalysis) return;
+    
+    // Process sentiment overview data
+    const sentimentData = [
+      { name: 'Positive', value: data.fileAnalysis.sentimentBreakdown.positive },
+      { name: 'Neutral', value: data.fileAnalysis.sentimentBreakdown.neutral },
+      { name: 'Negative', value: data.fileAnalysis.sentimentBreakdown.negative }
+    ];
+    setSentimentOverview(sentimentData);
+    
+    // Process trend data
+    // Group reviews by date and calculate sentiment counts per date
+    const reviewsByDate = data.fileAnalysis.reviews.reduce((acc: any, review: any) => {
+      const date = review.date.split('T')[0];
+      if (!acc[date]) {
+        acc[date] = { date, positive: 0, neutral: 0, negative: 0 };
+      }
+      
+      if (review.sentimentLabel === 'positive') {
+        acc[date].positive += 1;
+      } else if (review.sentimentLabel === 'negative') {
+        acc[date].negative += 1;
+      } else {
+        acc[date].neutral += 1;
+      }
+      
+      return acc;
+    }, {});
+    
+    // Convert to array and sort by date
+    const trendArray = Object.values(reviewsByDate).sort((a: any, b: any) => {
+      return new Date(a.date).getTime() - new Date(b.date).getTime();
+    });
+    
+    // Format dates for display
+    const formattedTrendData = trendArray.map((item: any) => {
+      const dateObj = new Date(item.date);
+      const month = dateObj.toLocaleString('default', { month: 'short' });
+      return {
+        ...item,
+        date: month
+      };
+    });
+    
+    setTrendData(formattedTrendData);
+    
+    // Process source data
+    const sourceMap: Record<string, {positive: number, neutral: number, negative: number}> = {};
+    data.fileAnalysis.reviews.forEach((review: any) => {
+      const source = review.source || 'Other';
+      if (!sourceMap[source]) {
+        sourceMap[source] = { positive: 0, neutral: 0, negative: 0 };
+      }
+      
+      if (review.sentimentLabel === 'positive') {
+        sourceMap[source].positive += 1;
+      } else if (review.sentimentLabel === 'negative') {
+        sourceMap[source].negative += 1;
+      } else {
+        sourceMap[source].neutral += 1;
+      }
+    });
+    
+    const sourceArray = Object.entries(sourceMap).map(([source, counts]) => ({
+      source,
+      ...counts
+    }));
+    
+    setSourceData(sourceArray);
+    
+    // Process aspects data
+    const aspectMap: Record<string, number> = {};
+    data.fileAnalysis.reviews.forEach((review: any) => {
+      if (review.aspects && Array.isArray(review.aspects)) {
+        review.aspects.forEach((aspect: any) => {
+          const aspectName = aspect.name;
+          if (!aspectMap[aspectName]) {
+            aspectMap[aspectName] = 0;
+          }
+          aspectMap[aspectName] += 1;
+        });
+      }
+    });
+    
+    const aspectArray = Object.entries(aspectMap)
+      .map(([aspect, count]) => ({ aspect, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 10);
+    
+    setAspectsData(aspectArray);
+    
+    // Process word cloud data
+    const wordMap: Record<string, {value: number, sentiment: string}> = {};
+    data.fileAnalysis.reviews.forEach((review: any) => {
+      if (review.keywords && Array.isArray(review.keywords)) {
+        review.keywords.forEach((keyword: any) => {
+          if (!wordMap[keyword.word]) {
+            wordMap[keyword.word] = { value: 0, sentiment: keyword.sentiment };
+          }
+          wordMap[keyword.word].value += 1;
+        });
+      }
+    });
+    
+    const wordCloudArray = Object.entries(wordMap)
+      .map(([text, details]) => ({ text, ...details }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 50);
+    
+    setWordCloudData(wordCloudArray);
+    
+    // Process recent reviews
+    const reviews = data.fileAnalysis.reviews.slice(0, 10);
+    setRecentReviews(reviews);
+  };
+  
+  const handleDemoClick = () => {
+    navigate('/demo');
+  };
   
   return (
     <div className="container mx-auto px-4 py-6 bg-gray-50 min-h-screen">
@@ -104,182 +189,153 @@ const Dashboard = () => {
           <p className="text-sm text-gray-500">Real-time sentiment analysis insights</p>
         </div>
         <div className="flex gap-2 mt-4 md:mt-0">
-          <Button variant="outline" size="sm">
-            Last 7 Days ▾
-          </Button>
-          <Button variant="outline" size="sm">
-            All Reviews ▾
+          <Button variant="outline" size="sm" onClick={handleDemoClick}>
+            Upload New Data
           </Button>
         </div>
       </div>
       
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <StatCard 
-          title="Total Reviews" 
-          value={sampleData.totalReviews} 
-        />
-        <StatCard 
-          title="Positive Sentiment" 
-          value={`${sampleData.positivePercentage}%`}
-          valueColor="text-green-600"
-          icon={<ThumbsUp size={18} />}
-        />
-        <StatCard 
-          title="Negative Sentiment" 
-          value={`${sampleData.negativePercentage}%`}
-          valueColor="text-red-600"
-          icon={<ThumbsDown size={18} />}
-        />
-        <StatCard 
-          title="Average Rating" 
-          value={sampleData.averageRating}
-          valueColor="text-blue-600"
-          icon={<BarChart2 size={18} />}
-        />
-      </div>
-      
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="mb-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="aspect">Aspect Analysis</TabsTrigger>
-          <TabsTrigger value="trends">Trends</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SentimentOverview data={sampleData.sentimentOverview} />
-            <SentimentTrendChart data={sampleData.trendData} />
+      {!hasData ? (
+        <div className="rounded-lg border border-dashed p-8 text-center">
+          <h3 className="text-lg font-medium mb-2">No analysis data available</h3>
+          <p className="text-gray-500 mb-4">Upload and analyze an Excel file in the Demo page to visualize the data here.</p>
+          <Button onClick={handleDemoClick}>Go to Demo Page</Button>
+        </div>
+      ) : (
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <StatCard 
+              title="Total Reviews" 
+              value={analysisData?.fileAnalysis?.totalReviews || 0} 
+              icon={<FileBarChart2 size={18} />}
+            />
+            <StatCard 
+              title="Positive Sentiment" 
+              value={`${Math.round((analysisData?.fileAnalysis?.sentimentBreakdown?.positive / analysisData?.fileAnalysis?.totalReviews) * 100) || 0}%`}
+              valueColor="text-green-600"
+              icon={<ThumbsUp size={18} />}
+            />
+            <StatCard 
+              title="Negative Sentiment" 
+              value={`${Math.round((analysisData?.fileAnalysis?.sentimentBreakdown?.negative / analysisData?.fileAnalysis?.totalReviews) * 100) || 0}%`}
+              valueColor="text-red-600"
+              icon={<ThumbsDown size={18} />}
+            />
+            <StatCard 
+              title="Average Accuracy" 
+              value={`${analysisData?.fileAnalysis?.accuracyScore || 0}%`}
+              valueColor="text-blue-600"
+              icon={<BarChart2 size={18} />}
+            />
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <SentimentBySource data={sampleData.sourceData} />
-            <MostMentionedAspects data={sampleData.aspectsData} />
-          </div>
-          
-          <div className="grid grid-cols-1 gap-6">
-            <WordCloudCard data={sampleData.wordCloudData} />
-            <RecentReviewsList reviews={sampleData.recentReviews} />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="aspect" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Aspect-Based Sentiment Analysis</h3>
-              <div className="h-64 flex items-center justify-center text-gray-500">
-                <p>Aspect-based analysis content will appear here</p>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+            <TabsList className="mb-4">
+              <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="aspect">Aspect Analysis</TabsTrigger>
+              <TabsTrigger value="trends">Trends</TabsTrigger>
+              <TabsTrigger value="reports">Reports</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="overview" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SentimentOverview data={sentimentOverview} />
+                <SentimentTrendChart data={trendData} />
               </div>
-            </Card>
-            <MostMentionedAspects data={sampleData.aspectsData} />
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="trends" className="space-y-6">
-          <div className="grid grid-cols-1 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Sentiment Trends Over Time</h3>
-              <div className="h-72">
-                <SentimentTrendChart data={sampleData.trendData} />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <SentimentBySource data={sourceData} />
+                <MostMentionedAspects data={aspectsData} />
               </div>
-            </Card>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Aspect Trends</h3>
-              <div className="h-64 flex items-center justify-center text-gray-400">
-                <p>Aspect sentiment trends visualization will appear here</p>
+              
+              <div className="grid grid-cols-1 gap-6">
+                <WordCloudCard data={wordCloudData} />
+                <RecentReviewsList reviews={recentReviews} />
               </div>
-            </Card>
-            <Card className="p-6">
-              <h3 className="text-lg font-medium mb-4">Source Trends</h3>
-              <div className="h-64 flex items-center justify-center text-gray-400">
-                <p>Source review trends visualization will appear here</p>
+            </TabsContent>
+            
+            <TabsContent value="aspect" className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="p-6">
+                  <h3 className="text-lg font-medium mb-4">Aspect-Based Sentiment Analysis</h3>
+                  <div className="h-64 flex items-center justify-center text-gray-500">
+                    {hasData ? (
+                      <p>Aspect analysis from your Excel data will appear here</p>
+                    ) : (
+                      <p>Upload data to see aspect-based analysis</p>
+                    )}
+                  </div>
+                </Card>
+                <MostMentionedAspects data={aspectsData} />
               </div>
-            </Card>
-          </div>
-        </TabsContent>
-        
-        <TabsContent value="reports" className="space-y-6">
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Generate Custom Report</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <h4 className="font-medium mb-3">Report Options</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <input type="checkbox" id="sentiment" className="mr-2" defaultChecked />
-                    <label htmlFor="sentiment" className="text-sm">Sentiment Overview</label>
+            </TabsContent>
+            
+            <TabsContent value="trends" className="space-y-6">
+              <div className="grid grid-cols-1 gap-6">
+                <Card className="p-6">
+                  <h3 className="text-lg font-medium mb-4">Sentiment Trends Over Time</h3>
+                  <div className="h-72">
+                    <SentimentTrendChart data={trendData} />
                   </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" id="aspect" className="mr-2" defaultChecked />
-                    <label htmlFor="aspect" className="text-sm">Aspect-Based Analysis</label>
+                </Card>
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="reports" className="space-y-6">
+              <Card className="p-6">
+                <h3 className="text-lg font-medium mb-4">Generate Custom Report</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <h4 className="font-medium mb-3">Report Options</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input type="checkbox" id="sentiment" className="mr-2" defaultChecked />
+                        <label htmlFor="sentiment" className="text-sm">Sentiment Overview</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" id="aspect" className="mr-2" defaultChecked />
+                        <label htmlFor="aspect" className="text-sm">Aspect-Based Analysis</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" id="trend" className="mr-2" />
+                        <label htmlFor="trend" className="text-sm">Trend Analysis</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" id="recommendations" className="mr-2" />
+                        <label htmlFor="recommendations" className="text-sm">Key Insights & Recommendations</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="checkbox" id="data" className="mr-2" />
+                        <label htmlFor="data" className="text-sm">Include Raw Data</label>
+                      </div>
+                    </div>
+                    <div className="mt-6">
+                      <Button className="bg-blue-600 hover:bg-blue-700">Generate Report</Button>
+                    </div>
                   </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" id="trend" className="mr-2" />
-                    <label htmlFor="trend" className="text-sm">Trend Analysis</label>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" id="recommendations" className="mr-2" />
-                    <label htmlFor="recommendations" className="text-sm">Key Insights & Recommendations</label>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="checkbox" id="data" className="mr-2" />
-                    <label htmlFor="data" className="text-sm">Include Raw Data</label>
+                  <div>
+                    <h4 className="font-medium mb-3">Report Format</h4>
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input type="radio" id="pdf" name="format" className="mr-2" defaultChecked />
+                        <label htmlFor="pdf" className="text-sm">PDF Report</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="radio" id="excel" name="format" className="mr-2" />
+                        <label htmlFor="excel" className="text-sm">Excel Report</label>
+                      </div>
+                      <div className="flex items-center">
+                        <input type="radio" id="csv" name="format" className="mr-2" />
+                        <label htmlFor="csv" className="text-sm">CSV Data Export</label>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div className="mt-6">
-                  <Button className="bg-blue-600 hover:bg-blue-700">Generate Report</Button>
-                </div>
-              </div>
-              <div>
-                <h4 className="font-medium mb-3">Report Format</h4>
-                <div className="space-y-2">
-                  <div className="flex items-center">
-                    <input type="radio" id="pdf" name="format" className="mr-2" defaultChecked />
-                    <label htmlFor="pdf" className="text-sm">PDF Report</label>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="radio" id="excel" name="format" className="mr-2" />
-                    <label htmlFor="excel" className="text-sm">Excel Report</label>
-                  </div>
-                  <div className="flex items-center">
-                    <input type="radio" id="csv" name="format" className="mr-2" />
-                    <label htmlFor="csv" className="text-sm">CSV Data Export</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </Card>
-          
-          <Card className="p-6">
-            <h3 className="text-lg font-medium mb-4">Saved Reports</h3>
-            <div className="space-y-4">
-              <div className="border p-4 rounded-md flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium">Monthly Sentiment Overview</h4>
-                  <p className="text-xs text-gray-500">Generated on June 10, 2023</p>
-                </div>
-                <Button variant="outline" size="sm">Download</Button>
-              </div>
-              <div className="border p-4 rounded-md flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium">Quarterly Performance Report</h4>
-                  <p className="text-xs text-gray-500">Generated on May 15, 2023</p>
-                </div>
-                <Button variant="outline" size="sm">Download</Button>
-              </div>
-              <div className="border p-4 rounded-md flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium">Competitor Analysis</h4>
-                  <p className="text-xs text-gray-500">Generated on April 28, 2023</p>
-                </div>
-                <Button variant="outline" size="sm">Download</Button>
-              </div>
-            </div>
-          </Card>
-        </TabsContent>
-      </Tabs>
+              </Card>
+            </TabsContent>
+          </Tabs>
+        </>
+      )}
     </div>
   );
 };

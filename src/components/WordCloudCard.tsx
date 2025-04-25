@@ -22,12 +22,10 @@ const WordCloudCard = ({ data = [] }: WordCloudCardProps) => {
       {!hasData ? (
         <div className="h-[250px] flex flex-col items-center justify-center text-gray-400">
           <CloudIcon className="h-16 w-16 mb-2 text-blue-300" />
-          <p>Word cloud visualization of frequently mentioned terms in reviews</p>
+          <p>Upload data to see word cloud visualization</p>
         </div>
       ) : (
         <div className="h-[250px] flex flex-wrap justify-center items-center">
-          {/* Simple word cloud visualization */}
-          {/* In a real implementation, you might want to use a dedicated word cloud library */}
           {data.slice(0, 30).map((word, index) => (
             <span 
               key={index}

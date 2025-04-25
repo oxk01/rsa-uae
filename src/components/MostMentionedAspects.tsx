@@ -25,7 +25,7 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
     >
       {!hasData ? (
         <div className="h-[260px] flex items-center justify-center text-gray-400">
-          No aspect data available
+          Upload Excel file to see aspect data
         </div>
       ) : (
         <div className="h-[260px]">
