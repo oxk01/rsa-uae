@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -39,23 +40,31 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
     }
     
     // Aspects insights
-    if (aspects.length > 0) {
+    if (aspects && aspects.length > 0) {
       const positiveAspects = aspects.filter((a: any) => a.sentiment === 'positive');
       const negativeAspects = aspects.filter((a: any) => a.sentiment === 'negative');
       
       if (positiveAspects.length > 0) {
-        // Fix: Add null check before calling toLowerCase()
-        insights.push(`Customers speak highly of ${positiveAspects.map((a: any) => a.name && a.name.toLowerCase() || 'this aspect').slice(0, 2).join(' and ')}.`);
+        const aspectsText = positiveAspects
+          .slice(0, 2)
+          .map((a: any) => a.aspect || a.name || 'this aspect')
+          .map((name: string) => typeof name === 'string' ? name.toLowerCase() : 'this aspect')
+          .join(' and ');
+        insights.push(`Customers speak highly of ${aspectsText}.`);
       }
       
       if (negativeAspects.length > 0) {
-        // Fix: Add null check before calling toLowerCase()
-        insights.push(`Consider improving ${negativeAspects.map((a: any) => a.name && a.name.toLowerCase() || 'this aspect').slice(0, 2).join(' and ')} based on negative feedback.`);
+        const aspectsText = negativeAspects
+          .slice(0, 2)
+          .map((a: any) => a.aspect || a.name || 'this aspect')
+          .map((name: string) => typeof name === 'string' ? name.toLowerCase() : 'this aspect')
+          .join(' and ');
+        insights.push(`Consider improving ${aspectsText} based on negative feedback.`);
       }
     }
     
     // Keywords insights
-    if (keyPhrases.length > 0) {
+    if (keyPhrases && keyPhrases.length > 0) {
       const positiveKeywords = keyPhrases.filter((k: any) => k.sentiment === 'positive').slice(0, 3);
       const negativeKeywords = keyPhrases.filter((k: any) => k.sentiment === 'negative').slice(0, 3);
       
@@ -63,16 +72,18 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         const words = positiveKeywords.map((k: any) => {
           if (typeof k === 'string') return k;
           return k.text || k.word || '';
-        }).join(', ');
-        insights.push(`Positive reviews frequently mention: ${words}.`);
+        }).filter(Boolean).join(', ');
+        
+        if (words) insights.push(`Positive reviews frequently mention: ${words}.`);
       }
       
       if (negativeKeywords.length > 0) {
         const words = negativeKeywords.map((k: any) => {
           if (typeof k === 'string') return k;
           return k.text || k.word || '';
-        }).join(', ');
-        insights.push(`Negative reviews commonly discuss: ${words}.`);
+        }).filter(Boolean).join(', ');
+        
+        if (words) insights.push(`Negative reviews commonly discuss: ${words}.`);
       }
     }
     
@@ -83,7 +94,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
   const generateRecommendations = () => {
     const recommendations = [];
     
-    if (aspects.length > 0) {
+    if (aspects && aspects.length > 0) {
       const worstAspects = [...aspects].sort((a: any, b: any) => {
         if (a.sentiment === 'negative' && b.sentiment !== 'negative') return -1;
         if (a.sentiment !== 'negative' && b.sentiment === 'negative') return 1;
@@ -92,9 +103,9 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
       
       worstAspects.forEach((aspect: any) => {
         if (aspect.sentiment === 'negative') {
-          // Fix: Add null check before calling toLowerCase()
-          const aspectName = aspect.name ? aspect.name.toLowerCase() : 'this aspect';
-          recommendations.push(`Focus on improving ${aspectName} to address customer concerns.`);
+          const aspectName = aspect.aspect || aspect.name;
+          const formattedAspectName = typeof aspectName === 'string' ? aspectName.toLowerCase() : 'this aspect';
+          recommendations.push(`Focus on improving ${formattedAspectName} to address customer concerns.`);
         }
       });
     }
@@ -118,96 +129,90 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
   const insights = generateInsights();
   const recommendations = generateRecommendations();
   
-  // Helper function to clear storage if needed
-  const clearOldAnalyses = () => {
+  // Clears all stored analyses and current analysis
+  const clearAllStoredData = () => {
     try {
-      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
-      const savedAnalyses = JSON.parse(savedAnalysesStr);
-      
-      // If we have more than 3 analyses, remove the oldest ones
-      if (savedAnalyses.length > 3) {
-        const updatedAnalyses = savedAnalyses.slice(0, 3);
-        localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
-        return true;
-      }
-      return false;
+      localStorage.removeItem('rsa_saved_analyses');
+      localStorage.removeItem('rsa_current_analysis');
+      return true;
     } catch (error) {
-      console.error("Error clearing old analyses:", error);
+      console.error("Error clearing stored data:", error);
       return false;
     }
   };
   
+  // Helper function to trim analysis data to reduce size
+  const createCompactSummary = (result: any) => {
+    // Create a simplified version with only essential data
+    return {
+      id: Date.now(),
+      date: new Date().toISOString(),
+      totalReviews: totalReviews,
+      sentimentBreakdown: sentimentBreakdown,
+      overallSentiment: {
+        sentiment: sentiment,
+        score: score
+      },
+      keywords: (keyPhrases || []).slice(0, 20).map((k: any) => ({
+        text: typeof k === 'string' ? k : (k.text || k.word || ''),
+        sentiment: k.sentiment || 'neutral',
+        value: k.value || k.count || 1
+      })),
+      aspects: (aspects || []).slice(0, 10).map((a: any) => ({
+        aspect: a.aspect || a.name || 'Unnamed aspect',
+        sentiment: a.sentiment || 'neutral',
+        count: a.count || 1
+      })),
+      // Include only 5 sample reviews instead of all
+      reviews: (result.fileAnalysis.reviews || []).slice(0, 5).map((review: any) => ({
+        title: review.title,
+        date: review.date,
+        sentiment: review.sentiment,
+        reviewText: (review.reviewText || '').substring(0, 200), // Limit text length
+      })),
+      insights: insights,
+      recommendations: recommendations
+    };
+  };
+  
   const handleSave = () => {
     try {
-      // First, store the current analysis with all its data
-      localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
-      
-      // Then prepare and store the summary for the dashboard
-      const summary = {
-        id: Date.now(),
-        fileName: 'Analysis Result',
-        date: new Date().toISOString(),
-        totalReviews: totalReviews,
-        sentimentBreakdown: result.fileAnalysis.sentimentBreakdown,
-        overallSentiment: result.overallSentiment,
-        keywords: result.fileAnalysis.keywords,
-        aspects: result.fileAnalysis.aspects,
-        reviews: result.fileAnalysis.reviews,
-        insights: insights,
-        recommendations: recommendations,
-        // For charts
-        aspectData: aspects.map((aspect: any) => ({
-          aspect: aspect.name || 'Unnamed aspect',
-          sentiment: aspect.sentiment,
-          positive: aspect.sentiment === 'positive' ? 100 : 0,
-          neutral: aspect.sentiment === 'neutral' ? 100 : 0,
-          negative: aspect.sentiment === 'negative' ? 100 : 0,
-        })),
-        trendData: result.fileAnalysis.reviews.map((review: any) => ({
-          date: review.date,
-          positive: review.sentiment.positive,
-          neutral: review.sentiment.neutral,
-          negative: review.sentiment.negative,
-          reviewSnippet: review.reviewText?.substring(0, 100)
-        })),
-        confusionMatrixData: [
-          { confidence: 'Very Low', accuracy: accuracyScore * 0.7 },
-          { confidence: 'Low', accuracy: accuracyScore * 0.8 },
-          { confidence: 'Medium', accuracy: accuracyScore * 0.9 },
-          { confidence: 'High', accuracy: accuracyScore },
-          { confidence: 'Very High', accuracy: accuracyScore * 0.95 }
-        ],
-        sourceData: [
-          { 
-            source: 'Website', 
-            positive: Math.round(sentimentBreakdown.positive * 0.8), 
-            neutral: Math.round(sentimentBreakdown.neutral * 1.2),
-            negative: Math.round(sentimentBreakdown.negative * 0.9)
-          },
-          { 
-            source: 'App', 
-            positive: Math.round(sentimentBreakdown.positive * 1.1), 
-            neutral: Math.round(sentimentBreakdown.neutral * 0.9),
-            negative: Math.round(sentimentBreakdown.negative * 1.0)
-          },
-          { 
-            source: 'Email', 
-            positive: Math.round(sentimentBreakdown.positive * 0.9), 
-            neutral: Math.round(sentimentBreakdown.neutral * 0.8),
-            negative: Math.round(sentimentBreakdown.negative * 1.2)
-          }
-        ],
-        mentionedAspectsData: aspects.map((aspect: any, index: number) => ({
-          aspect: aspect.name || 'Unnamed aspect',
-          count: totalReviews / (index + 1)
-        }))
-      };
-
+      // First try to clear space if needed
       try {
-        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
-        const savedAnalyses = JSON.parse(savedAnalysesStr);
-        const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 3)]; // Limit to 4 total to avoid storage issues
-        localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+        const existingSize = localStorage.getItem('rsa_saved_analyses') ? 
+          JSON.stringify(localStorage.getItem('rsa_saved_analyses')).length : 0;
+        
+        // If we already have a lot of data, clear some space first
+        if (existingSize > 1000000) { // ~1MB
+          clearAllStoredData();
+          toast({
+            title: "Storage cleared",
+            description: "Previous analyses were removed to make space for the new one.",
+          });
+        }
+      } catch (e) {
+        console.warn("Error checking storage size:", e);
+      }
+      
+      // Create a compact version of the analysis data
+      const summary = createCompactSummary(result);
+      
+      try {
+        // Store only the compact summary in localStorage
+        localStorage.setItem('rsa_saved_analyses', JSON.stringify([summary]));
+        
+        // Instead of storing the full analysis, store a reference to it
+        localStorage.setItem('rsa_current_analysis', JSON.stringify({
+          overallSentiment: result.overallSentiment,
+          fileAnalysis: {
+            totalReviews: totalReviews,
+            sentimentBreakdown: sentimentBreakdown,
+            accuracyScore: accuracyScore,
+            aspects: aspects.slice(0, 10),
+            keywords: keyPhrases.slice(0, 30),
+            reviews: (result.fileAnalysis.reviews || []).slice(0, 10)
+          }
+        }));
         
         onSave();
         
@@ -218,52 +223,55 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         
         navigate('/dashboard');
       } catch (error: any) {
-        // If we get a storage error, try to clear some space and retry
+        // If we still get quota exceeded error, try with even smaller data
         if (error?.name === 'QuotaExceededError' || 
-            (error?.message && error.message.includes('quota')) || 
-            (error?.toString().includes('quota'))) {
+            error?.toString().includes('quota')) {
           
-          // Try to clear some space by removing old analyses
-          const cleared = clearOldAnalyses();
+          // Last resort - clear everything and try one more time with minimal data
+          clearAllStoredData();
           
-          if (cleared) {
-            // Try again with fewer saved analyses
-            try {
-              const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
-              const savedAnalyses = JSON.parse(savedAnalysesStr);
-              // Just keep the current one and the latest one
-              const updatedAnalyses = [summary];
-              localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
-              
-              onSave();
-              
-              toast({
-                title: "Analysis saved",
-                description: "Your analysis has been saved (older analyses were removed to free up space).",
-              });
-              
-              navigate('/dashboard');
-              return;
-            } catch (retryError) {
-              console.error("Error even after clearing space:", retryError);
-            }
+          try {
+            // Create an extremely minimal summary
+            const minimalSummary = {
+              id: Date.now(),
+              date: new Date().toISOString(),
+              totalReviews: totalReviews,
+              sentimentBreakdown: sentimentBreakdown,
+              overallSentiment: { sentiment, score }
+            };
+            
+            localStorage.setItem('rsa_saved_analyses', JSON.stringify([minimalSummary]));
+            localStorage.setItem('rsa_current_analysis', JSON.stringify({
+              overallSentiment: { sentiment, score },
+              fileAnalysis: {
+                totalReviews: totalReviews,
+                sentimentBreakdown: sentimentBreakdown,
+                accuracyScore: accuracyScore
+              }
+            }));
+            
+            onSave();
+            
+            toast({
+              title: "Analysis saved (minimal)",
+              description: "Your analysis was saved with reduced details due to storage constraints.",
+            });
+            
+            navigate('/dashboard');
+            return;
+          } catch (finalError) {
+            console.error("Final attempt failed:", finalError);
+            throw finalError; // Re-throw to show error message
           }
-          
-          toast({
-            title: "Storage limit reached",
-            description: "Please open the dashboard and delete some previous analyses before saving new ones.",
-            variant: "destructive",
-          });
-        } else {
-          throw error; // Re-throw non-quota errors
         }
+        throw error; // Re-throw non-quota errors
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error("Error in save handler:", error);
       
       toast({
         title: "Save failed",
-        description: "There was an error saving your analysis. Please try again.",
+        description: "There was an error saving your analysis. Please try again or clear previous analyses.",
         variant: "destructive",
       });
     }
@@ -312,22 +320,29 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         <Card className="p-4">
           <h3 className="font-semibold mb-2">Key Phrases</h3>
           <div className="flex flex-wrap gap-2">
-            {keyPhrases.map((phrase: any, idx: number) => (
-              <span 
-                key={idx} 
-                className={`px-2 py-1 rounded-full text-xs ${
-                  sentiment === 'positive' 
-                    ? 'bg-green-100 text-green-800' 
-                    : sentiment === 'negative'
-                      ? 'bg-red-100 text-red-800'
-                      : 'bg-gray-100 text-gray-800'
-                }`}
-              >
-                {/* Fixed handling of phrases to avoid rendering objects */}
-                {typeof phrase === 'string' ? phrase : phrase.text || phrase.word || ""}
-              </span>
-            ))}
-            {keyPhrases.length === 0 && <p className="text-gray-500 text-sm">No key phrases identified</p>}
+            {keyPhrases && keyPhrases.length > 0 ? (
+              keyPhrases.slice(0, 8).map((phrase: any, idx: number) => {
+                const text = typeof phrase === 'string' ? phrase : (phrase.text || phrase.word || "");
+                if (!text) return null;
+                
+                return (
+                  <span 
+                    key={idx} 
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      sentiment === 'positive' 
+                        ? 'bg-green-100 text-green-800' 
+                        : sentiment === 'negative'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-gray-100 text-gray-800'
+                    }`}
+                  >
+                    {text}
+                  </span>
+                );
+              }).filter(Boolean)
+            ) : (
+              <p className="text-gray-500 text-sm">No key phrases identified</p>
+            )}
           </div>
         </Card>
       </div>
@@ -335,22 +350,29 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
       <Card className="p-4 mb-6">
         <h3 className="font-semibold mb-2">Aspects Analysis</h3>
         <div className="space-y-3">
-          {aspects.map((aspect: any, idx: number) => (
-            <div key={idx} className="border-b pb-3 last:border-b-0 last:pb-0">
-              <div className="flex justify-between mb-1">
-                <span className="font-medium">{aspect.name || 'Unnamed aspect'}</span>
-                <span className={
-                  aspect.sentiment === 'positive' ? 'text-green-600' : 
-                  aspect.sentiment === 'negative' ? 'text-red-600' : 
-                  'text-gray-600'
-                }>
-                  {aspect.sentiment.charAt(0).toUpperCase() + aspect.sentiment.slice(1)} ({aspect.confidence}%)
-                </span>
-              </div>
-              <p className="text-sm text-gray-500">{aspect.context}</p>
-            </div>
-          ))}
-          {aspects.length === 0 && <p className="text-gray-500">No aspects identified</p>}
+          {aspects && aspects.length > 0 ? (
+            aspects.slice(0, 5).map((aspect: any, idx: number) => {
+              const aspectName = aspect.aspect || aspect.name || 'Unnamed aspect';
+              return (
+                <div key={idx} className="border-b pb-3 last:border-b-0 last:pb-0">
+                  <div className="flex justify-between mb-1">
+                    <span className="font-medium">{aspectName}</span>
+                    <span className={
+                      aspect.sentiment === 'positive' ? 'text-green-600' : 
+                      aspect.sentiment === 'negative' ? 'text-red-600' : 
+                      'text-gray-600'
+                    }>
+                      {aspect.sentiment ? aspect.sentiment.charAt(0).toUpperCase() + aspect.sentiment.slice(1) : 'Neutral'} 
+                      {aspect.confidence && `(${aspect.confidence}%)`}
+                    </span>
+                  </div>
+                  {aspect.context && <p className="text-sm text-gray-500">{aspect.context}</p>}
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-gray-500">No aspects identified</p>
+          )}
         </div>
       </Card>
       
