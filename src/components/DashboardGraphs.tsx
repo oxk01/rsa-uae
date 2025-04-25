@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { 
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
@@ -66,7 +65,6 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
 }) => {
   const [viewType, setViewType] = useState<'charts' | 'details'>('charts');
   
-  // Calculate min and max counts for word cloud
   let minCount = 0, maxCount = 0;
   
   if (wordCloudData.length > 0) {
@@ -109,9 +107,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
         </div>
         
         <TabsContent value="charts" className="space-y-8">
-          {/* Row 1: Sentiment Overview and Sentiment Trend */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Sentiment Overview - Pie Chart */}
             <DashboardCard
               title="Overall Sentiment Distribution"
               icon={<PieChartIcon className="h-4 w-4" />}
@@ -157,7 +153,6 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               </div>
             </DashboardCard>
             
-            {/* Sentiment Trend - Line Chart */}
             <DashboardCard
               title="Sentiment Trends Over Time"
               icon={<LineChartIcon className="h-4 w-4" />}
@@ -209,9 +204,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             </DashboardCard>
           </div>
           
-          {/* Row 2: Word Cloud and Source Distribution */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Word Cloud */}
             <DashboardCard
               title="Frequent Words in Reviews"
               icon={<Hash className="h-4 w-4" />}
@@ -249,7 +242,6 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               </div>
             </DashboardCard>
             
-            {/* Source Distribution - Stacked Bar Chart */}
             <DashboardCard
               title="Sentiment by Platform/Source"
               icon={<BarChart3 className="h-4 w-4" />}
@@ -290,19 +282,17 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             </DashboardCard>
           </div>
           
-          {/* Row 3: Most Mentioned Aspects and Model Evaluation */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Most Mentioned Aspects - Horizontal Bar Chart */}
             <DashboardCard
               title="Most Mentioned Aspects"
               icon={<BarChart2 className="h-4 w-4" />}
             >
-              <div className="h-[320px]">
+              <div className="h-[350px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
-                    data={mentionedAspectsData.slice(0, 7)} // Limit to prevent overcrowding
-                    margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
+                    data={mentionedAspectsData.slice(0, 6)}
+                    margin={{ top: 5, right: 50, left: 80, bottom: 5 }}
                     barSize={24}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={true} vertical={false} />
@@ -310,8 +300,9 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                     <YAxis 
                       dataKey="aspect" 
                       type="category" 
-                      width={70} 
+                      width={75} 
                       tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => value.length > 12 ? `${value.substring(0, 12)}...` : value}
                     />
                     <Tooltip wrapperStyle={{ zIndex: 100 }} />
                     <Bar 
@@ -320,20 +311,25 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                       fill="#8884d8" 
                       radius={[0, 4, 4, 0]}
                     >
-                      {mentionedAspectsData.slice(0, 7).map((entry, index) => (
+                      {mentionedAspectsData.slice(0, 6).map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={COLORS.mentioned[index % COLORS.mentioned.length]} 
                         />
                       ))}
-                      <LabelList dataKey="count" position="right" />
+                      <LabelList 
+                        dataKey="count" 
+                        position="right" 
+                        offset={10}
+                        formatter={(value) => `${value}`}
+                        style={{ fontSize: '12px', fill: '#333' }}
+                      />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </div>
             </DashboardCard>
             
-            {/* Model Evaluation - Confusion Matrix / Heatmap */}
             <DashboardCard
               title="Model Evaluation"
               icon={<Activity className="h-4 w-4" />}
@@ -394,7 +390,6 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
         </TabsContent>
         
         <TabsContent value="details" className="space-y-8">
-          {/* Aspect-based Sentiment Breakdown - Grouped Bar Chart */}
           <DashboardCard
             title="Aspect-based Sentiment Breakdown"
             icon={<BarChart3 className="h-4 w-4" />}
@@ -446,7 +441,6 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
             </div>
           </DashboardCard>
           
-          {/* Detailed Word Analysis Table */}
           <DashboardCard
             title="Top Keywords Analysis"
             icon={<Hash className="h-4 w-4" />}

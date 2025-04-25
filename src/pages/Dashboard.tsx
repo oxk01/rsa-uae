@@ -379,24 +379,44 @@ const Dashboard = () => {
             title="Most Mentioned Aspects" 
             icon={<Hash className="h-4 w-4" />}
           >
-            <div className="h-[300px]">
+            <div className="h-[350px]">
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={mentionedAspectsData}
+                    data={mentionedAspectsData.slice(0, 6)}
                     layout="vertical"
-                    margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                    margin={{ top: 5, right: 50, left: 120, bottom: 5 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="name" width={100} />
+                    <XAxis 
+                      type="number"
+                      tickFormatter={(value) => `${value}`} 
+                    />
+                    <YAxis 
+                      type="category" 
+                      dataKey="name" 
+                      width={110} 
+                      tick={{ fontSize: 12 }}
+                      tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value} 
+                    />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Legend />
-                    <Bar dataKey="value" fill={COLORS.blue}>
+                    <Bar 
+                      dataKey="value" 
+                      fill={COLORS.blue}
+                      barSize={24}
+                      name="Mentions"
+                    >
                       {mentionedAspectsData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
-                      <LabelList dataKey="value" position="right" />
+                      <LabelList 
+                        dataKey="value" 
+                        position="right" 
+                        offset={10}
+                        formatter={(value) => `${value}`}
+                        style={{ fontSize: '12px', fill: '#333' }}
+                      />
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
