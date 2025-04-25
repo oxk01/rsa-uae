@@ -5,23 +5,24 @@ import DashboardCard from './DashboardCard';
 
 interface SentimentTrendChartProps {
   data?: Array<{
-    date: string | number;
+    date: string;  // Changed to string to ensure more readable dates
     positive: number;
     neutral: number;
     negative: number;
   }>;
 }
 
-const formatDate = (timestamp: string | number): string => {
+const formatDate = (dateString: string): string => {
   try {
-    const date = new Date(Number(timestamp) * 1000);
+    const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
       month: 'short', 
+      day: 'numeric',
       year: 'numeric' 
     });
   } catch (error) {
     console.error("Error formatting date:", error);
-    return String(timestamp);
+    return dateString;
   }
 };
 
@@ -55,6 +56,11 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
               <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#eee" />
               <XAxis 
                 dataKey="date" 
+                label={{ 
+                  value: 'Date', 
+                  position: 'insideBottom', 
+                  offset: -10 
+                }}
                 tick={{ fontSize: 12 }}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
