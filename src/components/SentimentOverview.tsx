@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
-const COLORS = ['#2c7a7b', '#4a5568', '#e53e3e'];
+const COLORS = ['#42b883', '#f6c23e', '#e64a3b'];
 
 interface SentimentOverviewProps {
   data?: Array<{
@@ -18,8 +18,8 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
   
   return (
     <DashboardCard 
-      title="Sentiment Overview" 
-      className="col-span-1 md:col-span-2"
+      title="Overall Sentiment Distribution" 
+      className="col-span-1"
     >
       {!hasData ? (
         <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
@@ -28,57 +28,54 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
         </div>
       ) : (
         <>
-          <div className="h-72">
+          <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
-              <PieChart margin={{ top: 10, right: 10, bottom: 10, left: 10 }}>
+              <PieChart margin={{ top: 20, right: 30, bottom: 0, left: 30 }}>
                 <Pie
                   data={data}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
+                  innerRadius={0}
+                  outerRadius={80}
                   fill="#8884d8"
                   dataKey="value"
-                  paddingAngle={2}
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  labelLine={{ strokeWidth: 1, stroke: '#ccc' }}
+                  paddingAngle={0}
+                  labelLine={false}
                 >
                   {data.map((entry, index) => (
                     <Cell 
                       key={`cell-${index}`} 
                       fill={COLORS[index % COLORS.length]} 
-                      stroke="#fff"
-                      strokeWidth={1}
                     />
                   ))}
                 </Pie>
                 <Tooltip 
-                  formatter={(value) => [`${value} reviews`, 'Count']}
+                  formatter={(value, name) => [`${value}%`, name]}
                   contentStyle={{ 
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                    borderRadius: '8px',
+                    backgroundColor: 'white', 
+                    borderRadius: '3px',
                     border: '1px solid #e5e7eb',
-                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    padding: '8px',
+                    boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                   }}
+                />
+                <Legend 
+                  layout="horizontal"
+                  verticalAlign="bottom"
+                  align="center"
+                  wrapperStyle={{ paddingTop: 20 }}
                 />
               </PieChart>
             </ResponsiveContainer>
           </div>
           
-          <div className="flex justify-center gap-6 mt-4">
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-[#2c7a7b] mr-2"></div>
-              <span className="text-sm">Positive</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-[#4a5568] mr-2"></div>
-              <span className="text-sm">Neutral</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-3 h-3 rounded-full bg-[#e53e3e] mr-2"></div>
-              <span className="text-sm">Negative</span>
-            </div>
-          </div>
+          {data.map((item, index) => (
+            item.name === "Negative" && (
+              <div key={index} className="text-center mt-2 text-sm font-medium text-red-500">
+                Negative: {item.value}%
+              </div>
+            )
+          ))}
         </>
       )}
     </DashboardCard>

@@ -1,30 +1,22 @@
 
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { Card } from '@/components/ui/card';
 
 interface StatCardProps {
   title: string;
-  value: string;
-  change?: string;
-  positive?: boolean;
-  icon: ReactNode;
+  value: string | number;
+  valueColor?: string;
+  icon?: React.ReactNode;
 }
 
-const StatCard = ({ title, value, change, positive = true, icon }: StatCardProps) => {
+const StatCard = ({ title, value, valueColor = 'text-black', icon }: StatCardProps) => {
   return (
-    <Card className="p-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground">{title}</p>
-          <h3 className="text-2xl font-bold mt-1">{value}</h3>
-          {change && (
-            <p className={`text-xs mt-1 ${positive ? 'text-green-600' : 'text-red-600'}`}>
-              {positive ? '↑' : '↓'} {change}
-            </p>
-          )}
-        </div>
-        <div className="p-3 bg-brand-blue bg-opacity-10 rounded">
-          {icon}
+    <Card className="border">
+      <div className="p-4">
+        <p className="text-sm text-gray-500 mb-1">{title}</p>
+        <div className="flex items-center space-x-2">
+          {icon && <span className="text-gray-400">{icon}</span>}
+          <h3 className={`text-2xl font-bold ${valueColor}`}>{value}</h3>
         </div>
       </div>
     </Card>

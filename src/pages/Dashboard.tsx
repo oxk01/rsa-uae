@@ -1,683 +1,285 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  ChartBarIcon, 
-  ChartPieIcon, 
-  ChartLineIcon, 
-  TagIcon, 
-  ServerIcon, 
-  Hash 
+  FileBarChart2, 
+  ThumbsUp, 
+  ThumbsDown,
+  BarChart2 
 } from 'lucide-react';
-import {
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  BarChart,
-  LineChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-  Line,
-  LabelList
-} from 'recharts';
-import { useToast } from '@/hooks/use-toast';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
+import StatCard from '@/components/StatCard';
 import SentimentOverview from '@/components/SentimentOverview';
-import TopKeywords from '@/components/TopKeywords';
-import DashboardCard from '@/components/DashboardCard';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import SentimentTrendChart from '@/components/SentimentTrendChart';
+import SentimentBySource from '@/components/SentimentBySource';
+import MostMentionedAspects from '@/components/MostMentionedAspects';
+import WordCloudCard from '@/components/WordCloudCard';
+import RecentReviewsList from '@/components/RecentReviewsList';
+import { Button } from '@/components/ui/button';
 
-const COLORS = {
-  positive: '#10b981',
-  neutral: '#6b7280',
-  negative: '#ef4444',
-  blue: '#3b82f6',
-  indigo: '#6366f1',
-  purple: '#8b5cf6',
-  pink: '#ec4899',
-  secondary: '#6c757d',
-  background: '#f9fafb'
+// Sample data for the dashboard
+const sampleData = {
+  totalReviews: 1248,
+  positivePercentage: 60,
+  negativePercentage: 15,
+  averageRating: 4.2,
+  sentimentOverview: [
+    { name: 'Positive', value: 60 },
+    { name: 'Neutral', value: 25 },
+    { name: 'Negative', value: 15 }
+  ],
+  trendData: [
+    { date: 'Jan', positive: 62, neutral: 25, negative: 13 },
+    { date: 'Feb', positive: 58, neutral: 28, negative: 14 },
+    { date: 'Mar', positive: 65, neutral: 23, negative: 12 },
+    { date: 'Apr', positive: 59, neutral: 24, negative: 17 },
+    { date: 'May', positive: 63, neutral: 22, negative: 15 },
+    { date: 'Jun', positive: 60, neutral: 25, negative: 15 }
+  ],
+  sourceData: [
+    { source: 'Website', positive: 35, neutral: 15, negative: 5 },
+    { source: 'Mobile App', positive: 25, neutral: 10, negative: 10 },
+    { source: 'Social Media', positive: 12, neutral: 8, negative: 5 },
+    { source: 'Email', positive: 8, neutral: 5, negative: 2 }
+  ],
+  aspectsData: [
+    { aspect: 'Quality', count: 120 },
+    { aspect: 'Price', count: 95 },
+    { aspect: 'Shipping', count: 80 },
+    { aspect: 'Customer Service', count: 65 },
+    { aspect: 'Features', count: 55 }
+  ],
+  wordCloudData: [
+    { text: 'great', value: 25, sentiment: 'positive' },
+    { text: 'quality', value: 18, sentiment: 'positive' },
+    { text: 'excellent', value: 16, sentiment: 'positive' },
+    { text: 'service', value: 15, sentiment: 'neutral' },
+    { text: 'slow', value: 12, sentiment: 'negative' },
+    { text: 'expensive', value: 10, sentiment: 'negative' },
+    { text: 'recommend', value: 9, sentiment: 'positive' },
+    { text: 'shipping', value: 9, sentiment: 'neutral' },
+    { text: 'helpful', value: 8, sentiment: 'positive' },
+    { text: 'easy', value: 8, sentiment: 'positive' },
+    { text: 'fast', value: 7, sentiment: 'positive' },
+    { text: 'difficult', value: 7, sentiment: 'negative' },
+    { text: 'price', value: 7, sentiment: 'neutral' },
+    { text: 'value', value: 6, sentiment: 'positive' },
+    { text: 'reliable', value: 6, sentiment: 'positive' }
+  ],
+  recentReviews: [
+    {
+      id: '1',
+      author: 'John D.',
+      text: 'The product worked exactly as described! Very elegant and quite satisfactory. Fast shipping and great customer service too!',
+      sentiment: 'positive',
+      date: '2023-06-10'
+    },
+    {
+      id: '2',
+      author: 'Sarah M.',
+      text: 'Disappointed with the delivery time. The product was good but delivery took more than promised.',
+      sentiment: 'negative',
+      date: '2023-06-08'
+    },
+    {
+      id: '3',
+      author: 'Mike C.',
+      text: 'Product is fine but pricing seems high when I found a similar product for less.',
+      sentiment: 'neutral',
+      date: '2023-06-07'
+    }
+  ]
 };
 
 const Dashboard = () => {
-  const [data, setData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('overview');
-  const { toast } = useToast();
   const navigate = useNavigate();
   
-  useEffect(() => {
-    const loadData = () => {
-      try {
-        const currentAnalysis = localStorage.getItem('rsa_current_analysis');
-        if (currentAnalysis) {
-          const parsedData = JSON.parse(currentAnalysis);
-          setData(parsedData);
-          setLoading(false);
-        } else {
-          const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
-          if (savedAnalysesStr) {
-            const savedAnalyses = JSON.parse(savedAnalysesStr);
-            if (savedAnalyses && savedAnalyses.length > 0) {
-              setData(savedAnalyses[0]);
-              setLoading(false);
-            } else {
-              handleNoData();
-            }
-          } else {
-            handleNoData();
-          }
-        }
-      } catch (error) {
-        console.error("Error loading analysis data:", error);
-        handleNoData();
-      }
-    };
-    
-    loadData();
-  }, [navigate]);
-  
-  const handleNoData = () => {
-    setLoading(false);
-    toast({
-      title: "No analysis data found",
-      description: "Please complete an analysis in the demo section first.",
-      variant: "destructive",
-    });
-  };
-  
-  const prepareSentimentData = () => {
-    if (!data || !data.fileAnalysis || !data.fileAnalysis.sentimentBreakdown) {
-      return [];
-    }
-    
-    const { positive, neutral, negative } = data.fileAnalysis.sentimentBreakdown;
-    
-    return [
-      { name: 'Positive', value: positive, fill: COLORS.positive },
-      { name: 'Neutral', value: neutral, fill: COLORS.neutral },
-      { name: 'Negative', value: negative, fill: COLORS.negative }
-    ];
-  };
-  
-  const prepareAspectData = () => {
-    if (!data || !data.aspects) {
-      return [];
-    }
-    
-    return data.aspects.map((aspect: any) => {
-      const sentiment = aspect.sentiment || 'neutral';
-      let confidence = aspect.confidence || 50;
-      
-      return {
-        name: aspect.name,
-        positive: sentiment === 'positive' ? confidence : 0,
-        neutral: sentiment === 'neutral' ? confidence : 0,
-        negative: sentiment === 'negative' ? confidence : 0,
-        sentiment
-      };
-    });
-  };
-  
-  const prepareTimelineData = () => {
-    if (!data || !data.fileAnalysis || !data.fileAnalysis.reviews) {
-      return [];
-    }
-    
-    const reviews = [...data.fileAnalysis.reviews];
-    reviews.sort((a: any, b: any) => {
-      const dateA = new Date(a.date || '2023-01-01');
-      const dateB = new Date(b.date || '2023-01-01');
-      return dateA.getTime() - dateB.getTime();
-    });
-    
-    const groupedByDate: Record<string, { positive: number, neutral: number, negative: number, count: number }> = {};
-    
-    reviews.forEach((review: any) => {
-      if (!review.date) return;
-      
-      const date = new Date(review.date).toISOString().split('T')[0];
-      
-      if (!groupedByDate[date]) {
-        groupedByDate[date] = { positive: 0, neutral: 0, negative: 0, count: 0 };
-      }
-      
-      if (review.sentiment) {
-        groupedByDate[date].positive += review.sentiment.positive || 0;
-        groupedByDate[date].neutral += review.sentiment.neutral || 0;
-        groupedByDate[date].negative += review.sentiment.negative || 0;
-        groupedByDate[date].count += 1;
-      }
-    });
-    
-    return Object.entries(groupedByDate).map(([date, values]) => {
-      const count = values.count || 1;
-      return {
-        date,
-        positive: Math.round(values.positive / count),
-        neutral: Math.round(values.neutral / count),
-        negative: Math.round(values.negative / count)
-      };
-    });
-  };
-  
-  const prepareKeywordsData = () => {
-    if (!data || !data.fileAnalysis || !data.fileAnalysis.reviews) {
-      return [];
-    }
-    
-    const keywordMap: Record<string, { count: number, sentiment: string }> = {};
-    
-    data.fileAnalysis.reviews.forEach((review: any) => {
-      if (!review.keywords) return;
-      
-      review.keywords.forEach((keyword: any) => {
-        if (!keyword || !keyword.word) return;
-        
-        const word = keyword.word.toLowerCase();
-        
-        if (!keywordMap[word]) {
-          keywordMap[word] = { count: 0, sentiment: keyword.sentiment || 'neutral' };
-        }
-        
-        keywordMap[word].count += keyword.count || 1;
-      });
-    });
-    
-    return Object.entries(keywordMap)
-      .map(([word, data]) => ({
-        word,
-        count: data.count,
-        sentiment: data.sentiment
-      }))
-      .sort((a, b) => b.count - a.count)
-      .slice(0, 20);
-  };
-  
-  const prepareSourceData = () => {
-    if (!data || !data.fileAnalysis || !data.fileAnalysis.reviews) {
-      return [];
-    }
-    
-    const sourceMap: Record<string, { positive: number, neutral: number, negative: number }> = {};
-    
-    data.fileAnalysis.reviews.forEach((review: any) => {
-      const source = review.source || 'Unknown';
-      
-      if (!sourceMap[source]) {
-        sourceMap[source] = { positive: 0, neutral: 0, negative: 0 };
-      }
-      
-      if (review.sentiment) {
-        const { positive, neutral, negative } = review.sentiment;
-        if (positive >= neutral && positive >= negative) {
-          sourceMap[source].positive += 1;
-        } else if (negative >= positive && negative >= neutral) {
-          sourceMap[source].negative += 1;
-        } else {
-          sourceMap[source].neutral += 1;
-        }
-      }
-    });
-    
-    return Object.entries(sourceMap).map(([source, counts]) => ({
-      source: source.charAt(0).toUpperCase() + source.slice(1),
-      ...counts
-    }));
-  };
-  
-  const prepareMentionedAspectsData = () => {
-    if (!data || !data.aspects) {
-      return [];
-    }
-    
-    return data.aspects
-      .map((aspect: any) => ({
-        name: aspect.name,
-        value: aspect.confidence || 50,
-        displayValue: `${aspect.confidence || 50}`,
-        fill: aspect.sentiment === 'positive' ? COLORS.positive : 
-              aspect.sentiment === 'negative' ? COLORS.negative : COLORS.neutral
-      }))
-      .slice(0, 5);
-  };
-  
-  const sentimentData = prepareSentimentData();
-  const aspectData = prepareAspectData();
-  const timelineData = prepareTimelineData();
-  const keywordsData = prepareKeywordsData();
-  const sourceData = prepareSourceData();
-  const mentionedAspectsData = prepareMentionedAspectsData();
-  
-  const handleStartNewAnalysis = () => {
-    navigate('/demo');
-  };
-  
-  if (loading) {
-    return (
-      <div className="container mx-auto p-6">
-        <div className="mb-6">
-          <Skeleton className="h-8 w-64 mb-2" />
-          <Skeleton className="h-4 w-full max-w-md" />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <Skeleton className="h-64 rounded-lg" />
-          <Skeleton className="h-64 rounded-lg" />
-          <Skeleton className="h-64 rounded-lg" />
-        </div>
-      </div>
-    );
-  }
-  
-  if (!data) {
-    return (
-      <div className="container mx-auto p-6">
-        <Card className="p-8 text-center">
-          <h2 className="text-2xl font-semibold mb-4">No Analysis Data Found</h2>
-          <p className="text-gray-600 mb-6">To view the dashboard, please complete an analysis in the demo section first.</p>
-          <Button onClick={handleStartNewAnalysis}>
-            Go to Analysis Demo
-          </Button>
-        </Card>
-      </div>
-    );
-  }
-  
-  const chartConfig = {
-    positive: { color: COLORS.positive },
-    neutral: { color: COLORS.neutral },
-    negative: { color: COLORS.negative },
-    blue: { color: COLORS.blue },
-    indigo: { color: COLORS.indigo },
-    purple: { color: COLORS.purple },
-    pink: { color: COLORS.pink },
-  };
-  
   return (
-    <div className="container mx-auto px-4 py-6 bg-background min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Analysis Dashboard</h1>
-        <p className="text-muted-foreground">
-          Insights from {data.fileAnalysis?.fileName || 'your analysis'} 
-          with {data.fileAnalysis?.totalReviews || 0} reviews
-        </p>
+    <div className="container mx-auto px-4 py-6 bg-gray-50 min-h-screen">
+      <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h1 className="text-xl font-bold mb-1">Dashboard</h1>
+          <p className="text-sm text-gray-500">Real-time sentiment analysis insights</p>
+        </div>
+        <div className="flex gap-2 mt-4 md:mt-0">
+          <Button variant="outline" size="sm">
+            Last 7 Days ▾
+          </Button>
+          <Button variant="outline" size="sm">
+            All Reviews ▾
+          </Button>
+        </div>
       </div>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <StatCard 
+          title="Total Reviews" 
+          value={sampleData.totalReviews} 
+        />
+        <StatCard 
+          title="Positive Sentiment" 
+          value={`${sampleData.positivePercentage}%`}
+          valueColor="text-green-600"
+          icon={<ThumbsUp size={18} />}
+        />
+        <StatCard 
+          title="Negative Sentiment" 
+          value={`${sampleData.negativePercentage}%`}
+          valueColor="text-red-600"
+          icon={<ThumbsDown size={18} />}
+        />
+        <StatCard 
+          title="Average Rating" 
+          value={sampleData.averageRating}
+          valueColor="text-blue-600"
+          icon={<BarChart2 size={18} />}
+        />
+      </div>
+      
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="mb-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="aspects">Aspects Analysis</TabsTrigger>
-          <TabsTrigger value="timeline">Timeline</TabsTrigger>
-          <TabsTrigger value="keywords">Keywords</TabsTrigger>
+          <TabsTrigger value="aspect">Aspect Analysis</TabsTrigger>
+          <TabsTrigger value="trends">Trends</TabsTrigger>
+          <TabsTrigger value="reports">Reports</TabsTrigger>
         </TabsList>
         
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <DashboardCard 
-              title="Overall Sentiment Distribution" 
-              icon={<ChartPieIcon className="h-4 w-4" />}
-              className="md:col-span-2"
-            >
-              <div className="h-[300px]">
-                <ChartContainer config={chartConfig}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={sentimentData}
-                        nameKey="name"
-                        dataKey="value"
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={60}
-                        outerRadius={90}
-                        paddingAngle={2}
-                        label={(entry) => `${entry.name}: ${entry.value}`}
-                      >
-                        {sentimentData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))}
-                      </Pie>
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Legend verticalAlign="bottom" height={36} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
-            </DashboardCard>
-            
-            <TopKeywords keywords={keywordsData} className="md:col-span-1" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <SentimentOverview data={sampleData.sentimentOverview} />
+            <SentimentTrendChart data={sampleData.trendData} />
           </div>
           
-          <DashboardCard 
-            title="Sentiment by Source" 
-            icon={<ServerIcon className="h-4 w-4" />}
-          >
-            <div className="h-[400px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={sourceData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="source" width={100} />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent />}
-                      formatter={(value: number) => [`${value}`, 'Score']}
-                    />
-                    <Legend />
-                    <Bar dataKey="positive" stackId="a" fill={COLORS.positive} name="Positive" />
-                    <Bar dataKey="neutral" stackId="a" fill={COLORS.neutral} name="Neutral" />
-                    <Bar dataKey="negative" stackId="a" fill={COLORS.negative} name="Negative" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </DashboardCard>
-          
-          <DashboardCard 
-            title="Most Mentioned Aspects" 
-            icon={<Hash className="h-4 w-4" />}
-          >
-            <div className="h-[400px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={mentionedAspectsData}
-                    layout="vertical"
-                    margin={{ top: 5, right: 65, left: 120, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-                    <XAxis 
-                      type="number"
-                      tickFormatter={(value) => `${value}`} 
-                    />
-                    <YAxis 
-                      type="category" 
-                      dataKey="name" 
-                      width={110} 
-                      tick={{ fontSize: 12 }}
-                      tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value} 
-                    />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent />}
-                      formatter={(value: number) => [`${value}`, 'Score']}
-                    />
-                    <Legend />
-                    <Bar 
-                      dataKey="value" 
-                      fill={COLORS.blue}
-                      barSize={20}
-                      name="Mentions"
-                    >
-                      {mentionedAspectsData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                      <LabelList 
-                        dataKey="displayValue" 
-                        position="right" 
-                        offset={15}
-                        formatter={(value) => `${value}`}
-                        style={{ fontSize: '12px', fill: '#333' }}
-                      />
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </DashboardCard>
-        </TabsContent>
-        
-        <TabsContent value="aspects" className="space-y-6">
-          <DashboardCard 
-            title="Aspect-Based Sentiment Breakdown" 
-            icon={<ChartBarIcon className="h-4 w-4" />}
-          >
-            <div className="h-[400px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={aspectData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Bar dataKey="positive" stackId="a" name="Positive" fill={COLORS.positive} />
-                    <Bar dataKey="neutral" stackId="a" name="Neutral" fill={COLORS.neutral} />
-                    <Bar dataKey="negative" stackId="a" name="Negative" fill={COLORS.negative} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </DashboardCard>
-          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {data.aspects?.map((aspect: any, index: number) => (
-              <Card key={index}>
-                <CardHeader className="pb-2">
-                  <CardTitle className="text-lg flex justify-between">
-                    {aspect.name}
-                    <span className={`text-sm font-normal ${
-                      aspect.sentiment === 'positive' ? 'text-green-600' : 
-                      aspect.sentiment === 'negative' ? 'text-red-600' : 'text-gray-600'
-                    }`}>
-                      {aspect.sentiment.charAt(0).toUpperCase() + aspect.sentiment.slice(1)} 
-                      ({aspect.confidence || 0}%)
-                    </span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{aspect.context || 'No context available'}</p>
-                </CardContent>
-              </Card>
-            ))}
+            <SentimentBySource data={sampleData.sourceData} />
+            <MostMentionedAspects data={sampleData.aspectsData} />
+          </div>
+          
+          <div className="grid grid-cols-1 gap-6">
+            <WordCloudCard data={sampleData.wordCloudData} />
+            <RecentReviewsList reviews={sampleData.recentReviews} />
           </div>
         </TabsContent>
         
-        <TabsContent value="timeline" className="space-y-6">
-          <DashboardCard 
-            title="Sentiment Trends Over Time" 
-            icon={<ChartLineIcon className="h-4 w-4" />}
-          >
-            <div className="h-[400px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart
-                    data={timelineData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="positive" 
-                      name="Positive" 
-                      stroke={COLORS.positive} 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                      activeDot={{ r: 6 }} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="neutral" 
-                      name="Neutral" 
-                      stroke={COLORS.neutral} 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                      activeDot={{ r: 6 }} 
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="negative" 
-                      name="Negative" 
-                      stroke={COLORS.negative} 
-                      strokeWidth={2} 
-                      dot={{ r: 4 }} 
-                      activeDot={{ r: 6 }} 
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </DashboardCard>
-          
-          <DashboardCard 
-            title="Volume of Reviews Over Time" 
-            icon={<ChartBarIcon className="h-4 w-4" />}
-          >
-            <div className="h-[300px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={timelineData}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="date" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Bar 
-                      dataKey="positive" 
-                      name="Positive" 
-                      stackId="a" 
-                      fill={COLORS.positive} 
-                    />
-                    <Bar 
-                      dataKey="neutral" 
-                      name="Neutral" 
-                      stackId="a" 
-                      fill={COLORS.neutral} 
-                    />
-                    <Bar 
-                      dataKey="negative" 
-                      name="Negative" 
-                      stackId="a" 
-                      fill={COLORS.negative} 
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
-          </DashboardCard>
+        <TabsContent value="aspect" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Aspect-Based Sentiment Analysis</h3>
+              <div className="h-64 flex items-center justify-center text-gray-500">
+                <p>Aspect-based analysis content will appear here</p>
+              </div>
+            </Card>
+            <MostMentionedAspects data={sampleData.aspectsData} />
+          </div>
         </TabsContent>
         
-        <TabsContent value="keywords" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <DashboardCard 
-              title="Top Keywords" 
-              icon={<Hash className="h-4 w-4" />}
-              className="col-span-1"
-            >
-              <div className="h-[400px]">
-                <ChartContainer config={chartConfig}>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={keywordsData.slice(0, 10)}
-                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                      layout="vertical"
-                    >
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis type="number" />
-                      <YAxis type="category" dataKey="word" width={120} />
-                      <ChartTooltip content={<ChartTooltipContent />} />
-                      <Bar dataKey="count" name="Mentions">
-                        {keywordsData.slice(0, 10).map((entry, index) => (
-                          <Cell 
-                            key={`cell-${index}`} 
-                            fill={entry.sentiment === 'positive' ? COLORS.positive : 
-                                  entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
-                          />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
+        <TabsContent value="trends" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Sentiment Trends Over Time</h3>
+              <div className="h-72">
+                <SentimentTrendChart data={sampleData.trendData} />
               </div>
-            </DashboardCard>
-            
-            <Card className="col-span-1">
-              <CardHeader>
-                <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <Hash className="h-4 w-4" />
-                  Keyword Cloud
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-wrap gap-2 justify-center items-center min-h-[400px]">
-                  {keywordsData.map((keyword, index) => (
-                    <span 
-                      key={index}
-                      className={`inline-block px-3 py-1 rounded-full text-white
-                        ${keyword.sentiment === 'positive' ? 'bg-green-500' : 
-                          keyword.sentiment === 'negative' ? 'bg-red-500' : 'bg-gray-500'}`}
-                      style={{
-                        fontSize: `${Math.max(0.8, Math.min(2, 0.8 + keyword.count / 20))}rem`,
-                        opacity: 0.7 + (keyword.count / 100)
-                      }}
-                    >
-                      {keyword.word}
-                    </span>
-                  ))}
-                </div>
-              </CardContent>
             </Card>
           </div>
-          
-          <DashboardCard 
-            title="Sentiment Distribution by Keyword" 
-            icon={<ChartBarIcon className="h-4 w-4" />}
-          >
-            <div className="h-[400px]">
-              <ChartContainer config={chartConfig}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={keywordsData.slice(0, 8)}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="word" />
-                    <YAxis />
-                    <ChartTooltip content={<ChartTooltipContent />} />
-                    <Legend />
-                    <Bar 
-                      dataKey="count" 
-                      name="Mentions" 
-                      fill={COLORS.blue}
-                    >
-                      {keywordsData.slice(0, 8).map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.sentiment === 'positive' ? COLORS.positive : 
-                                entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </ChartContainer>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Aspect Trends</h3>
+              <div className="h-64 flex items-center justify-center text-gray-400">
+                <p>Aspect sentiment trends visualization will appear here</p>
+              </div>
+            </Card>
+            <Card className="p-6">
+              <h3 className="text-lg font-medium mb-4">Source Trends</h3>
+              <div className="h-64 flex items-center justify-center text-gray-400">
+                <p>Source review trends visualization will appear here</p>
+              </div>
+            </Card>
+          </div>
+        </TabsContent>
+        
+        <TabsContent value="reports" className="space-y-6">
+          <Card className="p-6">
+            <h3 className="text-lg font-medium mb-4">Generate Custom Report</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h4 className="font-medium mb-3">Report Options</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input type="checkbox" id="sentiment" className="mr-2" defaultChecked />
+                    <label htmlFor="sentiment" className="text-sm">Sentiment Overview</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" id="aspect" className="mr-2" defaultChecked />
+                    <label htmlFor="aspect" className="text-sm">Aspect-Based Analysis</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" id="trend" className="mr-2" />
+                    <label htmlFor="trend" className="text-sm">Trend Analysis</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" id="recommendations" className="mr-2" />
+                    <label htmlFor="recommendations" className="text-sm">Key Insights & Recommendations</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="checkbox" id="data" className="mr-2" />
+                    <label htmlFor="data" className="text-sm">Include Raw Data</label>
+                  </div>
+                </div>
+                <div className="mt-6">
+                  <Button className="bg-blue-600 hover:bg-blue-700">Generate Report</Button>
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-3">Report Format</h4>
+                <div className="space-y-2">
+                  <div className="flex items-center">
+                    <input type="radio" id="pdf" name="format" className="mr-2" defaultChecked />
+                    <label htmlFor="pdf" className="text-sm">PDF Report</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="radio" id="excel" name="format" className="mr-2" />
+                    <label htmlFor="excel" className="text-sm">Excel Report</label>
+                  </div>
+                  <div className="flex items-center">
+                    <input type="radio" id="csv" name="format" className="mr-2" />
+                    <label htmlFor="csv" className="text-sm">CSV Data Export</label>
+                  </div>
+                </div>
+              </div>
             </div>
-          </DashboardCard>
+          </Card>
+          
+          <Card className="p-6">
+            <h3 className="text-lg font-medium mb-4">Saved Reports</h3>
+            <div className="space-y-4">
+              <div className="border p-4 rounded-md flex justify-between items-center">
+                <div>
+                  <h4 className="font-medium">Monthly Sentiment Overview</h4>
+                  <p className="text-xs text-gray-500">Generated on June 10, 2023</p>
+                </div>
+                <Button variant="outline" size="sm">Download</Button>
+              </div>
+              <div className="border p-4 rounded-md flex justify-between items-center">
+                <div>
+                  <h4 className="font-medium">Quarterly Performance Report</h4>
+                  <p className="text-xs text-gray-500">Generated on May 15, 2023</p>
+                </div>
+                <Button variant="outline" size="sm">Download</Button>
+              </div>
+              <div className="border p-4 rounded-md flex justify-between items-center">
+                <div>
+                  <h4 className="font-medium">Competitor Analysis</h4>
+                  <p className="text-xs text-gray-500">Generated on April 28, 2023</p>
+                </div>
+                <Button variant="outline" size="sm">Download</Button>
+              </div>
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
-      
-      <div className="mt-8 text-center">
-        <Button onClick={handleStartNewAnalysis} className="bg-blue-600 hover:bg-blue-700">
-          Start New Analysis
-        </Button>
-      </div>
     </div>
   );
 };

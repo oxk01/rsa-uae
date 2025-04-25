@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Header from '@/components/Header';
 import StatsGrid from '@/components/StatsGrid';
 import { Card } from '@/components/ui/card';
-import { AlertCircle, Download } from 'lucide-react';
+import { AlertCircle, Download, LayoutDashboard } from 'lucide-react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -428,17 +428,29 @@ const Index = () => {
             <h1 className="text-2xl font-semibold text-gray-900">Sentiment Analysis Dashboard</h1>
             <p className="text-gray-500 mt-1">Analyze customer reviews with AI-powered contextual sentiment analysis</p>
           </div>
-          {hasData && (
+          <div className="flex gap-2">
+            {hasData && (
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleExportData}
+                className="flex items-center gap-1"
+              >
+                <Download className="h-4 w-4" />
+                Export to Excel
+              </Button>
+            )}
             <Button 
-              variant="outline" 
               size="sm" 
-              onClick={handleExportData}
-              className="flex items-center gap-1"
+              className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700"
+              asChild
             >
-              <Download className="h-4 w-4" />
-              Export to Excel
+              <Link to="/dashboard">
+                <LayoutDashboard className="h-4 w-4" />
+                New Dashboard
+              </Link>
             </Button>
-          )}
+          </div>
         </div>
         
         {!hasData && (
