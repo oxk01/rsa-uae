@@ -5,19 +5,32 @@ import DashboardCard from './DashboardCard';
 
 interface SentimentTrendChartProps {
   data?: Array<{
-    date: string;
+    date: string | number;
     positive: number;
     neutral: number;
     negative: number;
   }>;
 }
 
+const formatDate = (timestamp: string | number): string => {
+  try {
+    const date = new Date(Number(timestamp) * 1000);
+    return date.toLocaleDateString('en-US', { 
+      month: 'short', 
+      year: 'numeric' 
+    });
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return String(timestamp);
+  }
+};
+
 const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
   const hasData = data && data.length > 0;
   
-  // Ensure all data values are valid numbers
+  // Ensure all data values are valid numbers and format dates
   const validatedData = hasData ? data.map(item => ({
-    date: item.date,
+    date: formatDate(item.date),
     positive: typeof item.positive === 'number' ? item.positive : 0,
     neutral: typeof item.neutral === 'number' ? item.neutral : 0,
     negative: typeof item.negative === 'number' ? item.negative : 0
@@ -51,6 +64,7 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
                 domain={[0, 100]}
+                label={{ value: 'Sentiment %', angle: -90, position: 'insideLeft' }}
               />
               <Tooltip 
                 contentStyle={{ 
@@ -67,21 +81,21 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                 stroke="#42b883" 
                 activeDot={{ r: 6 }} 
                 strokeWidth={2}
-                name="positive"
+                name="Positive"
               />
               <Line 
                 type="monotone" 
                 dataKey="neutral" 
                 stroke="#f6c23e" 
                 strokeWidth={2}
-                name="neutral"
+                name="Neutral"
               />
               <Line 
                 type="monotone" 
                 dataKey="negative" 
                 stroke="#e64a3b" 
                 strokeWidth={2}
-                name="negative"
+                name="Negative"
               />
             </LineChart>
           </ResponsiveContainer>
