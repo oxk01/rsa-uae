@@ -24,7 +24,7 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     enableTooltip: true,
     deterministic: true,
     fontFamily: 'Inter, sans-serif',
-    fontSizes: [10, 60],
+    fontSizes: [10, 60] as [number, number], // Explicitly type as MinMaxPair
     fontStyle: 'normal',
     fontWeight: 'normal',
     padding: 1,
