@@ -239,12 +239,15 @@ const Dashboard = () => {
       return [];
     }
     
-    return data.aspects.map((aspect: any) => ({
-      name: aspect.name,
-      value: aspect.confidence || 50,
-      fill: aspect.sentiment === 'positive' ? COLORS.positive : 
-            aspect.sentiment === 'negative' ? COLORS.negative : COLORS.neutral
-    }));
+    return data.aspects
+      .map((aspect: any) => ({
+        name: aspect.name,
+        value: aspect.confidence || 50,
+        displayValue: `${aspect.confidence || 50}`,
+        fill: aspect.sentiment === 'positive' ? COLORS.positive : 
+              aspect.sentiment === 'negative' ? COLORS.negative : COLORS.neutral
+      }))
+      .slice(0, 5);
   };
   
   const sentimentData = prepareSentimentData();
@@ -357,14 +360,17 @@ const Dashboard = () => {
             title="Sentiment by Source" 
             icon={<ServerIcon className="h-4 w-4" />}
           >
-            <div className="h-[300px]">
+            <div className="h-[400px]">
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={sourceData} layout="vertical">
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                     <XAxis type="number" />
                     <YAxis type="category" dataKey="source" width={100} />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip 
+                      content={<ChartTooltipContent />}
+                      formatter={(value: number) => [`${value}`, 'Score']}
+                    />
                     <Legend />
                     <Bar dataKey="positive" stackId="a" fill={COLORS.positive} name="Positive" />
                     <Bar dataKey="neutral" stackId="a" fill={COLORS.neutral} name="Neutral" />
@@ -379,15 +385,15 @@ const Dashboard = () => {
             title="Most Mentioned Aspects" 
             icon={<Hash className="h-4 w-4" />}
           >
-            <div className="h-[350px]">
+            <div className="h-[400px]">
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
-                    data={mentionedAspectsData.slice(0, 6)}
+                    data={mentionedAspectsData}
                     layout="vertical"
-                    margin={{ top: 5, right: 50, left: 120, bottom: 5 }}
+                    margin={{ top: 5, right: 65, left: 120, bottom: 5 }}
                   >
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
                     <XAxis 
                       type="number"
                       tickFormatter={(value) => `${value}`} 
@@ -399,21 +405,24 @@ const Dashboard = () => {
                       tick={{ fontSize: 12 }}
                       tickFormatter={(value) => value.length > 15 ? `${value.substring(0, 15)}...` : value} 
                     />
-                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <ChartTooltip 
+                      content={<ChartTooltipContent />}
+                      formatter={(value: number) => [`${value}`, 'Score']}
+                    />
                     <Legend />
                     <Bar 
                       dataKey="value" 
                       fill={COLORS.blue}
-                      barSize={24}
+                      barSize={20}
                       name="Mentions"
                     >
                       {mentionedAspectsData.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.fill} />
                       ))}
                       <LabelList 
-                        dataKey="value" 
+                        dataKey="displayValue" 
                         position="right" 
-                        offset={10}
+                        offset={15}
                         formatter={(value) => `${value}`}
                         style={{ fontSize: '12px', fill: '#333' }}
                       />
