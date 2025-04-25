@@ -288,6 +288,16 @@ const Dashboard = () => {
     );
   }
   
+  const chartConfig = {
+    positive: { color: COLORS.positive },
+    neutral: { color: COLORS.neutral },
+    negative: { color: COLORS.negative },
+    blue: { color: COLORS.blue },
+    indigo: { color: COLORS.indigo },
+    purple: { color: COLORS.purple },
+    pink: { color: COLORS.pink },
+  };
+  
   return (
     <div className="container mx-auto px-4 py-6 bg-background min-h-screen">
       <div className="mb-6">
@@ -314,27 +324,29 @@ const Dashboard = () => {
               className="md:col-span-2"
             >
               <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={sentimentData}
-                      nameKey="name"
-                      dataKey="value"
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={90}
-                      paddingAngle={2}
-                      label={(entry) => `${entry.name}: ${entry.value}`}
-                    >
-                      {sentimentData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.fill} />
-                      ))}
-                    </Pie>
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Legend verticalAlign="bottom" height={36} />
-                  </PieChart>
-                </ResponsiveContainer>
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={sentimentData}
+                        nameKey="name"
+                        dataKey="value"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={90}
+                        paddingAngle={2}
+                        label={(entry) => `${entry.name}: ${entry.value}`}
+                      >
+                        {sentimentData.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                      </Pie>
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Legend verticalAlign="bottom" height={36} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
               </div>
             </DashboardCard>
             
@@ -346,18 +358,20 @@ const Dashboard = () => {
             icon={<ServerIcon className="h-4 w-4" />}
           >
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={sourceData} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="source" width={100} />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar dataKey="positive" stackId="a" fill={COLORS.positive} name="Positive" />
-                  <Bar dataKey="neutral" stackId="a" fill={COLORS.neutral} name="Neutral" />
-                  <Bar dataKey="negative" stackId="a" fill={COLORS.negative} name="Negative" />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={sourceData} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="source" width={100} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="positive" stackId="a" fill={COLORS.positive} name="Positive" />
+                    <Bar dataKey="neutral" stackId="a" fill={COLORS.neutral} name="Neutral" />
+                    <Bar dataKey="negative" stackId="a" fill={COLORS.negative} name="Negative" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
           
@@ -366,25 +380,27 @@ const Dashboard = () => {
             icon={<Hash className="h-4 w-4" />}
           >
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={mentionedAspectsData}
-                  layout="vertical"
-                  margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" />
-                  <YAxis type="category" dataKey="name" width={100} />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar dataKey="value" fill={COLORS.blue}>
-                    {mentionedAspectsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.fill} />
-                    ))}
-                    <LabelList dataKey="value" position="right" />
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={mentionedAspectsData}
+                    layout="vertical"
+                    margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis type="number" />
+                    <YAxis type="category" dataKey="name" width={100} />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="value" fill={COLORS.blue}>
+                      {mentionedAspectsData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                      ))}
+                      <LabelList dataKey="value" position="right" />
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
         </TabsContent>
@@ -395,21 +411,23 @@ const Dashboard = () => {
             icon={<ChartBarIcon className="h-4 w-4" />}
           >
             <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={aspectData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar dataKey="positive" stackId="a" name="Positive" fill={COLORS.positive} />
-                  <Bar dataKey="neutral" stackId="a" name="Neutral" fill={COLORS.neutral} />
-                  <Bar dataKey="negative" stackId="a" name="Negative" fill={COLORS.negative} />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={aspectData}
+                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar dataKey="positive" stackId="a" name="Positive" fill={COLORS.positive} />
+                    <Bar dataKey="neutral" stackId="a" name="Neutral" fill={COLORS.neutral} />
+                    <Bar dataKey="negative" stackId="a" name="Negative" fill={COLORS.negative} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
           
@@ -442,45 +460,47 @@ const Dashboard = () => {
             icon={<ChartLineIcon className="h-4 w-4" />}
           >
             <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={timelineData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="positive" 
-                    name="Positive" 
-                    stroke={COLORS.positive} 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 6 }} 
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="neutral" 
-                    name="Neutral" 
-                    stroke={COLORS.neutral} 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 6 }} 
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="negative" 
-                    name="Negative" 
-                    stroke={COLORS.negative} 
-                    strokeWidth={2} 
-                    dot={{ r: 4 }} 
-                    activeDot={{ r: 6 }} 
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart
+                    data={timelineData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="positive" 
+                      name="Positive" 
+                      stroke={COLORS.positive} 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 6 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="neutral" 
+                      name="Neutral" 
+                      stroke={COLORS.neutral} 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 6 }} 
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="negative" 
+                      name="Negative" 
+                      stroke={COLORS.negative} 
+                      strokeWidth={2} 
+                      dot={{ r: 4 }} 
+                      activeDot={{ r: 6 }} 
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
           
@@ -489,36 +509,38 @@ const Dashboard = () => {
             icon={<ChartBarIcon className="h-4 w-4" />}
           >
             <div className="h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={timelineData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar 
-                    dataKey="positive" 
-                    name="Positive" 
-                    stackId="a" 
-                    fill={COLORS.positive} 
-                  />
-                  <Bar 
-                    dataKey="neutral" 
-                    name="Neutral" 
-                    stackId="a" 
-                    fill={COLORS.neutral} 
-                  />
-                  <Bar 
-                    dataKey="negative" 
-                    name="Negative" 
-                    stackId="a" 
-                    fill={COLORS.negative} 
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={timelineData}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="date" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar 
+                      dataKey="positive" 
+                      name="Positive" 
+                      stackId="a" 
+                      fill={COLORS.positive} 
+                    />
+                    <Bar 
+                      dataKey="neutral" 
+                      name="Neutral" 
+                      stackId="a" 
+                      fill={COLORS.neutral} 
+                    />
+                    <Bar 
+                      dataKey="negative" 
+                      name="Negative" 
+                      stackId="a" 
+                      fill={COLORS.negative} 
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
         </TabsContent>
@@ -531,27 +553,29 @@ const Dashboard = () => {
               className="col-span-1"
             >
               <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={keywordsData.slice(0, 10)}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    layout="vertical"
-                  >
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" />
-                    <YAxis type="category" dataKey="word" width={120} />
-                    <Tooltip content={<ChartTooltipContent />} />
-                    <Bar dataKey="count" name="Mentions">
-                      {keywordsData.slice(0, 10).map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.sentiment === 'positive' ? COLORS.positive : 
-                                entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
-                        />
-                      ))}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
+                <ChartContainer config={chartConfig}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart
+                      data={keywordsData.slice(0, 10)}
+                      margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                      layout="vertical"
+                    >
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" />
+                      <YAxis type="category" dataKey="word" width={120} />
+                      <ChartTooltip content={<ChartTooltipContent />} />
+                      <Bar dataKey="count" name="Mentions">
+                        {keywordsData.slice(0, 10).map((entry, index) => (
+                          <Cell 
+                            key={`cell-${index}`} 
+                            fill={entry.sentiment === 'positive' ? COLORS.positive : 
+                                  entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
+                          />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
               </div>
             </DashboardCard>
             
@@ -588,31 +612,33 @@ const Dashboard = () => {
             icon={<ChartBarIcon className="h-4 w-4" />}
           >
             <div className="h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={keywordsData.slice(0, 8)}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="word" />
-                  <YAxis />
-                  <Tooltip content={<ChartTooltipContent />} />
-                  <Legend />
-                  <Bar 
-                    dataKey="count" 
-                    name="Mentions" 
-                    fill={COLORS.blue}
+              <ChartContainer config={chartConfig}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={keywordsData.slice(0, 8)}
+                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                   >
-                    {keywordsData.slice(0, 8).map((entry, index) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={entry.sentiment === 'positive' ? COLORS.positive : 
-                              entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
-                      />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="word" />
+                    <YAxis />
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                    <Legend />
+                    <Bar 
+                      dataKey="count" 
+                      name="Mentions" 
+                      fill={COLORS.blue}
+                    >
+                      {keywordsData.slice(0, 8).map((entry, index) => (
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.sentiment === 'positive' ? COLORS.positive : 
+                                entry.sentiment === 'negative' ? COLORS.negative : COLORS.neutral} 
+                        />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </ChartContainer>
             </div>
           </DashboardCard>
         </TabsContent>
