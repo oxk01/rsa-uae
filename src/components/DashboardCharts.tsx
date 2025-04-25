@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -16,11 +15,11 @@ import {
   Pie,
   Cell,
   Legend,
-  LabelList
+  LabelList,
+  ReferenceDot
 } from 'recharts';
 import { ChartContainer } from '@/components/ui/chart';
 
-// Sample data for charts - now with clearer monthly progression
 const sentimentTrendData = [
   { month: 'Jan', positive: 65, neutral: 25, negative: 10, total: 100, reviewCount: 42 },
   { month: 'Feb', positive: 59, neutral: 22, negative: 19, total: 100, reviewCount: 38 },
@@ -30,14 +29,12 @@ const sentimentTrendData = [
   { month: 'Jun', positive: 75, neutral: 15, negative: 10, total: 100, reviewCount: 53 },
 ];
 
-// Average out the sentiment distribution to avoid overfitting
 const sentimentDistribution = [
   { name: 'Positive', value: 65, color: '#10b981' },
   { name: 'Neutral', value: 20, color: '#6b7280' },
   { name: 'Negative', value: 15, color: '#ef4444' },
 ];
 
-// More balanced distribution of review sources
 const reviewSourceData = [
   { name: 'Website', value: 45 },
   { name: 'Mobile App', value: 28 },
@@ -45,11 +42,18 @@ const reviewSourceData = [
   { name: 'Email', value: 10 },
 ];
 
-// Softer, more pleasant color palette to avoid visual overfitting
 const COLORS = ['#93B5FF', '#B0FFBC', '#FFD6E0', '#CAACFF'];
 const PASTEL_COLORS = ['#F2FCE2', '#FEF7CD', '#E5DEFF', '#D3E4FD'];
 
-// Helper function to safely capitalize the first letter of a string
+const monthlyAspectData = [
+  { month: 'Jan', aspect: 'Product Quality', score: 89, prevScore: 92 },
+  { month: 'Feb', aspect: 'Customer Service', score: 75, prevScore: 78 },
+  { month: 'Mar', aspect: 'Price', score: 68, prevScore: 65 },
+  { month: 'Apr', aspect: 'Delivery', score: 62, prevScore: 64 },
+  { month: 'May', aspect: 'Website UX', score: 58, prevScore: 61 },
+  { month: 'Jun', aspect: 'Returns Process', score: 55, prevScore: 52 }
+];
+
 const capitalizeFirstLetter = (value: string | number): string => {
   if (typeof value === 'string') {
     return value.charAt(0).toUpperCase() + value.slice(1);
@@ -60,22 +64,18 @@ const capitalizeFirstLetter = (value: string | number): string => {
 const DashboardCharts = () => {
   const { t } = useLanguage();
   
-  // Use aggregated data for smoother visualization
   const aggregatedTrendData = useMemo(() => {
     return sentimentTrendData.map(item => ({
       ...item,
-      // Add month and year for better labeling
       monthYear: `${item.month} 2025`,
-      // Create slight variations in the data for more natural visualization
       positive: Math.round(item.positive * (1 + (Math.random() * 0.04 - 0.02))),
       neutral: Math.round(item.neutral * (1 + (Math.random() * 0.04 - 0.02))),
       negative: Math.round(item.negative * (1 + (Math.random() * 0.04 - 0.02))),
     }));
   }, []);
-  
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-      {/* Sentiment Trend Chart - Using smoother curves and better visual indicators */}
       <Card className="col-span-1 lg:col-span-2 p-4 border-blue-100 bg-gradient-to-r from-[#fdfcfb] via-[#e0f4ff] to-[#f8fbfe]/75">
         <h3 className="text-lg font-medium mb-4">{t('sentimentTrend')}</h3>
         <div className="h-80">
@@ -99,7 +99,6 @@ const DashboardCharts = () => {
                 </linearGradient>
               </defs>
               
-              {/* Review count visualization above chart */}
               <text x="50%" y="15" textAnchor="middle" className="text-sm font-medium text-blue-800">
                 Reviews by Month
               </text>
@@ -113,7 +112,7 @@ const DashboardCharts = () => {
                 height={60}
                 angle={-30}
                 minTickGap={0}
-                interval={0} // Show all labels
+                interval={0}
                 padding={{ left: 20, right: 20 }}
               />
               <YAxis 
@@ -172,7 +171,6 @@ const DashboardCharts = () => {
                 )}
               />
               
-              {/* Add text labels for review counts */}
               {aggregatedTrendData.map((entry, index) => (
                 <text
                   key={`review-count-${index}`}
@@ -204,7 +202,6 @@ const DashboardCharts = () => {
         </div>
       </Card>
 
-      {/* Sentiment Distribution Chart - More balanced presentation */}
       <Card className="p-4 border-emerald-100 bg-gradient-to-r from-[#f8fefa] via-[#f2fdf3] to-[#e0f4ff]/30">
         <h3 className="text-lg font-medium mb-4">{t('sentimentDistribution')}</h3>
         <div className="h-80">
@@ -255,7 +252,6 @@ const DashboardCharts = () => {
         </div>
       </Card>
 
-      {/* Review Source Chart - Better balanced visual representation */}
       <Card className="p-4 border-violet-100 bg-gradient-to-r from-[#fdfdff] via-[#f6f5ff] to-[#eeeaff]/30">
         <h3 className="text-lg font-medium mb-4">{t('reviewSources')}</h3>
         <div className="h-80">
@@ -305,7 +301,6 @@ const DashboardCharts = () => {
         </div>
       </Card>
 
-      {/* Sentiment Over Time Bar Chart - Smoother representation with totals */}
       <Card className="col-span-1 lg:col-span-3 p-4 border-blue-100 bg-gradient-to-r from-[#fdfcfb] via-[#f1f7ff] to-[#f8fbfe]/75">
         <h3 className="text-lg font-medium mb-4">{t('sentimentOverTime')}</h3>
         <div className="h-80">
@@ -388,6 +383,88 @@ const DashboardCharts = () => {
         </div>
         <div className="text-center text-xs text-gray-500 mt-4">
           <p>Data shows aggregated monthly sentiment trends with normalized distributions</p>
+        </div>
+      </Card>
+
+      <Card className="col-span-1 lg:col-span-3 p-4 border-amber-100 bg-gradient-to-r from-[#fffbf2] via-[#fff8e6] to-[#fff9ed]/75">
+        <h3 className="text-lg font-medium mb-4">{t('aspectTrends')}</h3>
+        <div className="h-96">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart
+              data={monthlyAspectData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+              barGap={0}
+              barCategoryGap="25%"
+            >
+              <CartesianGrid strokeDasharray="3 3" opacity={0.15} />
+              <XAxis 
+                dataKey="aspect"
+                interval={0}
+                angle={-45}
+                textAnchor="end"
+                height={100}
+                tick={{ fontSize: 12, fill: "#374151" }}
+                axisLine={{ stroke: "#e5e7eb" }}
+              />
+              <YAxis
+                domain={[0, 100]}
+                tick={{ fontSize: 12, fill: "#374151" }}
+                axisLine={{ stroke: "#e5e7eb" }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
+                formatter={(value) => [`${value}%`, 'Score']}
+              />
+              <Bar
+                dataKey="score"
+                fill="#f97316"
+                radius={[4, 4, 0, 0]}
+                barSize={40}
+                name="Current Score"
+              >
+                <LabelList
+                  dataKey="score"
+                  position="top"
+                  formatter={(value) => `${value}%`}
+                  style={{ fontSize: '11px', fill: '#374151' }}
+                />
+              </Bar>
+              <ReferenceDot
+                x={0}
+                y={monthlyAspectData[0].prevScore}
+                r={6}
+                fill="#000000"
+                stroke="white"
+                strokeWidth={2}
+              />
+              {monthlyAspectData.map((entry, index) => (
+                <ReferenceDot
+                  key={index}
+                  x={entry.aspect}
+                  y={entry.prevScore}
+                  r={6}
+                  fill="#000000"
+                  stroke="white"
+                  strokeWidth={2}
+                />
+              ))}
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+        <div className="flex justify-center gap-6 mt-6 text-sm text-gray-600">
+          <div className="flex items-center">
+            <div className="w-4 h-4 bg-[#f97316] rounded mr-2"></div>
+            <span>Current Month Score</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-4 h-4 rounded-full bg-black border-2 border-white mr-2"></div>
+            <span>Previous Month Score</span>
+          </div>
         </div>
       </Card>
     </div>
