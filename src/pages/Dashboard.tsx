@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileBarChart2, ThumbsUp, ThumbsDown, BarChart2 } from 'lucide-react';
+import { FileBarChart2, ThumbsUp, ThumbsDown, BarChart2, Trash2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -18,27 +17,79 @@ const Dashboard = () => {
   const { toast } = useToast();
   const [hasData, setHasData] = useState(false);
   const [analysisData, setAnalysisData] = useState<any>(null);
+  const [savedAnalyses, setSavedAnalyses] = useState<any[]>([]);
   
   useEffect(() => {
-    const storedData = localStorage.getItem('rsa_current_analysis');
-    if (storedData) {
-      try {
+    loadAnalysisData();
+  }, []);
+  
+  const loadAnalysisData = () => {
+    try {
+      const storedData = localStorage.getItem('rsa_current_analysis');
+      if (storedData) {
         const data = JSON.parse(storedData);
         setAnalysisData(data);
         setHasData(true);
-      } catch (e) {
-        console.error("Error parsing stored data:", e);
-        setHasData(false);
+      } else {
+        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
+        if (savedAnalysesStr) {
+          const analyses = JSON.parse(savedAnalysesStr);
+          setSavedAnalyses(analyses);
+          
+          if (analyses.length > 0) {
+            setAnalysisData({
+              overallSentiment: analyses[0].overallSentiment,
+              fileAnalysis: {
+                totalReviews: analyses[0].totalReviews,
+                sentimentBreakdown: analyses[0].sentimentBreakdown,
+                accuracyScore: analyses[0].accuracyScore || 80,
+                reviews: analyses[0].reviews || [],
+                aspects: analyses[0].aspects || [],
+                keywords: analyses[0].keywords || []
+              }
+            });
+            setHasData(true);
+          } else {
+            setHasData(false);
+          }
+        } else {
+          setHasData(false);
+        }
       }
+    } catch (e) {
+      console.error("Error loading analysis data:", e);
+      setHasData(false);
+      toast({
+        title: "Error loading data",
+        description: "There was a problem loading your analysis data.",
+        variant: "destructive"
+      });
     }
-  }, []);
+  };
 
   const handleDemoClick = () => {
     navigate('/demo');
   };
+  
+  const handleDeleteAllAnalyses = () => {
+    try {
+      localStorage.removeItem('rsa_saved_analyses');
+      setSavedAnalyses([]);
+      toast({
+        title: "Analyses deleted",
+        description: "All saved analyses have been deleted.",
+      });
+    } catch (e) {
+      console.error("Error deleting analyses:", e);
+      toast({
+        title: "Delete failed",
+        description: "There was an error deleting the analyses.",
+        variant: "destructive"
+      });
+    }
+  };
 
-  // Prepare data for components
-  const sentimentOverview = hasData ? [
+  const sentimentOverview = hasData && analysisData?.fileAnalysis?.sentimentBreakdown ? [
     { name: 'Positive', value: analysisData.fileAnalysis.sentimentBreakdown.positive },
     { name: 'Neutral', value: analysisData.fileAnalysis.sentimentBreakdown.neutral },
     { name: 'Negative', value: analysisData.fileAnalysis.sentimentBreakdown.negative }
@@ -51,9 +102,22 @@ const Dashboard = () => {
           <h1 className="text-xl font-bold mb-1">Dashboard</h1>
           <p className="text-sm text-gray-500">Real-time sentiment analysis insights</p>
         </div>
-        <Button variant="outline" size="sm" onClick={handleDemoClick}>
-          Upload New Data
-        </Button>
+        <div className="flex gap-2 mt-2 md:mt-0">
+          {hasData && savedAnalyses.length > 0 && (
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleDeleteAllAnalyses}
+              className="flex items-center gap-1 text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+              Clear Storage
+            </Button>
+          )}
+          <Button variant="outline" size="sm" onClick={handleDemoClick}>
+            Upload New Data
+          </Button>
+        </div>
       </div>
 
       {!hasData ? (
@@ -93,22 +157,22 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <SentimentOverview data={sentimentOverview} />
             <SentimentTrendChart 
-              data={analysisData.fileAnalysis.reviews.slice(-10).map((review: any) => ({
-                date: review.date,
-                positive: review.sentiment.positive,
-                neutral: review.sentiment.neutral,
-                negative: review.sentiment.negative
-              }))} 
+              data={analysisData.fileAnalysis.reviews?.slice(-10).map((review: any) => ({
+                date: review.date || new Date().toISOString().split('T')[0],
+                positive: review.sentiment?.positive || 0,
+                neutral: review.sentiment?.neutral || 0,
+                negative: review.sentiment?.negative || 0
+              })) || []} 
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <MostMentionedAspects data={analysisData.fileAnalysis.aspects} />
-            <WordCloudCard data={analysisData.fileAnalysis.keywords} />
+            <MostMentionedAspects data={analysisData.fileAnalysis.aspects || []} />
+            <WordCloudCard data={analysisData.fileAnalysis.keywords || []} />
           </div>
 
           <div className="grid grid-cols-1 gap-6">
-            <RecentReviewsList reviews={analysisData.fileAnalysis.reviews.slice(0, 10)} />
+            <RecentReviewsList reviews={analysisData.fileAnalysis.reviews?.slice(0, 10) || []} />
           </div>
         </>
       )}

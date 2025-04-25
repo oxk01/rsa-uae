@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
@@ -119,6 +118,25 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
   const insights = generateInsights();
   const recommendations = generateRecommendations();
   
+  // Helper function to clear storage if needed
+  const clearOldAnalyses = () => {
+    try {
+      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+      const savedAnalyses = JSON.parse(savedAnalysesStr);
+      
+      // If we have more than 3 analyses, remove the oldest ones
+      if (savedAnalyses.length > 3) {
+        const updatedAnalyses = savedAnalyses.slice(0, 3);
+        localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Error clearing old analyses:", error);
+      return false;
+    }
+  };
+  
   const handleSave = () => {
     try {
       // First, store the current analysis with all its data
@@ -185,38 +203,69 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         }))
       };
 
-      const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
-      const savedAnalyses = JSON.parse(savedAnalysesStr);
-      const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 9)];
-      localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
-      
-      onSave();
-      
-      toast({
-        title: "Analysis saved",
-        description: "Your analysis has been successfully saved to the dashboard.",
-      });
-      
-      navigate('/dashboard');
+      try {
+        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+        const savedAnalyses = JSON.parse(savedAnalysesStr);
+        const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 3)]; // Limit to 4 total to avoid storage issues
+        localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+        
+        onSave();
+        
+        toast({
+          title: "Analysis saved",
+          description: "Your analysis has been successfully saved to the dashboard.",
+        });
+        
+        navigate('/dashboard');
+      } catch (error: any) {
+        // If we get a storage error, try to clear some space and retry
+        if (error?.name === 'QuotaExceededError' || 
+            (error?.message && error.message.includes('quota')) || 
+            (error?.toString().includes('quota'))) {
+          
+          // Try to clear some space by removing old analyses
+          const cleared = clearOldAnalyses();
+          
+          if (cleared) {
+            // Try again with fewer saved analyses
+            try {
+              const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
+              const savedAnalyses = JSON.parse(savedAnalysesStr);
+              // Just keep the current one and the latest one
+              const updatedAnalyses = [summary];
+              localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
+              
+              onSave();
+              
+              toast({
+                title: "Analysis saved",
+                description: "Your analysis has been saved (older analyses were removed to free up space).",
+              });
+              
+              navigate('/dashboard');
+              return;
+            } catch (retryError) {
+              console.error("Error even after clearing space:", retryError);
+            }
+          }
+          
+          toast({
+            title: "Storage limit reached",
+            description: "Please open the dashboard and delete some previous analyses before saving new ones.",
+            variant: "destructive",
+          });
+        } else {
+          throw error; // Re-throw non-quota errors
+        }
+      }
     } catch (error: any) {
       console.error("Error in save handler:", error);
       
-      if (error?.name === 'QuotaExceededError' || 
-          (error?.message && error.message.includes('quota')) || 
-          (error?.toString().includes('quota'))) {
-        
-        toast({
-          title: "Storage limit reached",
-          description: "Your browser's storage is full. Please delete some analyses before saving new ones.",
-          variant: "destructive",
-        });
-      } else {
-        toast({
-          title: "Save failed",
-          description: "There was an error saving your analysis. Please try again.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Save failed",
+        description: "There was an error saving your analysis. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
