@@ -2,27 +2,27 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardCard from './DashboardCard';
+import { parseISO, format } from 'date-fns';
 
 interface SentimentTrendChartProps {
   data?: Array<{
-    date: string;  // Changed to string to ensure more readable dates
+    date: string;
     positive: number;
     neutral: number;
     negative: number;
   }>;
 }
 
-const formatDate = (dateString: string): string => {
+const formatDate = (dateInput: string): string => {
   try {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric',
-      year: 'numeric' 
-    });
+    // Try parsing the date with date-fns, which supports multiple formats
+    const date = parseISO(dateInput);
+    
+    // If parsing is successful, format the date
+    return format(date, 'MMM dd, yyyy');
   } catch (error) {
     console.error("Error formatting date:", error);
-    return dateString;
+    return dateInput; // Return original input if parsing fails
   }
 };
 
