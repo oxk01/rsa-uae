@@ -13,7 +13,6 @@ interface WordCloudProps {
 
 const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
   const formattedData = useMemo(() => {
-    // Sort data by value and limit to maxWords
     return data
       .sort((a, b) => b.value - a.value)
       .slice(0, maxWords)
@@ -25,14 +24,14 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
   }, [data, maxWords]);
 
   const options = {
-    colors: ['#4ade80', '#94a3b8', '#f87171', '#3b82f6', '#a855f7'],
+    colors: ['#3b82f6', '#10b981', '#f43f5e', '#8b5cf6', '#f59e0b'],
     enableTooltip: true,
-    deterministic: true,
-    fontFamily: 'Inter, sans-serif',
-    fontSizes: [12, 80] as [number, number],
+    deterministic: false,
+    fontFamily: 'Inter, system-ui, sans-serif',
+    fontSizes: [14, 60] as [number, number],
     fontStyle: 'normal',
-    fontWeight: 'normal',
-    padding: 2,
+    fontWeight: 'bold',
+    padding: 3,
     rotations: 3,
     rotationAngles: [0, 90] as [number, number],
     scale: 'sqrt' as const,
@@ -45,16 +44,33 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
   return (
     <div className="h-full w-full">
       {formattedData.length > 0 ? (
-        <ReactWordcloud
-          words={formattedData}
-          options={options}
-          callbacks={{
-            getWordColor
-          }}
-        />
+        <div className="h-full transition-all duration-500 ease-in-out">
+          <ReactWordcloud
+            words={formattedData}
+            options={options}
+            callbacks={{
+              getWordColor,
+              onWordMouseOver: (word: any) => {
+                // Add hover effect
+                const element = document.getElementById(word.text);
+                if (element) {
+                  element.style.transform = 'scale(1.1)';
+                  element.style.transition = 'transform 0.2s ease';
+                }
+              },
+              onWordMouseOut: (word: any) => {
+                // Remove hover effect
+                const element = document.getElementById(word.text);
+                if (element) {
+                  element.style.transform = 'scale(1)';
+                }
+              }
+            }}
+          />
+        </div>
       ) : (
         <div className="h-full flex items-center justify-center">
-          <p className="text-gray-500">No keyword data available</p>
+          <p className="text-gray-500 dark:text-gray-400">No keyword data available</p>
         </div>
       )}
     </div>
@@ -64,13 +80,13 @@ const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
 function getSentimentColor(sentiment: string): string {
   switch (sentiment.toLowerCase()) {
     case 'positive':
-      return '#4ade80';
+      return '#10b981'; // Green
     case 'negative':
-      return '#f87171';
+      return '#f43f5e'; // Red
     case 'neutral':
-      return '#94a3b8';
+      return '#6b7280'; // Gray
     default:
-      return '#3b82f6';
+      return '#3b82f6'; // Blue
   }
 }
 
