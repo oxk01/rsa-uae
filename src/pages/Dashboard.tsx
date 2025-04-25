@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileBarChart2, ThumbsUp, ThumbsDown, BarChart2, Trash2 } from 'lucide-react';
@@ -88,7 +87,7 @@ const Dashboard = () => {
         console.log("Analysis data loaded successfully with", 
           data.fileAnalysis?.reviews?.length, "reviews,",
           data.fileAnalysis?.aspects?.length, "aspects, and",
-          data.fileAnalysis?.keywords?.length, "keywords");
+          data.fileAnalysis?.keywords?.length);
         setAnalysisData(data);
         setHasData(true);
       } else {
@@ -295,11 +294,9 @@ const Dashboard = () => {
             <HeatmapMatrix data={getMatrixData()} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="grid grid-cols-1 gap-6 mb-6">
             <WordCloudCard data={analysisData?.fileAnalysis?.keywords || []} />
-            <div className="lg:col-span-2">
-              <RecentReviewsList reviews={(analysisData?.fileAnalysis?.reviews || []).slice(0, 10)} />
-            </div>
+            <RecentReviewsList reviews={(analysisData?.fileAnalysis?.reviews || []).slice(0, 10)} />
           </div>
         </>
       )}
