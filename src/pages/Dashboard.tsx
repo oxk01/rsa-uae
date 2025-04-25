@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -5,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Trash2, Download, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LabelList } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend, LabelList, ReferenceLine } from 'recharts';
 import SentimentTrend from '@/components/SentimentTrend';
 import RecentReviews from '@/components/RecentReviews';
 import GenerateReportButton from '@/components/GenerateReportButton';
@@ -76,15 +77,24 @@ const Dashboard = () => {
   useEffect(() => {
     const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
     if (savedAnalysesStr) {
-      const analyses = JSON.parse(savedAnalysesStr);
-      setSavedAnalyses(analyses);
-      
-      if (analyses.length > 0) {
-        generateTrendData(analyses);
-        generateAspectData(analyses);
+      try {
+        const analyses = JSON.parse(savedAnalysesStr);
+        setSavedAnalyses(analyses);
+        
+        if (analyses.length > 0) {
+          generateTrendData(analyses);
+          generateAspectData(analyses);
+        }
+      } catch (error) {
+        console.error("Error parsing saved analyses:", error);
+        toast({
+          title: "Error loading data",
+          description: "There was an error loading your saved analyses. The data might be corrupted.",
+          variant: "destructive",
+        });
       }
     }
-  }, []);
+  }, [toast]);
   
   const generateTrendData = (analyses: Analysis[]) => {
     if (analyses.length >= 1) {
@@ -113,6 +123,9 @@ const Dashboard = () => {
           formattedDate = "Unknown";
         }
         
+        // Add null checks for sentiment
+        const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
+        
         const reviewSnippet = analysis.reviewText 
           ? (analysis.reviewText.length > 100 
               ? analysis.reviewText.substring(0, 100) + '...' 
@@ -122,9 +135,9 @@ const Dashboard = () => {
         return {
           date: formattedDate,
           originalDate,
-          positive: analysis.sentiment.positive,
-          neutral: analysis.sentiment.neutral,
-          negative: analysis.sentiment.negative,
+          positive: sentiment.positive || 0,
+          neutral: sentiment.neutral || 0,
+          negative: sentiment.negative || 0,
           reviewSnippet
         };
       });
@@ -149,10 +162,14 @@ const Dashboard = () => {
         });
       } 
       else if (analysis.reviewText) {
+        // Make sure sentiment is defined before using it
+        const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
+        const sentimentLabel = sentiment.positive > sentiment.negative ? 'positive' : 
+          sentiment.negative > sentiment.positive ? 'negative' : 'neutral';
+        
         const extractedAspects = extractAspects(
           analysis.reviewText, 
-          analysis.sentiment.positive > analysis.sentiment.negative ? 'positive' : 
-            analysis.sentiment.negative > analysis.sentiment.positive ? 'negative' : 'neutral'
+          sentimentLabel
         );
         
         extractedAspects.forEach(aspect => {
@@ -402,9 +419,11 @@ const Dashboard = () => {
     let totalNegative = 0;
     
     savedAnalyses.forEach(analysis => {
-      totalPositive += analysis.sentiment.positive;
-      totalNeutral += analysis.sentiment.neutral;
-      totalNegative += analysis.sentiment.negative;
+      // Add null checks for sentiment
+      const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
+      totalPositive += sentiment.positive || 0;
+      totalNeutral += sentiment.neutral || 0;
+      totalNegative += sentiment.negative || 0;
     });
     
     return [
@@ -422,14 +441,17 @@ const Dashboard = () => {
   const averageAccuracy = calculateAverageAccuracy();
 
   const enhancedReviews = savedAnalyses.map(analysis => {
+    // Add null checks for sentiment
+    const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
+    
     let sentimentLabel = "Neutral";
-    if (analysis.sentiment.positive > Math.max(analysis.sentiment.neutral, analysis.sentiment.negative)) {
+    if (sentiment.positive > Math.max(sentiment.neutral, sentiment.negative)) {
       sentimentLabel = "Positive";
-    } else if (analysis.sentiment.negative > Math.max(analysis.sentiment.neutral, analysis.sentiment.positive)) {
+    } else if (sentiment.negative > Math.max(sentiment.neutral, sentiment.positive)) {
       sentimentLabel = "Negative";
     }
     
-    const rating = `${Math.max(1, Math.min(5, Math.round(analysis.sentiment.positive * 5 / 100)))}/5`;
+    const rating = `${Math.max(1, Math.min(5, Math.round((sentiment.positive || 0) * 5 / 100)))}/5`;
     
     const reviewText = analysis.reviewText || `Analysis for ${analysis.title} with ${analysis.reviewCount} reviews.`;
     
