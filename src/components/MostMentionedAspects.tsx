@@ -7,16 +7,26 @@ interface MostMentionedAspectsProps {
   data?: Array<{
     aspect: string;
     count: number;
+    sentiment?: string;
+    positive?: number;
+    negative?: number;
+    neutral?: number;
   }>;
 }
 
 const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
   const hasData = data && data.length > 0;
   
-  // Sort and limit data to top 5 aspects
+  // Sort and limit data to top 10 aspects
   const sortedData = [...(data || [])]
     .sort((a, b) => b.count - a.count)
-    .slice(0, 5);
+    .slice(0, 10);
+  
+  const getBarColor = (entry: any) => {
+    if (!entry.sentiment) return '#3B82F6';
+    return entry.sentiment === 'positive' ? '#10b981' : 
+           entry.sentiment === 'negative' ? '#ef4444' : '#6b7280';
+  };
     
   return (
     <DashboardCard 
@@ -53,7 +63,21 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
                 tickFormatter={(value) => value.length > 15 ? `${value.substr(0, 13)}...` : value}
               />
               <Tooltip
-                formatter={(value) => [`${value} mentions`, 'Count']}
+                formatter={(value, name, props) => {
+                  const entry = props.payload;
+                  if (entry.positive !== undefined && entry.negative !== undefined && entry.neutral !== undefined) {
+                    return [
+                      <div>
+                        <div>{`Total: ${value} mentions`}</div>
+                        <div>{`Positive: ${entry.positive}%`}</div>
+                        <div>{`Neutral: ${entry.neutral}%`}</div>
+                        <div>{`Negative: ${entry.negative}%`}</div>
+                      </div>,
+                      'Mentions'
+                    ];
+                  }
+                  return [`${value} mentions`, 'Count'];
+                }}
                 contentStyle={{ 
                   backgroundColor: 'white', 
                   borderRadius: '3px',
@@ -63,11 +87,12 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
               />
               <Bar 
                 dataKey="count" 
+                name="Mentions"
                 fill="#3b82f6" 
                 radius={[0, 4, 4, 0]}
               >
                 {sortedData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill="#3b82f6" />
+                  <Cell key={`cell-${index}`} fill={getBarColor(entry)} />
                 ))}
               </Bar>
             </BarChart>

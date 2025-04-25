@@ -8,16 +8,21 @@ interface WordCloudProps {
     value: number;
     sentiment?: string;
   }>;
+  maxWords?: number;
 }
 
-const WordCloudVisualization = ({ data }: WordCloudProps) => {
+const WordCloudVisualization = ({ data, maxWords = 100 }: WordCloudProps) => {
   const formattedData = useMemo(() => {
-    return data.map(item => ({
-      text: item.text,
-      value: item.value,
-      color: getSentimentColor(item.sentiment || 'neutral')
-    }));
-  }, [data]);
+    // Sort data by value and limit to maxWords
+    return data
+      .sort((a, b) => b.value - a.value)
+      .slice(0, maxWords)
+      .map(item => ({
+        text: item.text,
+        value: item.value,
+        color: getSentimentColor(item.sentiment || 'neutral')
+      }));
+  }, [data, maxWords]);
 
   const options = {
     colors: ['#4ade80', '#94a3b8', '#f87171', '#3b82f6', '#a855f7'],

@@ -2,6 +2,7 @@
 import React from 'react';
 import { CloudIcon } from 'lucide-react';
 import DashboardCard from './DashboardCard';
+import WordCloudVisualization from './WordCloudVisualization';
 
 interface WordCloudCardProps {
   data?: Array<{
@@ -25,20 +26,8 @@ const WordCloudCard = ({ data = [] }: WordCloudCardProps) => {
           <p>Upload data to see word cloud visualization</p>
         </div>
       ) : (
-        <div className="h-[250px] flex flex-wrap justify-center items-center">
-          {data.slice(0, 30).map((word, index) => (
-            <span 
-              key={index}
-              className="inline-block px-2 py-1 m-1 rounded-lg"
-              style={{
-                fontSize: `${Math.max(0.7, Math.min(2, 0.7 + word.value / 10))}rem`,
-                color: word.sentiment === 'positive' ? '#42b883' : 
-                       word.sentiment === 'negative' ? '#e64a3b' : '#6b7280'
-              }}
-            >
-              {word.text}
-            </span>
-          ))}
+        <div className="h-[250px]">
+          <WordCloudVisualization data={data} maxWords={100} />
         </div>
       )}
     </DashboardCard>

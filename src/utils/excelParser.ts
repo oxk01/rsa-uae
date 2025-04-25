@@ -1,3 +1,4 @@
+
 import * as XLSX from 'xlsx';
 
 export interface ParsedReview {
@@ -61,7 +62,8 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
         const reviews: ParsedReview[] = [];
         const dataRows = jsonData.slice(1);
         
-        const CHUNK_SIZE = 1000;
+        // Increase chunk size for better performance with large datasets
+        const CHUNK_SIZE = 2000;
         let processedCount = 0;
         
         const processChunk = (startIdx: number) => {
@@ -126,6 +128,7 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
           if (processedCount < dataRows.length) {
             setTimeout(() => processChunk(endIdx), 0);
           } else {
+            console.log(`Successfully processed all ${reviews.length} reviews from excel file`);
             resolve(reviews);
           }
         };
@@ -324,7 +327,14 @@ export const extractAspects = (text: string, sentiment: string): Array<{
     'quality', 'price', 'value', 'service', 'delivery', 'shipping', 
     'design', 'durability', 'reliability', 'customer service', 'packaging', 
     'usability', 'performance', 'size', 'color', 'features', 'functionality',
-    'support', 'installation', 'ease of use', 'comfort'
+    'support', 'installation', 'ease of use', 'comfort', 'efficiency',
+    'speed', 'responsiveness', 'battery life', 'sound quality', 'image quality',
+    'build quality', 'user interface', 'customer support', 'connectivity',
+    'compatibility', 'weight', 'materials', 'accuracy', 'resolution', 'screen',
+    'controls', 'instructions', 'software', 'app', 'warranty', 'maintenance',
+    'safety', 'security', 'storage', 'capacity', 'range', 'versatility',
+    'appearance', 'style', 'taste', 'smell', 'texture', 'effectiveness',
+    'convenience', 'portability', 'battery', 'power', 'precision', 'flexibility'
   ];
   
   for (const aspect of commonAspects) {
@@ -366,8 +376,6 @@ export const extractAspects = (text: string, sentiment: string): Array<{
         confidence,
         context
       });
-      
-      if (aspects.length >= 5) break;
     }
   }
   

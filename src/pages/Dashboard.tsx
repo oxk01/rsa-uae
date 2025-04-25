@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileBarChart2, ThumbsUp, ThumbsDown, BarChart2, Trash2 } from 'lucide-react';
@@ -34,6 +35,8 @@ const Dashboard = () => {
       if (storedData) {
         try {
           data = JSON.parse(storedData);
+          console.log("Loaded current analysis with data points:", 
+            data?.fileAnalysis?.reviews?.length || 0);
         } catch (e) {
           console.error("Error parsing current analysis:", e);
         }
@@ -48,6 +51,9 @@ const Dashboard = () => {
             setSavedAnalyses(analyses);
             
             if (analyses.length > 0) {
+              console.log("Using saved analysis with data points:", 
+                analyses[0]?.reviews?.length || 0);
+              
               // Create a valid analysis data structure from the saved analysis
               data = {
                 overallSentiment: analyses[0].overallSentiment,
@@ -79,6 +85,10 @@ const Dashboard = () => {
       }
       
       if (data) {
+        console.log("Analysis data loaded successfully with", 
+          data.fileAnalysis?.reviews?.length, "reviews,",
+          data.fileAnalysis?.aspects?.length, "aspects, and",
+          data.fileAnalysis?.keywords?.length, "keywords");
         setAnalysisData(data);
         setHasData(true);
       } else {
@@ -141,6 +151,8 @@ const Dashboard = () => {
       ? analysisData.fileAnalysis.sentimentBreakdown.negative 
       : 33;
     
+    console.log("Sentiment distribution:", positiveValue, neutralValue, negativeValue);
+    
     return [
       { name: 'Positive', value: positiveValue },
       { name: 'Neutral', value: neutralValue },
@@ -153,14 +165,40 @@ const Dashboard = () => {
       return [];
     }
     
-    return analysisData.fileAnalysis.reviews.slice(-10).map((review: any) => {
+    // Group reviews by date to show sentiment trend over time
+    const reviewsByDate: Record<string, { positive: number, neutral: number, negative: number, count: number }> = {};
+    
+    analysisData.fileAnalysis.reviews.forEach((review: any) => {
       const date = review.date || new Date().toISOString().split('T')[0];
-      const positive = typeof review.sentiment?.positive === 'number' ? review.sentiment.positive : 0;
-      const neutral = typeof review.sentiment?.neutral === 'number' ? review.sentiment.neutral : 0; 
-      const negative = typeof review.sentiment?.negative === 'number' ? review.sentiment.negative : 0;
       
-      return { date, positive, neutral, negative };
+      if (!reviewsByDate[date]) {
+        reviewsByDate[date] = { positive: 0, neutral: 0, negative: 0, count: 0 };
+      }
+      
+      reviewsByDate[date].count++;
+      
+      if (review.sentimentLabel === 'positive') {
+        reviewsByDate[date].positive++;
+      } else if (review.sentimentLabel === 'negative') {
+        reviewsByDate[date].negative++;
+      } else {
+        reviewsByDate[date].neutral++;
+      }
     });
+    
+    // Convert to percentages and format for chart
+    return Object.entries(reviewsByDate)
+      .sort(([dateA], [dateB]) => new Date(dateA).getTime() - new Date(dateB).getTime())
+      .slice(-10) // Last 10 dates
+      .map(([date, data]) => {
+        const total = data.count;
+        return {
+          date,
+          positive: Math.round((data.positive / total) * 100),
+          neutral: Math.round((data.neutral / total) * 100),
+          negative: Math.round((data.negative / total) * 100)
+        };
+      });
   };
 
   const getMatrixData = () => {
@@ -187,7 +225,12 @@ const Dashboard = () => {
       <div className="mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div>
           <h1 className="text-xl font-bold mb-1">Dashboard</h1>
-          <p className="text-sm text-gray-500">Real-time sentiment analysis insights</p>
+          <p className="text-sm text-gray-500">
+            Real-time sentiment analysis insights
+            {hasData && analysisData?.fileAnalysis?.totalReviews && (
+              <span> - Analyzing {analysisData.fileAnalysis.totalReviews} reviews</span>
+            )}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
           {hasData && (
@@ -252,8 +295,11 @@ const Dashboard = () => {
             <HeatmapMatrix data={getMatrixData()} />
           </div>
 
-          <div className="grid grid-cols-1 gap-6">
-            <RecentReviewsList reviews={(analysisData?.fileAnalysis?.reviews || []).slice(0, 10)} />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <WordCloudCard data={analysisData?.fileAnalysis?.keywords || []} />
+            <div className="lg:col-span-2">
+              <RecentReviewsList reviews={(analysisData?.fileAnalysis?.reviews || []).slice(0, 10)} />
+            </div>
           </div>
         </>
       )}

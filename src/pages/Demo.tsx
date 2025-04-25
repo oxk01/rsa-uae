@@ -11,11 +11,14 @@ import { Review, KeywordItem } from '@/types/review';
 
 const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, status: string) => void) => {
   try {
-    onProgressUpdate?.(10, "Reading Excel file...");
+    onProgressUpdate?.(5, "Reading Excel file...");
     
+    console.time("parseExcelFile");
     const reviews = await parseExcelFile(file);
+    console.timeEnd("parseExcelFile");
+    console.log(`Parsed ${reviews.length} reviews from Excel file`);
     
-    onProgressUpdate?.(30, `Processing ${reviews.length} reviews...`);
+    onProgressUpdate?.(20, `Processing ${reviews.length} reviews...`);
     
     let totalPositive = 0;
     let totalNeutral = 0;
@@ -23,12 +26,28 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     let totalAccuracy = 0;
     
     const processedReviews = [];
-    const CHUNK_SIZE = 100;
     
-    for (let i = 0; i < reviews.length; i += CHUNK_SIZE) {
-      const chunk = reviews.slice(i, Math.min(i + CHUNK_SIZE, reviews.length));
+    // Increased chunk size for better performance with large datasets
+    const CHUNK_SIZE = Math.min(Math.max(500, Math.floor(reviews.length / 10)), 2000);
+    
+    console.log(`Processing reviews in chunks of ${CHUNK_SIZE}`);
+    
+    const isLargeDataset = reviews.length > 10000;
+    const totalChunks = Math.ceil(reviews.length / CHUNK_SIZE);
+    
+    // Process in chunks to avoid blocking UI
+    for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      const startIdx = chunkIndex * CHUNK_SIZE;
+      const endIdx = Math.min(startIdx + CHUNK_SIZE, reviews.length);
+      const chunk = reviews.slice(startIdx, endIdx);
       
-      const chunkResults = chunk.map(review => {
+      onProgressUpdate?.(
+        20 + Math.floor((chunkIndex / totalChunks) * 60),
+        `Analyzing chunk ${chunkIndex + 1}/${totalChunks} (${startIdx} - ${endIdx} of ${reviews.length} reviews)...`
+      );
+      
+      // Process a chunk of reviews with Promise.all for better performance
+      const chunkPromises = chunk.map(async (review, index) => {
         const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
         
         if (sentiment === 'positive') totalPositive++;
@@ -63,35 +82,43 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         };
       });
       
+      const chunkResults = await Promise.all(chunkPromises);
       processedReviews.push(...chunkResults);
       
-      const progress = Math.min(30 + Math.round(60 * ((i + chunk.length) / reviews.length)), 90);
-      onProgressUpdate?.(progress, `Analyzed ${i + chunk.length} of ${reviews.length} reviews...`);
+      console.log(`Processed chunk ${chunkIndex + 1}/${totalChunks}: ${chunkResults.length} reviews`);
     }
     
+    onProgressUpdate?.(85, "Aggregating results and extracting insights...");
+    
+    console.time("Aggregating results");
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    const aspectsData = processedReviews.reduce((acc: Record<string, any>, review) => {
+    // Reduce memory usage by processing aspects and keywords more efficiently
+    const aspectsData: Record<string, any> = {};
+    const keywordsData: Record<string, any> = {};
+    
+    // Process all reviews to extract aspects and keywords
+    console.log("Aggregating aspects and keywords from all reviews...");
+    processedReviews.forEach((review) => {
+      // Process aspects
       (review.aspects || []).forEach(aspect => {
-        if (!acc[aspect.name]) {
-          acc[aspect.name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
+        if (!aspectsData[aspect.name]) {
+          aspectsData[aspect.name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
         }
-        acc[aspect.name][aspect.sentiment]++;
-        acc[aspect.name].total++;
+        aspectsData[aspect.name][aspect.sentiment]++;
+        aspectsData[aspect.name].total++;
       });
-      return acc;
-    }, {});
-    
-    const keywordsData = processedReviews.reduce((acc: Record<string, any>, review) => {
+      
+      // Process keywords
       (review.keywords || []).forEach(keyword => {
-        if (!acc[keyword.word]) {
-          acc[keyword.word] = { count: 0, sentiment: keyword.sentiment };
+        if (!keywordsData[keyword.word]) {
+          keywordsData[keyword.word] = { count: 0, sentiment: keyword.sentiment };
         }
-        acc[keyword.word].count++;
+        keywordsData[keyword.word].count++;
       });
-      return acc;
-    }, {});
+    });
     
+    // Format aspects data
     const formattedAspectsData = Object.entries(aspectsData).map(([name, data]: [string, any]) => ({
       aspect: name,
       count: data.total,
@@ -101,6 +128,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       negative: Math.round((data.negative / data.total) * 100),
     }));
     
+    // Format keywords data and sort by count
     const formattedKeywordsData = Object.entries(keywordsData)
       .map(([word, data]: [string, any]) => ({
         text: word,
@@ -108,7 +136,9 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         sentiment: data.sentiment
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 100);
+      .slice(0, 150); // Keep top 150 keywords for visualization
+    
+    console.log(`Generated ${formattedAspectsData.length} aspect insights and ${formattedKeywordsData.length} keywords`);
     
     const total = totalPositive + totalNeutral + totalNegative;
     const sentimentPercentages = {
@@ -116,6 +146,13 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       neutral: Math.round((totalNeutral / total) * 100),
       negative: Math.round((totalNegative / total) * 100)
     };
+    
+    // Adjust for large datasets to prevent memory issues
+    const reviewsToStore = isLargeDataset ? 
+      processedReviews.slice(0, 1000) : // Keep first 1000 reviews for large datasets
+      processedReviews;
+    
+    console.log(`Storing ${reviewsToStore.length} of ${processedReviews.length} reviews in the result`);
     
     const result = {
       overallSentiment: {
@@ -126,15 +163,18 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         totalReviews: reviews.length,
         sentimentBreakdown: sentimentPercentages,
         accuracyScore: avgAccuracy,
-        reviews: processedReviews,
+        reviews: reviewsToStore,
         aspects: formattedAspectsData,
         keywords: formattedKeywordsData,
         dataPoints: reviews.length
       }
     };
     
+    console.timeEnd("Aggregating results");
+    
     try {
       localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
+      console.log("Saved current analysis to localStorage");
     } catch (storageError) {
       console.warn("Could not save to localStorage:", storageError);
     }
@@ -163,9 +203,10 @@ const Demo = () => {
   const handleFileChange = (file: File | null) => {
     if (file) {
       setFile(file);
+      const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
       toast({
         title: "File uploaded",
-        description: `${file.name} has been uploaded for analysis. Ready to process all data points.`,
+        description: `${file.name} (${sizeMB} MB) has been uploaded for analysis. Ready to process all data points.`,
       });
     }
   };
@@ -203,10 +244,9 @@ const Demo = () => {
           totalReviews: result.fileAnalysis.totalReviews,
           sentimentBreakdown: result.fileAnalysis.sentimentBreakdown,
           overallSentiment: result.overallSentiment,
-          // Fix: Use fileAnalysis.keywords instead of keyPhrases which doesn't exist
-          keyPhrases: result.fileAnalysis.keywords,
-          // Fix: Use fileAnalysis.aspects which is where aspects are stored
+          keywords: result.fileAnalysis.keywords,
           aspects: result.fileAnalysis.aspects,
+          accuracyScore: result.fileAnalysis.accuracyScore,
           sampleReviews: result.fileAnalysis.reviews.slice(0, 20)
         };
         
