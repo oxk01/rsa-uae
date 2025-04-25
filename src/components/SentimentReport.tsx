@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -177,6 +176,65 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           identify key themes and topics that matter most to our customers.
         </p>
       </section>
+
+      <Separator className="my-8" />
+
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Actionable Recommendations</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className="p-6 bg-green-50 border-green-200">
+            <h3 className="font-semibold text-green-800 mb-3">Short-term Actions:</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-1">•</span>
+                <span className="text-green-800">
+                  Establish a regular reporting cadence to track sentiment trends over time.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-1">•</span>
+                <span className="text-green-800">
+                  Address immediate concerns in shipping and delivery processes based on recent feedback.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-600 mt-1">•</span>
+                <span className="text-green-800">
+                  Implement quick fixes for commonly reported size-related issues.
+                </span>
+              </li>
+            </ul>
+          </Card>
+
+          <Card className="p-6 bg-blue-50 border-blue-200">
+            <h3 className="font-semibold text-blue-800 mb-3">Long-term Strategy:</h3>
+            <ul className="space-y-3">
+              <li className="flex items-start gap-2">
+                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-800">
+                  Implement targeted improvements based on the most frequently mentioned negative aspects.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-800">
+                  Consider implementing a continuous feedback loop to monitor sentiment changes over time.
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-blue-600 mt-1">•</span>
+                <span className="text-blue-800">
+                  Develop a comprehensive size guide and fit recommendation system.
+                </span>
+              </li>
+            </ul>
+          </Card>
+        </div>
+        <div className="mt-4 text-gray-600 text-sm">
+          <p>These recommendations are based on the analysis of customer feedback and sentiment trends. Regular monitoring and implementation of these suggestions can help improve overall customer satisfaction.</p>
+        </div>
+      </section>
+
     </div>
   );
 };
