@@ -70,11 +70,11 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
           </div>
           
           {data.map((item, index) => (
-            item.name === "Negative" && (
+            item.name === "Negative" && typeof item.value === 'number' ? (
               <div key={index} className="text-center mt-2 text-sm font-medium text-red-500">
                 Negative: {item.value}%
               </div>
-            )
+            ) : null
           ))}
         </>
       )}

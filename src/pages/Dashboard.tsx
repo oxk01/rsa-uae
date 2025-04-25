@@ -144,9 +144,10 @@ const Dashboard = () => {
     
     return analysisData.fileAnalysis.reviews.slice(-10).map((review: any) => {
       const date = review.date || new Date().toISOString().split('T')[0];
-      const positive = review.sentiment?.positive || 0;
-      const neutral = review.sentiment?.neutral || 0; 
-      const negative = review.sentiment?.negative || 0;
+      // Ensure these are numbers to prevent passing objects
+      const positive = typeof review.sentiment?.positive === 'number' ? review.sentiment.positive : 0;
+      const neutral = typeof review.sentiment?.neutral === 'number' ? review.sentiment.neutral : 0; 
+      const negative = typeof review.sentiment?.negative === 'number' ? review.sentiment.negative : 0;
       
       return { date, positive, neutral, negative };
     });
