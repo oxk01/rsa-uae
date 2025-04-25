@@ -14,6 +14,31 @@ interface GenerateReportButtonProps {
   showReport?: boolean;
 }
 
+// Define types for the aspect data used in reporting
+interface AspectData {
+  positive: number;
+  neutral: number;
+  negative: number;
+  total: number;
+}
+
+// Define the type for keyword data
+interface KeywordData {
+  word: string;
+  count: number;
+  sentiment: 'positive' | 'negative' | 'neutral';
+}
+
+// Define the aspect sentiment type
+interface AspectSentiment {
+  aspect: string;
+  positivePercentage: number;
+  negativePercentage: number;
+  neutralPercentage: number;
+  sentiment: 'positive' | 'negative' | 'neutral';
+  total: number;
+}
+
 const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({ 
   hasData = false,
   onGenerate,
@@ -48,7 +73,7 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
       analyses.filter(a => a.accuracyScore !== undefined).length;
     
     // Find common themes and topics across all datasets
-    const allKeywords = {};
+    const allKeywords: Record<string, { count: number, positive: number, neutral: number, negative: number }> = {};
     analyses.forEach(analysis => {
       analysis.keywords.forEach(kw => {
         if (!allKeywords[kw.word]) {
@@ -60,7 +85,7 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
     });
     
     const topKeywords = Object.entries(allKeywords)
-      .map(([word, data]: [string, any]) => ({
+      .map(([word, data]) => ({
         word,
         count: data.count,
         sentiment: data.positive > data.negative 
@@ -68,13 +93,13 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
           : data.negative > data.positive 
             ? 'negative' 
             : 'neutral'
-      }))
+      } as KeywordData))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
       
     // Extract common aspects
     const aspects = ['quality', 'price', 'service', 'delivery', 'support', 'features', 'usability'];
-    const aspectData = {};
+    const aspectData: Record<string, AspectData> = {};
     
     aspects.forEach(aspect => {
       aspectData[aspect] = { positive: 0, neutral: 0, negative: 0, total: 0 };
@@ -545,12 +570,12 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
     }
     
     // Helper function to generate business insights
-    function generateKeyInsights(analyses, topKeywords, aspectData) {
+    function generateKeyInsights(analyses, topKeywords, aspectData: Record<string, AspectData>) {
       // Let's identify the most prominent topics
       const topTopics = topKeywords.slice(0, 5);
       
       // Calculate aspect sentiments
-      const aspectSentiments = Object.entries(aspectData)
+      const aspectSentiments: AspectSentiment[] = Object.entries(aspectData)
         .filter(([_, data]) => data.total > 0)
         .map(([aspect, data]) => {
           const positivePercentage = Math.round((data.positive / data.total) * 100);
@@ -901,7 +926,7 @@ const GenerateReportButton: React.FC<GenerateReportButtonProps> = ({
     }
     
     // Helper function to generate comparative insights
-    function generateComparativeInsights(analyses, aspectData) {
+    function generateComparativeInsights(analyses, aspectData: Record<string, AspectData>) {
       if (analyses.length < 2) {
         return `
           <div class="summary-box">
