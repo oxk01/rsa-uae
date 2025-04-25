@@ -1,29 +1,11 @@
-
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { 
-  PieChart, 
-  BarChart, 
-  LineChart, 
-  Pie, 
-  Bar, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
-  ResponsiveContainer, 
-  Cell,
-  LabelList
-} from 'recharts';
+import React, { useState } from 'react';
 import { 
   ChartBarIcon, 
   ChartPieIcon, 
   ChartLineIcon, 
   TagIcon, 
   ServerIcon, 
-  HashtagIcon 
+  Hash 
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -31,17 +13,15 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
-
 import SentimentOverview from '@/components/SentimentOverview';
 import TopKeywords from '@/components/TopKeywords';
 import DashboardCard from '@/components/DashboardCard';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 
-// Custom color constants for consistent styling
 const COLORS = {
-  positive: '#10b981', // green
-  neutral: '#6b7280', // gray
-  negative: '#ef4444', // red
+  positive: '#10b981',
+  neutral: '#6b7280',
+  negative: '#ef4444',
   blue: '#3b82f6',
   indigo: '#6366f1',
   purple: '#8b5cf6',
@@ -58,7 +38,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Attempt to fetch the current analysis data from localStorage
     const loadData = () => {
       try {
         const currentAnalysis = localStorage.getItem('rsa_current_analysis');
@@ -71,7 +50,6 @@ const Dashboard = () => {
           if (savedAnalysesStr) {
             const savedAnalyses = JSON.parse(savedAnalysesStr);
             if (savedAnalyses && savedAnalyses.length > 0) {
-              // Use the most recent saved analysis
               setData(savedAnalyses[0]);
               setLoading(false);
             } else {
@@ -99,7 +77,6 @@ const Dashboard = () => {
     });
   };
   
-  // Prepare data for different charts
   const prepareSentimentData = () => {
     if (!data || !data.fileAnalysis || !data.fileAnalysis.sentimentBreakdown) {
       return [];
@@ -123,7 +100,6 @@ const Dashboard = () => {
       const sentiment = aspect.sentiment || 'neutral';
       let confidence = aspect.confidence || 50;
       
-      // Create a data object with zeros for all sentiments and the actual value for the current sentiment
       return {
         name: aspect.name,
         positive: sentiment === 'positive' ? confidence : 0,
@@ -139,7 +115,6 @@ const Dashboard = () => {
       return [];
     }
     
-    // Get all reviews and sort by date
     const reviews = [...data.fileAnalysis.reviews];
     reviews.sort((a: any, b: any) => {
       const dateA = new Date(a.date || '2023-01-01');
@@ -147,13 +122,11 @@ const Dashboard = () => {
       return dateA.getTime() - dateB.getTime();
     });
     
-    // Group reviews by date and calculate sentiment averages
     const groupedByDate: Record<string, { positive: number, neutral: number, negative: number, count: number }> = {};
     
     reviews.forEach((review: any) => {
       if (!review.date) return;
       
-      // Format date to YYYY-MM-DD
       const date = new Date(review.date).toISOString().split('T')[0];
       
       if (!groupedByDate[date]) {
@@ -168,7 +141,6 @@ const Dashboard = () => {
       }
     });
     
-    // Calculate averages and format for the chart
     return Object.entries(groupedByDate).map(([date, values]) => {
       const count = values.count || 1;
       return {
@@ -185,7 +157,6 @@ const Dashboard = () => {
       return [];
     }
     
-    // Collect all keywords from all reviews
     const keywordMap: Record<string, { count: number, sentiment: string }> = {};
     
     data.fileAnalysis.reviews.forEach((review: any) => {
@@ -204,7 +175,6 @@ const Dashboard = () => {
       });
     });
     
-    // Convert to array and sort by count
     return Object.entries(keywordMap)
       .map(([word, data]) => ({
         word,
@@ -220,7 +190,6 @@ const Dashboard = () => {
       return [];
     }
     
-    // Group reviews by source
     const sourceMap: Record<string, { positive: number, neutral: number, negative: number }> = {};
     
     data.fileAnalysis.reviews.forEach((review: any) => {
@@ -230,7 +199,6 @@ const Dashboard = () => {
         sourceMap[source] = { positive: 0, neutral: 0, negative: 0 };
       }
       
-      // Determine the dominant sentiment
       if (review.sentiment) {
         const { positive, neutral, negative } = review.sentiment;
         if (positive >= neutral && positive >= negative) {
@@ -243,7 +211,6 @@ const Dashboard = () => {
       }
     });
     
-    // Convert to array for the chart
     return Object.entries(sourceMap).map(([source, counts]) => ({
       source: source.charAt(0).toUpperCase() + source.slice(1),
       ...counts
@@ -255,7 +222,6 @@ const Dashboard = () => {
       return [];
     }
     
-    // Use the existing aspects data but transform it for horizontal bar chart
     return data.aspects.map((aspect: any) => ({
       name: aspect.name,
       value: aspect.confidence || 50,
@@ -315,54 +281,6 @@ const Dashboard = () => {
         </p>
       </div>
       
-      {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">Sentiment Score</p>
-              <h3 className={`text-3xl font-bold ${
-                data.overallSentiment?.sentiment === 'positive' ? 'text-green-600' : 
-                data.overallSentiment?.sentiment === 'negative' ? 'text-red-600' : 'text-gray-600'
-              }`}>
-                {data.overallSentiment?.score || 0}/100
-              </h3>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">Total Reviews</p>
-              <h3 className="text-3xl font-bold">{data.fileAnalysis?.totalReviews || 0}</h3>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">Accuracy Score</p>
-              <h3 className="text-3xl font-bold">{data.fileAnalysis?.accuracyScore || 0}%</h3>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="pt-6">
-            <div className="text-center">
-              <p className="text-sm text-muted-foreground mb-1">Positive Ratio</p>
-              <h3 className="text-3xl font-bold">
-                {data.fileAnalysis?.sentimentBreakdown ? 
-                  Math.round(data.fileAnalysis.sentimentBreakdown.positive / 
-                  (data.fileAnalysis.totalReviews || 1) * 100) : 0}%
-              </h3>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
         <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-4">
           <TabsTrigger value="overview">Overview</TabsTrigger>
@@ -371,10 +289,8 @@ const Dashboard = () => {
           <TabsTrigger value="keywords">Keywords</TabsTrigger>
         </TabsList>
         
-        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Sentiment Overview */}
             <DashboardCard 
               title="Overall Sentiment Distribution" 
               icon={<ChartPieIcon className="h-4 w-4" />}
@@ -405,11 +321,9 @@ const Dashboard = () => {
               </div>
             </DashboardCard>
             
-            {/* Top Keywords */}
             <TopKeywords keywords={keywordsData} className="md:col-span-1" />
           </div>
           
-          {/* Source Distribution */}
           <DashboardCard 
             title="Sentiment by Source" 
             icon={<ServerIcon className="h-4 w-4" />}
@@ -430,10 +344,9 @@ const Dashboard = () => {
             </div>
           </DashboardCard>
           
-          {/* Most Mentioned Aspects */}
           <DashboardCard 
             title="Most Mentioned Aspects" 
-            icon={<HashtagIcon className="h-4 w-4" />}
+            icon={<Hash className="h-4 w-4" />}
           >
             <div className="h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
@@ -458,7 +371,6 @@ const Dashboard = () => {
           </DashboardCard>
         </TabsContent>
         
-        {/* Aspects Tab */}
         <TabsContent value="aspects" className="space-y-6">
           <DashboardCard 
             title="Aspect-Based Sentiment Breakdown" 
@@ -483,7 +395,6 @@ const Dashboard = () => {
             </div>
           </DashboardCard>
           
-          {/* Aspect Details */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {data.aspects?.map((aspect: any, index: number) => (
               <Card key={index}>
@@ -507,7 +418,6 @@ const Dashboard = () => {
           </div>
         </TabsContent>
         
-        {/* Timeline Tab */}
         <TabsContent value="timeline" className="space-y-6">
           <DashboardCard 
             title="Sentiment Trends Over Time" 
@@ -556,7 +466,6 @@ const Dashboard = () => {
             </div>
           </DashboardCard>
           
-          {/* Monthly Trends would go here if we had enough data */}
           <DashboardCard 
             title="Volume of Reviews Over Time" 
             icon={<ChartBarIcon className="h-4 w-4" />}
@@ -596,12 +505,11 @@ const Dashboard = () => {
           </DashboardCard>
         </TabsContent>
         
-        {/* Keywords Tab */}
         <TabsContent value="keywords" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <DashboardCard 
               title="Top Keywords" 
-              icon={<TagIcon className="h-4 w-4" />}
+              icon={<Hash className="h-4 w-4" />}
               className="col-span-1"
             >
               <div className="h-[400px]">
@@ -632,7 +540,7 @@ const Dashboard = () => {
             <Card className="col-span-1">
               <CardHeader>
                 <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                  <TagIcon className="h-4 w-4" />
+                  <Hash className="h-4 w-4" />
                   Keyword Cloud
                 </CardTitle>
               </CardHeader>
