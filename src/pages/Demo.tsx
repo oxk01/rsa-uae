@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -27,7 +26,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     
     const processedReviews = [];
     
-    // Increased chunk size for better performance with large datasets
     const CHUNK_SIZE = Math.min(Math.max(500, Math.floor(reviews.length / 10)), 2000);
     
     console.log(`Processing reviews in chunks of ${CHUNK_SIZE}`);
@@ -35,7 +33,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     const isLargeDataset = reviews.length > 10000;
     const totalChunks = Math.ceil(reviews.length / CHUNK_SIZE);
     
-    // Process in chunks to avoid blocking UI
     for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       const startIdx = chunkIndex * CHUNK_SIZE;
       const endIdx = Math.min(startIdx + CHUNK_SIZE, reviews.length);
@@ -46,7 +43,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         `Analyzing chunk ${chunkIndex + 1}/${totalChunks} (${startIdx} - ${endIdx} of ${reviews.length} reviews)...`
       );
       
-      // Process a chunk of reviews with Promise.all for better performance
       const chunkPromises = chunk.map(async (review, index) => {
         const { sentiment, score, accuracy } = analyzeSentiment(review.reviewText);
         
@@ -93,14 +89,10 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
     console.time("Aggregating results");
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    // Reduce memory usage by processing aspects and keywords more efficiently
     const aspectsData: Record<string, any> = {};
     const keywordsData: Record<string, any> = {};
     
-    // Process all reviews to extract aspects and keywords
-    console.log("Aggregating aspects and keywords from all reviews...");
     processedReviews.forEach((review) => {
-      // Process aspects
       (review.aspects || []).forEach(aspect => {
         if (!aspectsData[aspect.name]) {
           aspectsData[aspect.name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
@@ -109,7 +101,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         aspectsData[aspect.name].total++;
       });
       
-      // Process keywords
       (review.keywords || []).forEach(keyword => {
         if (!keywordsData[keyword.word]) {
           keywordsData[keyword.word] = { count: 0, sentiment: keyword.sentiment };
@@ -118,7 +109,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       });
     });
     
-    // Format aspects data
     const formattedAspectsData = Object.entries(aspectsData).map(([name, data]: [string, any]) => ({
       aspect: name,
       count: data.total,
@@ -128,7 +118,6 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       negative: Math.round((data.negative / data.total) * 100),
     }));
     
-    // Format keywords data and sort by count
     const formattedKeywordsData = Object.entries(keywordsData)
       .map(([word, data]: [string, any]) => ({
         text: word,
@@ -136,9 +125,7 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         sentiment: data.sentiment
       }))
       .sort((a, b) => b.value - a.value)
-      .slice(0, 150); // Keep top 150 keywords for visualization
-    
-    console.log(`Generated ${formattedAspectsData.length} aspect insights and ${formattedKeywordsData.length} keywords`);
+      .slice(0, 150);
     
     const total = totalPositive + totalNeutral + totalNegative;
     const sentimentPercentages = {
@@ -147,12 +134,9 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       negative: Math.round((totalNegative / total) * 100)
     };
     
-    // Adjust for large datasets to prevent memory issues
     const reviewsToStore = isLargeDataset ? 
-      processedReviews.slice(0, 1000) : // Keep first 1000 reviews for large datasets
+      processedReviews.slice(0, 1000) : 
       processedReviews;
-    
-    console.log(`Storing ${reviewsToStore.length} of ${processedReviews.length} reviews in the result`);
     
     const result = {
       overallSentiment: {
@@ -287,35 +271,47 @@ const Demo = () => {
   const rtlClass = language === 'ar' ? 'rtl' : '';
   
   return (
-    <div className={`min-h-screen bg-slate-50 py-8 ${rtlClass}`}>
-      <div className="container mx-auto px-4 max-w-5xl">
-        <div className="bg-white rounded-lg shadow-sm overflow-hidden">
-          {analysisState === 'input' && (
-            <ReviewInput 
-              onFileChange={handleFileChange}
-              onAnalyze={handleAnalyze}
-              file={file}
-            />
-          )}
+    <div className={`min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 py-12 ${rtlClass}`}>
+      <div className="container mx-auto px-4 max-w-4xl">
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-blue-100 animate-fade-in">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white text-center">
+            <h1 className="text-xl font-semibold tracking-wide">
+              Sentiment Analysis Dashboard
+            </h1>
+          </div>
           
-          {analysisState === 'analyzing' && (
-            <ReviewLoading progress={progress} status={status} />
-          )}
-          
-          {analysisState === 'results' && analysisResult && (
-            <ReviewResults 
-              result={analysisResult}
-              onSave={() => {
-                toast({
-                  title: "Analysis saved",
-                  description: "Your analysis has been saved to the dashboard.",
-                });
-                navigate('/dashboard');
-              }} 
-              onStartOver={handleStartOver}
-              displayMode="table"
-            />
-          )}
+          <div className="p-8 space-y-6">
+            {analysisState === 'input' && (
+              <ReviewInput 
+                onFileChange={handleFileChange}
+                onAnalyze={handleAnalyze}
+                file={file}
+              />
+            )}
+            
+            {analysisState === 'analyzing' && (
+              <ReviewLoading progress={progress} status={status} />
+            )}
+            
+            {analysisState === 'results' && analysisResult && (
+              <ReviewResults 
+                result={analysisResult}
+                onSave={() => {
+                  toast({
+                    title: "Analysis saved",
+                    description: "Your analysis has been saved to the dashboard.",
+                  });
+                  navigate('/dashboard');
+                }} 
+                onStartOver={handleStartOver}
+                displayMode="table"
+              />
+            )}
+          </div>
+        </div>
+        
+        <div className="mt-6 text-center text-gray-500 text-sm">
+          <p>Powered by AI-driven sentiment analysis</p>
         </div>
       </div>
     </div>
