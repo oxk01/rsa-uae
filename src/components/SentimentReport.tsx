@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -274,7 +273,7 @@ const getAspectData = (analysisData: any) => {
   }));
 };
 
-// Helper function to process trend data
+// Helper function to process trend data with improved date handling
 const getTrendData = (analysisData: any) => {
   if (!analysisData?.fileAnalysis?.reviews) return [];
   
@@ -282,12 +281,28 @@ const getTrendData = (analysisData: any) => {
   const dateMap = new Map();
   
   reviews.forEach((review: any) => {
-    const date = new Date(review.date).toISOString().split('T')[0];
-    if (!dateMap.has(date)) {
-      dateMap.set(date, { positive: 0, neutral: 0, negative: 0, total: 0 });
+    let dateStr = "";
+    try {
+      if (review.date) {
+        const reviewDate = new Date(review.date);
+        if (!isNaN(reviewDate.getTime())) {
+          dateStr = reviewDate.toISOString().split('T')[0];
+        } else {
+          dateStr = String(review.date).substring(0, 10) || "Unknown";
+        }
+      } else {
+        dateStr = "Unknown";
+      }
+    } catch (e) {
+      console.error("Error processing date:", e, review.date);
+      dateStr = "Unknown";
     }
     
-    const stats = dateMap.get(date);
+    if (!dateMap.has(dateStr)) {
+      dateMap.set(dateStr, { positive: 0, neutral: 0, negative: 0, total: 0 });
+    }
+    
+    const stats = dateMap.get(dateStr);
     stats.total++;
     
     if (review.sentimentLabel === 'positive') stats.positive++;
@@ -298,11 +313,21 @@ const getTrendData = (analysisData: any) => {
   return Array.from(dateMap.entries())
     .map(([date, stats]) => ({
       date,
-      positive: (stats.positive / stats.total) * 100,
-      neutral: (stats.neutral / stats.total) * 100,
-      negative: (stats.negative / stats.total) * 100
+      positive: stats.total > 0 ? Math.round((stats.positive / stats.total) * 100) : 0,
+      neutral: stats.total > 0 ? Math.round((stats.neutral / stats.total) * 100) : 0,
+      negative: stats.total > 0 ? Math.round((stats.negative / stats.total) * 100) : 0
     }))
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    .sort((a, b) => {
+      if (a.date === "Unknown") return -1;
+      if (b.date === "Unknown") return 1;
+      
+      try {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      } catch (e) {
+        console.error("Error sorting dates:", e, a.date, b.date);
+        return 0;
+      }
+    });
 };
 
 // Helper function to process keywords data
@@ -363,4 +388,3 @@ const generateRecommendations = (analysisData: any) => {
 };
 
 export default SentimentReport;
-
