@@ -16,6 +16,15 @@ interface SentimentOverviewProps {
 const SentimentOverview = ({ data }: SentimentOverviewProps) => {
   const hasData = data && data.length > 0;
   
+  // Find negative sentiment item
+  const getNegativeValue = (): number => {
+    if (!hasData) return 0;
+    const negativeItem = data.find(item => item.name === "Negative");
+    return negativeItem && typeof negativeItem.value === 'number' ? negativeItem.value : 0;
+  };
+
+  const negativeValue = getNegativeValue();
+  
   return (
     <DashboardCard 
       title="Overall Sentiment Distribution" 
@@ -69,13 +78,9 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
             </ResponsiveContainer>
           </div>
           
-          {data.map((item, index) => (
-            item.name === "Negative" && typeof item.value === 'number' ? (
-              <div key={index} className="text-center mt-2 text-sm font-medium text-red-500">
-                Negative: {item.value}%
-              </div>
-            ) : null
-          ))}
+          <div className="text-center mt-2 text-sm font-medium text-red-500">
+            Negative: {negativeValue}%
+          </div>
         </>
       )}
     </DashboardCard>
