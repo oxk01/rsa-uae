@@ -12,11 +12,11 @@ interface HeatmapMatrixProps {
 }
 
 const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
-  // Calculate confusion matrix values
-  const truePositives = Math.round((data.predictedPositive * data.actualPositive) / 100);
-  const falseNegatives = Math.round((data.predictedNegative * data.actualPositive) / 100);
-  const falsePositives = Math.round((data.predictedPositive * data.actualNegative) / 100);
-  const trueNegatives = Math.round((data.predictedNegative * data.actualNegative) / 100);
+  // Calculate exact percentages from the data
+  const truePositives = data.predictedPositive;
+  const falseNegatives = data.predictedNegative;
+  const falsePositives = data.actualNegative;
+  const trueNegatives = 100 - (truePositives + falseNegatives + falsePositives);
 
   return (
     <DashboardCard 
