@@ -67,7 +67,7 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   position: 'insideBottom', 
                   offset: -10 
                 }}
-                tick={{ fontSize: 12, angle: 0, textAnchor: 'middle' }}
+                tick={{ fontSize: 12 }}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
                 height={60}
@@ -86,7 +86,10 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   border: '1px solid #e5e7eb',
                   boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1)'
                 }}
-                formatter={(value, name) => [`${value}%`, name.charAt(0).toUpperCase() + name.slice(1)]}
+                formatter={(value: any, name: any) => {
+                  // Ensure proper formatting with type safety
+                  return [`${value}%`, typeof name === 'string' ? name.charAt(0).toUpperCase() + name.slice(1) : name];
+                }}
                 labelFormatter={(label) => `Date: ${label}`}
               />
               <Legend wrapperStyle={{ paddingTop: 10, fontSize: 12 }} />
