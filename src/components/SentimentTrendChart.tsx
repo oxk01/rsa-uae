@@ -2,24 +2,27 @@
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardCard from './DashboardCard';
-import { parseISO, format } from 'date-fns';
+import { format, fromUnixTime } from 'date-fns';
 
 interface SentimentTrendChartProps {
   data?: Array<{
-    date: string;
+    date: string | number;
     positive: number;
     neutral: number;
     negative: number;
   }>;
 }
 
-const formatDate = (dateInput: string): string => {
+const formatTimestamp = (timestamp: string | number): string => {
   try {
-    const date = parseISO(dateInput);
-    return format(date, 'd MMMM');
+    // Convert string to number if needed
+    const numericTimestamp = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
+    // Convert seconds to milliseconds if needed (Unix timestamps are in seconds)
+    const timestampInMs = numericTimestamp > 9999999999 ? numericTimestamp : numericTimestamp * 1000;
+    return format(fromUnixTime(timestampInMs / 1000), 'MMM d, yyyy');
   } catch (error) {
-    console.error("Error formatting date:", error, "for input:", dateInput);
-    return dateInput;
+    console.error("Error formatting timestamp:", error, "for input:", timestamp);
+    return String(timestamp);
   }
 };
 
@@ -60,9 +63,11 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
               <XAxis 
                 dataKey="date" 
                 tick={{ fontSize: 12 }}
-                tickFormatter={formatDate}
+                tickFormatter={formatTimestamp}
                 height={60}
+                angle={-45}
                 textAnchor="end"
+                interval={0}
               />
               <YAxis 
                 tick={{ fontSize: 12 }}
@@ -81,7 +86,7 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   const formattedName = typeof name === 'string' ? name.charAt(0).toUpperCase() + name.slice(1) : name;
                   return [`${value}%`, formattedName];
                 }}
-                labelFormatter={(label) => `Date: ${formatDate(String(label))}`}
+                labelFormatter={(label) => `Date: ${formatTimestamp(String(label))}`}
               />
               <Legend 
                 verticalAlign="top" 
