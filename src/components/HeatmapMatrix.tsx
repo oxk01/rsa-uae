@@ -52,10 +52,6 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
             <div className="text-xs text-green-600">True Negative</div>
           </div>
         </div>
-        
-        <div className="text-center text-sm text-gray-600 font-medium mt-4">
-          Overall Model Accuracy: {data.actualPositive}%
-        </div>
       </div>
     </DashboardCard>
   );
