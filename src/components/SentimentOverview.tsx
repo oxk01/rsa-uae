@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { AlertCircle } from 'lucide-react';
 import DashboardCard from './DashboardCard';
 
@@ -29,12 +29,7 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
       ) : (
         <div className="h-[260px]">
           <ResponsiveContainer width="100%" height="100%">
-            <PieChart margin={{ top: 20, right: 30, bottom: 0, left: 30 }}>
-              <defs>
-                <filter id="shadow">
-                  <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
-                </filter>
-              </defs>
+            <PieChart margin={{ top: 30, right: 40, bottom: 30, left: 40 }}>
               <Pie
                 data={data}
                 cx="50%"
@@ -44,7 +39,10 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
                 fill="#8884d8"
                 dataKey="value"
                 paddingAngle={2}
-                filter="url(#shadow)"
+                label={({ name, percent }) => (
+                  `${name}: ${(percent * 100).toFixed(0)}%`
+                )}
+                labelLine={{ strokeWidth: 1, stroke: '#8884d8' }}
               >
                 {data.map((entry, index) => (
                   <Cell 
@@ -55,24 +53,15 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value, name) => [`${value}%`, name]}
+                formatter={(value) => [`${value}%`, 'Sentiment']}
                 contentStyle={{ 
                   backgroundColor: 'white', 
                   borderRadius: '8px',
                   border: '1px solid #e5e7eb',
                   padding: '12px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)'
+                  fontSize: '12px',
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
-              />
-              <Legend 
-                layout="horizontal"
-                verticalAlign="bottom"
-                align="center"
-                wrapperStyle={{ 
-                  paddingTop: 20,
-                  fontSize: '14px',
-                }}
-                formatter={(value) => <span className="text-gray-700">{value}</span>}
               />
             </PieChart>
           </ResponsiveContainer>

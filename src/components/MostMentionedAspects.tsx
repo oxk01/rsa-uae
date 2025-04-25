@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 import DashboardCard from './DashboardCard';
@@ -19,7 +18,7 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
   
   const sortedData = [...(data || [])]
     .sort((a, b) => b.count - a.count)
-    .slice(0, 10);
+    .slice(0, 7); // Reduced to 7 items to prevent overlapping
   
   const getBarColor = (entry: any) => {
     if (!entry.sentiment) return '#3B82F6';
@@ -42,27 +41,21 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
             <BarChart
               data={sortedData}
               layout="vertical"
-              margin={{ top: 5, right: 40, left: 50, bottom: 5 }}
+              margin={{ top: 5, right: 60, left: 120, bottom: 5 }}
               barSize={20}
             >
-              <defs>
-                <linearGradient id="barGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#4F46E5" stopOpacity={0.8}/>
-                  <stop offset="100%" stopColor="#818CF8" stopOpacity={0.8}/>
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f0f0f0" />
               <XAxis 
                 type="number"
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 11 }}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
               />
               <YAxis 
                 type="category" 
                 dataKey="aspect"
-                tick={{ fontSize: 12 }}
-                width={120}
+                tick={{ fontSize: 11 }}
+                width={110}
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
                 tickFormatter={(value) => value.length > 15 ? `${value.substr(0, 13)}...` : value}
@@ -73,22 +66,8 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
                   backgroundColor: 'white', 
                   borderRadius: '8px',
                   border: '1px solid #e5e7eb',
+                  fontSize: '12px',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                }}
-                formatter={(value, name, props) => {
-                  const entry = props.payload;
-                  if (entry.positive !== undefined) {
-                    return [
-                      <div>
-                        <div className="font-medium">{`${value} mentions`}</div>
-                        <div className="text-green-600">{`Positive: ${entry.positive}%`}</div>
-                        <div className="text-gray-600">{`Neutral: ${entry.neutral}%`}</div>
-                        <div className="text-red-600">{`Negative: ${entry.negative}%`}</div>
-                      </div>,
-                      ''
-                    ];
-                  }
-                  return [`${value} mentions`, ''];
                 }}
               />
               <Bar 

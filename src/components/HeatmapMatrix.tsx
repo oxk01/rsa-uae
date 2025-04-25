@@ -20,8 +20,8 @@ const COLORS = {
 
 const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
   const accuracyData = [
-    { name: 'Accurate Predictions', value: data.actualPositive, color: COLORS.accurate },
-    { name: 'Inaccurate Predictions', value: data.actualNegative, color: COLORS.inaccurate }
+    { name: 'Accurate', value: data.actualPositive, color: COLORS.accurate },
+    { name: 'Inaccurate', value: data.actualNegative, color: COLORS.inaccurate }
   ];
 
   return (
@@ -31,7 +31,7 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
     >
       <div className="h-[260px]">
         <ResponsiveContainer width="100%" height="100%">
-          <PieChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <PieChart margin={{ top: 30, right: 40, bottom: 30, left: 40 }}>
             <defs>
               <filter id="matrixShadow">
                 <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2"/>
@@ -46,7 +46,17 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
               paddingAngle={2}
               dataKey="value"
               filter="url(#matrixShadow)"
-              label={({ name, value }) => `${name}: ${value}%`}
+              label={({ name, value }) => (
+                <text 
+                  x={0} 
+                  y={0} 
+                  textAnchor="middle" 
+                  fill="#374151"
+                  className="text-xs font-medium"
+                >
+                  {`${name}: ${value}%`}
+                </text>
+              )}
             >
               {accuracyData.map((entry, index) => (
                 <Cell 
@@ -64,6 +74,7 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
                 borderRadius: '8px',
                 border: '1px solid #e5e7eb',
                 padding: '12px',
+                fontSize: '12px',
                 boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
               }}
               formatter={(value) => [`${value}%`, 'Accuracy']}
