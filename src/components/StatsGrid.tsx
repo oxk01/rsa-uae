@@ -1,28 +1,24 @@
 
 import React from 'react';
-import StatCard from './StatCard';
-import { MessageSquare, Star, Clock, TrendingUp, BarChart3 } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { FileText, ThumbsUp, ThumbsDown, BarChart2 } from 'lucide-react';
 
 interface StatsGridProps {
-  // Making the component accept actual data rather than using hardcoded values
   totalReviews?: string;
   averageRating?: string;
   responseTime?: string;
   sentimentScore?: string;
   accuracyScore?: string;
-  // Change data for each stat
   reviewsChange?: string;
   ratingChange?: string;
   responseChange?: string;
   sentimentChange?: string;
   accuracyChange?: string;
-  // Whether changes are positive or negative
   reviewsPositive?: boolean;
   ratingPositive?: boolean;
   responsePositive?: boolean;
   sentimentPositive?: boolean;
   accuracyPositive?: boolean;
-  // Total data points processed
   totalDataPoints?: string;
   dataPointsChange?: string;
   dataPointsPositive?: boolean;
@@ -49,42 +45,38 @@ const StatsGrid = ({
   dataPointsPositive = true
 }: StatsGridProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-      <StatCard 
-        title="Total Reviews" 
-        value={totalReviews} 
-        change={reviewsChange} 
-        positive={reviewsPositive}
-        icon={<MessageSquare className="h-5 w-5 text-brand-blue" />}
-      />
-      <StatCard 
-        title="Average Rating" 
-        value={averageRating} 
-        change={ratingChange} 
-        positive={ratingPositive}
-        icon={<Star className="h-5 w-5 text-brand-amber" />}
-      />
-      <StatCard 
-        title="Response Time" 
-        value={responseTime} 
-        change={responseChange} 
-        positive={responsePositive}
-        icon={<Clock className="h-5 w-5 text-brand-teal" />}
-      />
-      <StatCard 
-        title="Sentiment Score" 
-        value={sentimentScore} 
-        change={sentimentChange} 
-        positive={sentimentPositive}
-        icon={<TrendingUp className="h-5 w-5 text-brand-blue" />}
-      />
-      <StatCard 
-        title="Accuracy Score" 
-        value={accuracyScore} 
-        change={accuracyChange} 
-        positive={accuracyPositive}
-        icon={<BarChart3 className="h-5 w-5 text-brand-purple" />}
-      />
+    <div className="grid grid-cols-4 gap-4">
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between mb-2">
+          <FileText className="h-6 w-6 text-blue-500" />
+          <span className="text-xs text-gray-500">Total Reviews</span>
+        </div>
+        <div className="text-2xl font-bold text-gray-800">{totalReviews}</div>
+      </div>
+      
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between mb-2">
+          <ThumbsUp className="h-6 w-6 text-green-500" />
+          <span className="text-xs text-gray-500">Positive Sentiment</span>
+        </div>
+        <div className="text-2xl font-bold text-green-600">{sentimentScore}</div>
+      </div>
+      
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between mb-2">
+          <ThumbsDown className="h-6 w-6 text-red-500" />
+          <span className="text-xs text-gray-500">Negative Sentiment</span>
+        </div>
+        <div className="text-2xl font-bold text-red-600">10%</div>
+      </div>
+      
+      <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow">
+        <div className="flex items-center justify-between mb-2">
+          <BarChart2 className="h-6 w-6 text-blue-600" />
+          <span className="text-xs text-gray-500">Average Accuracy</span>
+        </div>
+        <div className="text-2xl font-bold text-blue-700">{accuracyScore}</div>
+      </div>
     </div>
   );
 };
