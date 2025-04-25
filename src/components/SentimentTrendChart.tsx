@@ -19,7 +19,7 @@ const formatDate = (dateInput: string): string => {
     const date = parseISO(dateInput);
     
     // If parsing is successful, format the date
-    return format(date, 'MMM dd, yyyy');
+    return format(date, 'd MMMM');
   } catch (error) {
     console.error("Error formatting date:", error);
     return dateInput; // Return original input if parsing fails
@@ -112,3 +112,4 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
 };
 
 export default SentimentTrendChart;
+
