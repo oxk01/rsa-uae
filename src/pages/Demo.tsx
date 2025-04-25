@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -202,8 +203,10 @@ const Demo = () => {
           totalReviews: result.fileAnalysis.totalReviews,
           sentimentBreakdown: result.fileAnalysis.sentimentBreakdown,
           overallSentiment: result.overallSentiment,
-          keyPhrases: result.keyPhrases,
-          aspects: result.aspects.slice(0, 5),
+          // Fix: Use fileAnalysis.keywords instead of keyPhrases which doesn't exist
+          keyPhrases: result.fileAnalysis.keywords,
+          // Fix: Use fileAnalysis.aspects which is where aspects are stored
+          aspects: result.fileAnalysis.aspects,
           sampleReviews: result.fileAnalysis.reviews.slice(0, 20)
         };
         
