@@ -45,11 +45,13 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
       const negativeAspects = aspects.filter((a: any) => a.sentiment === 'negative');
       
       if (positiveAspects.length > 0) {
-        insights.push(`Customers speak highly of ${positiveAspects.map((a: any) => a.name.toLowerCase()).slice(0, 2).join(' and ')}.`);
+        // Fix: Add null check before calling toLowerCase()
+        insights.push(`Customers speak highly of ${positiveAspects.map((a: any) => a.name && a.name.toLowerCase() || 'this aspect').slice(0, 2).join(' and ')}.`);
       }
       
       if (negativeAspects.length > 0) {
-        insights.push(`Consider improving ${negativeAspects.map((a: any) => a.name.toLowerCase()).slice(0, 2).join(' and ')} based on negative feedback.`);
+        // Fix: Add null check before calling toLowerCase()
+        insights.push(`Consider improving ${negativeAspects.map((a: any) => a.name && a.name.toLowerCase() || 'this aspect').slice(0, 2).join(' and ')} based on negative feedback.`);
       }
     }
     
@@ -59,12 +61,18 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
       const negativeKeywords = keyPhrases.filter((k: any) => k.sentiment === 'negative').slice(0, 3);
       
       if (positiveKeywords.length > 0) {
-        const words = positiveKeywords.map((k: any) => typeof k === 'string' ? k : k.text).join(', ');
+        const words = positiveKeywords.map((k: any) => {
+          if (typeof k === 'string') return k;
+          return k.text || k.word || '';
+        }).join(', ');
         insights.push(`Positive reviews frequently mention: ${words}.`);
       }
       
       if (negativeKeywords.length > 0) {
-        const words = negativeKeywords.map((k: any) => typeof k === 'string' ? k : k.text).join(', ');
+        const words = negativeKeywords.map((k: any) => {
+          if (typeof k === 'string') return k;
+          return k.text || k.word || '';
+        }).join(', ');
         insights.push(`Negative reviews commonly discuss: ${words}.`);
       }
     }
@@ -85,7 +93,9 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
       
       worstAspects.forEach((aspect: any) => {
         if (aspect.sentiment === 'negative') {
-          recommendations.push(`Focus on improving ${aspect.name.toLowerCase()} to address customer concerns.`);
+          // Fix: Add null check before calling toLowerCase()
+          const aspectName = aspect.name ? aspect.name.toLowerCase() : 'this aspect';
+          recommendations.push(`Focus on improving ${aspectName} to address customer concerns.`);
         }
       });
     }
@@ -129,7 +139,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
         recommendations: recommendations,
         // For charts
         aspectData: aspects.map((aspect: any) => ({
-          aspect: aspect.name,
+          aspect: aspect.name || 'Unnamed aspect',
           sentiment: aspect.sentiment,
           positive: aspect.sentiment === 'positive' ? 100 : 0,
           neutral: aspect.sentiment === 'neutral' ? 100 : 0,
@@ -170,7 +180,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
           }
         ],
         mentionedAspectsData: aspects.map((aspect: any, index: number) => ({
-          aspect: aspect.name,
+          aspect: aspect.name || 'Unnamed aspect',
           count: totalReviews / (index + 1)
         }))
       };
@@ -264,7 +274,8 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
                       : 'bg-gray-100 text-gray-800'
                 }`}
               >
-                {typeof phrase === 'string' ? phrase : phrase.text || ""}
+                {/* Fixed handling of phrases to avoid rendering objects */}
+                {typeof phrase === 'string' ? phrase : phrase.text || phrase.word || ""}
               </span>
             ))}
             {keyPhrases.length === 0 && <p className="text-gray-500 text-sm">No key phrases identified</p>}
@@ -278,7 +289,7 @@ const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps
           {aspects.map((aspect: any, idx: number) => (
             <div key={idx} className="border-b pb-3 last:border-b-0 last:pb-0">
               <div className="flex justify-between mb-1">
-                <span className="font-medium">{aspect.name}</span>
+                <span className="font-medium">{aspect.name || 'Unnamed aspect'}</span>
                 <span className={
                   aspect.sentiment === 'positive' ? 'text-green-600' : 
                   aspect.sentiment === 'negative' ? 'text-red-600' : 
