@@ -36,54 +36,27 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
         
         totalAccuracy += accuracy;
         
-        let ratingValue = "0/5";
-        if (review.rating) {
-          const ratingNum = parseFloat(review.rating);
-          if (!isNaN(ratingNum)) {
-            if (ratingNum <= 5) {
-              ratingValue = `${ratingNum}/5`;
-            } else if (ratingNum <= 10) {
-              ratingValue = `${(ratingNum / 2).toFixed(1)}/5`;
-            } else if (ratingNum <= 100) {
-              ratingValue = `${(ratingNum / 20).toFixed(1)}/5`;
-            }
-          }
-        } else {
-          const sentimentRating = sentiment === 'positive' ? 
-                            Math.floor(Math.random() * 2) + 4 : 
-                            sentiment === 'negative' ?
-                            Math.floor(Math.random() * 2) + 1 : 
-                            3;
-          ratingValue = `${sentimentRating}/5`;
-        }
-        
         const keywords = extractKeywords(review.reviewText, sentiment);
-        
         const aspects = extractAspects(review.reviewText, sentiment);
-        
-        let helpfulnessRatio;
-        if (review.helpfulnessNumerator !== undefined && review.helpfulnessDenominator !== undefined) {
-          helpfulnessRatio = `${review.helpfulnessNumerator}/${review.helpfulnessDenominator}`;
-        }
         
         return {
           id: Date.now() + Math.random(),
-          title: review.productId,
+          title: review.productId || 'Unknown Product',
           date: review.date || new Date().toISOString().split('T')[0],
           sentiment: {
             positive: sentiment === 'positive' ? score : 10,
             neutral: sentiment === 'neutral' ? score : 10,
-            negative: sentiment === 'negative' ? 100 - score : 10
+            negative: sentiment === 'negative' ? score : 10
           },
           reviewCount: 1,
-          source: 'excel',
-          rating: ratingValue,
+          rating: review.rating || '0/5',
           reviewText: review.reviewText,
           sentimentLabel: sentiment,
           accuracyScore: accuracy,
-          keywords: keywords,
-          aspects: aspects,
-          helpfulnessRatio,
+          keywords,
+          aspects,
+          helpfulnessRatio: review.helpfulnessNumerator && review.helpfulnessDenominator ? 
+            `${review.helpfulnessNumerator}/${review.helpfulnessDenominator}` : undefined,
           verified: review.verified,
           userId: review.userId
         };
@@ -93,100 +66,81 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
       
       const progress = Math.min(30 + Math.round(60 * ((i + chunk.length) / reviews.length)), 90);
       onProgressUpdate?.(progress, `Analyzed ${i + chunk.length} of ${reviews.length} reviews...`);
-      
-      await new Promise(resolve => setTimeout(resolve, 0));
     }
     
     const avgAccuracy = Math.round(totalAccuracy / reviews.length);
     
-    const allAspects = processedReviews
-      .flatMap((r: any) => r.aspects || [])
-      .reduce((acc: Record<string, any[]>, curr: any) => {
-        if (!curr || !curr.name) return acc;
-        
-        if (!acc[curr.name]) {
-          acc[curr.name] = [];
+    const aspectsData = processedReviews.reduce((acc: Record<string, any>, review) => {
+      (review.aspects || []).forEach(aspect => {
+        if (!acc[aspect.name]) {
+          acc[aspect.name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
         }
-        acc[curr.name].push(curr);
-        return acc;
-      }, {});
-    
-    const topAspects = Object.entries(allAspects)
-      .sort(([, a], [, b]) => (b as any[]).length - (a as any[]).length)
-      .slice(0, 5)
-      .map(([name, instances]) => {
-        const aspectInstances = instances as any[];
-        const positive = aspectInstances.filter(a => a.sentiment === 'positive').length;
-        const negative = aspectInstances.filter(a => a.sentiment === 'negative').length;
-        const neutral = aspectInstances.filter(a => a.sentiment === 'neutral').length;
-        
-        let sentiment;
-        if (positive > negative && positive > neutral) sentiment = 'positive';
-        else if (negative > positive && negative > neutral) sentiment = 'negative';
-        else sentiment = 'neutral';
-        
-        const context = aspectInstances[0].context || '';
-        
-        const total = aspectInstances.length;
-        const confidence = Math.round((sentiment === 'positive' ? positive : sentiment === 'negative' ? negative : neutral) / total * 100);
-        
-        return {
-          name,
-          sentiment,
-          confidence,
-          context
-        };
+        acc[aspect.name][aspect.sentiment]++;
+        acc[aspect.name].total++;
       });
+      return acc;
+    }, {});
     
-    const allKeywords = processedReviews
-      .flatMap((r: Review) => r.keywords || [])
-      .reduce((acc: Record<string, { count: number, sentiment: string }>, curr: KeywordItem) => {
-        if (!curr) return acc;
-        
-        const word = curr.word || '';
-        if (!acc[word]) {
-          acc[word] = { 
-            count: 0, 
-            sentiment: curr.sentiment || 'neutral' 
-          };
+    const keywordsData = processedReviews.reduce((acc: Record<string, any>, review) => {
+      (review.keywords || []).forEach(keyword => {
+        if (!acc[keyword.word]) {
+          acc[keyword.word] = { count: 0, sentiment: keyword.sentiment };
         }
-        acc[word].count += 1;
-        return acc;
-      }, {});
+        acc[keyword.word].count++;
+      });
+      return acc;
+    }, {});
     
-    const topKeywords = Object.entries(allKeywords)
-      .sort(([, a], [, b]) => {
-        const countA = a && typeof a === 'object' && 'count' in a ? (a.count as number) : 0;
-        const countB = b && typeof b === 'object' && 'count' in a ? (b.count as number) : 0;
-        return countB - countA;
-      })
-      .slice(0, 5)
-      .map(([word]) => word);
+    const formattedAspectsData = Object.entries(aspectsData).map(([name, data]: [string, any]) => ({
+      aspect: name,
+      count: data.total,
+      sentiment: data.positive > data.negative ? 'positive' : 'negative',
+      positive: Math.round((data.positive / data.total) * 100),
+      neutral: Math.round((data.neutral / data.total) * 100),
+      negative: Math.round((data.negative / data.total) * 100),
+    }));
     
-    onProgressUpdate?.(100, "Analysis complete!");
+    const formattedKeywordsData = Object.entries(keywordsData)
+      .map(([word, data]: [string, any]) => ({
+        text: word,
+        value: data.count,
+        sentiment: data.sentiment
+      }))
+      .sort((a, b) => b.value - a.value)
+      .slice(0, 100);
     
-    return {
-      text: `Analysis of file: ${file.name}`,
+    const total = totalPositive + totalNeutral + totalNegative;
+    const sentimentPercentages = {
+      positive: Math.round((totalPositive / total) * 100),
+      neutral: Math.round((totalNeutral / total) * 100),
+      negative: Math.round((totalNegative / total) * 100)
+    };
+    
+    const result = {
       overallSentiment: {
-        sentiment: totalPositive > totalNegative ? "positive" : totalNegative > totalPositive ? "negative" : "neutral",
+        sentiment: totalPositive > totalNegative ? "positive" : "negative",
         score: Math.round(((totalPositive - totalNegative) / reviews.length + 1) * 50)
       },
-      aspects: topAspects,
-      keyPhrases: topKeywords,
       fileAnalysis: {
         totalReviews: reviews.length,
-        sentimentBreakdown: {
-          positive: totalPositive,
-          neutral: totalNeutral, 
-          negative: totalNegative
-        },
-        isRealData: true,
-        fileName: file.name,
+        sentimentBreakdown: sentimentPercentages,
         accuracyScore: avgAccuracy,
         reviews: processedReviews,
+        aspects: formattedAspectsData,
+        keywords: formattedKeywordsData,
         dataPoints: reviews.length
       }
     };
+    
+    try {
+      localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
+    } catch (storageError) {
+      console.warn("Could not save to localStorage:", storageError);
+    }
+    
+    onProgressUpdate?.(100, "Analysis complete!");
+    return result;
+    
   } catch (error) {
     console.error("Error analyzing file:", error);
     throw error;
@@ -240,7 +194,6 @@ const Demo = () => {
       setAnalysisResult(result);
       setAnalysisState('results');
       
-      // Save summary to localStorage instead of all reviews
       try {
         const summary = {
           id: Date.now(),
@@ -251,22 +204,18 @@ const Demo = () => {
           overallSentiment: result.overallSentiment,
           keyPhrases: result.keyPhrases,
           aspects: result.aspects.slice(0, 5),
-          // Sample a small subset of reviews instead of all reviews
           sampleReviews: result.fileAnalysis.reviews.slice(0, 20)
         };
         
         const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses') || '[]';
         const savedAnalyses = JSON.parse(savedAnalysesStr);
         
-        // Keep only the most recent analyses to avoid storage quota issues
         const updatedAnalyses = [summary, ...savedAnalyses.slice(0, 9)];
         localStorage.setItem('rsa_saved_analyses', JSON.stringify(updatedAnalyses));
         
-        // Also store the current analysis separately for immediate access
         localStorage.setItem('rsa_current_analysis', JSON.stringify(result));
       } catch (storageError) {
         console.warn("Could not save to localStorage:", storageError);
-        // Continue without saving to localStorage
       }
       
       toast({
