@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { CheckCircle, RefreshCcw } from "lucide-react";
@@ -10,11 +11,13 @@ interface ResultProps {
   result: any;
   onSave: () => void;
   onStartOver: () => void;
-  displayMode?: string; // Added displayMode prop as optional
+  displayMode?: string;
 }
 
-const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
+const ReviewResults = ({ result, onSave, onStartOver, displayMode }: ResultProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  
   const sentiment = result?.overallSentiment?.sentiment || 'neutral';
   const score = result?.overallSentiment?.score || 50;
   const keyPhrases = result?.keyPhrases || [];
@@ -30,6 +33,8 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
         title: "Analysis saved",
         description: "Your analysis has been successfully saved to the dashboard.",
       });
+      
+      navigate('/dashboard');
     } catch (error: any) {
       console.error("Error in save handler:", error);
       
@@ -125,7 +130,7 @@ const ReviewResults = ({ result, onSave, onStartOver }: ResultProps) => {
       
       <div className="flex flex-col sm:flex-row justify-center gap-4 pt-4">
         <Button onClick={handleSave} className="bg-blue-500 hover:bg-blue-600">
-          Save to Dashboard
+          Save & View Dashboard
         </Button>
         <Button variant="outline" onClick={onStartOver} className="border-blue-300 text-blue-600 hover:bg-blue-50 dark:border-blue-700 dark:text-blue-400 dark:hover:bg-blue-900/20">
           <RefreshCcw className="h-4 w-4 mr-2" />

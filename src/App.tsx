@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Pricing from "./pages/Pricing";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   const queryClient = new QueryClient();
@@ -52,6 +53,7 @@ const App = () => {
                     <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
                     <Route path="/demo" element={<ProtectedRoute><Demo /></ProtectedRoute>} />
                     <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
+                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     
                     {/* Catch-all route */}
                     <Route path="*" element={<NotFound />} />
