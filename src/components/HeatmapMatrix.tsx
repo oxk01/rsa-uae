@@ -29,8 +29,8 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
       title="Model Evaluation Matrix" 
       className="bg-gradient-to-br from-white via-green-50/30 to-green-100/20 border-green-100"
     >
-      <div className="h-[260px] relative">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="h-[260px] relative flex flex-col items-center justify-center">
+        <ResponsiveContainer width="100%" height="80%">
           <PieChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
             <defs>
               <filter id="matrixShadow">
