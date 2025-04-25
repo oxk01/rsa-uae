@@ -174,38 +174,80 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           This chart shows how sentiment has changed over time, helping identify trends and the impact of any changes or events.
         </p>
         
-        {trendData.length > 1 ? (
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={trendData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="positive" stroke="#4ade80" name="Positive" />
-                <Line type="monotone" dataKey="neutral" stroke="#94a3b8" name="Neutral" />
-                <Line type="monotone" dataKey="negative" stroke="#f87171" name="Negative" />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        ) : (
-          <Card className="p-4 bg-gray-50">
-            <p className="text-gray-500 text-center">Insufficient time-series data for trend analysis.</p>
-          </Card>
-        )}
-        
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart
+              data={trendData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
+              <XAxis 
+                dataKey="date" 
+                angle={-45}
+                textAnchor="end"
+                interval={0}
+                height={60}
+                tick={{ fontSize: 12 }}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                domain={[0, 100]}
+                label={{ 
+                  value: 'Sentiment %', 
+                  angle: -90, 
+                  position: 'insideLeft',
+                  style: { textAnchor: 'middle' }
+                }}
+              />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: 'white',
+                  borderRadius: '8px',
+                  border: '1px solid #e5e7eb',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+                formatter={(value: number) => [`${value}%`]}
+              />
+              <Legend
+                verticalAlign="top"
+                height={36}
+              />
+              <Line
+                type="monotone"
+                dataKey="positive"
+                stroke="#4ade80"
+                strokeWidth={2}
+                name="Positive"
+                dot={{ stroke: '#4ade80', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="neutral"
+                stroke="#94a3b8"
+                strokeWidth={2}
+                name="Neutral"
+                dot={{ stroke: '#94a3b8', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+              />
+              <Line
+                type="monotone"
+                dataKey="negative"
+                stroke="#f87171"
+                strokeWidth={2}
+                name="Negative"
+                dot={{ stroke: '#f87171', strokeWidth: 2, r: 4 }}
+                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+
         {trendData.length > 1 && (
-          <div className="mt-4">
+          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
             <h3 className="text-lg font-medium mb-2">Trend Analysis:</h3>
             <p className="text-gray-700">
-              {trendData[0].positive > trendData[trendData.length-1].positive
-                ? "The data shows a decreasing trend in positive sentiment over time, which may indicate emerging issues that need attention."
-                : "The data shows an improving trend in positive sentiment over time, suggesting that recent changes have been well-received by customers."
-              }
+              {getTrendAnalysis(trendData)}
             </p>
           </div>
         )}
@@ -333,45 +375,47 @@ function getTrendData(analysisData: any) {
   if (!analysisData?.fileAnalysis?.reviews || !analysisData.fileAnalysis.reviews.length) {
     return [];
   }
-  
+
   const reviews = [...analysisData.fileAnalysis.reviews]
-    .sort((a: any, b: any) => {
-      const dateA = new Date(a.date || 0).getTime();
-      const dateB = new Date(b.date || 0).getTime();
-      return dateA - dateB;
+    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  const groupedByDate = reviews.reduce((acc: any, review: any) => {
+    const date = new Date(review.date).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
     });
-  
-  const dateGroups: Record<string, {positive: number, neutral: number, negative: number, count: number}> = {};
-  
-  reviews.forEach((review: any) => {
-    const date = review.date || new Date().toISOString().split('T')[0];
-    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    
-    if (!dateGroups[formattedDate]) {
-      dateGroups[formattedDate] = {positive: 0, neutral: 0, negative: 0, count: 0};
+
+    if (!acc[date]) {
+      acc[date] = {
+        positive: 0,
+        neutral: 0,
+        negative: 0,
+        total: 0
+      };
     }
-    
+
     if (review.sentiment) {
-      if (review.sentiment.positive && review.sentiment.positive > review.sentiment.negative) {
-        dateGroups[formattedDate].positive++;
-      } else if (review.sentiment.negative && review.sentiment.negative > review.sentiment.positive) {
-        dateGroups[formattedDate].negative++;
+      if (review.sentiment.positive > review.sentiment.negative) {
+        acc[date].positive++;
+      } else if (review.sentiment.negative > review.sentiment.positive) {
+        acc[date].negative++;
       } else {
-        dateGroups[formattedDate].neutral++;
+        acc[date].neutral++;
       }
+      acc[date].total++;
     }
-    
-    dateGroups[formattedDate].count++;
-  });
-  
-  return Object.entries(dateGroups).map(([date, data]) => {
-    return {
+
+    return acc;
+  }, {});
+
+  return Object.entries(groupedByDate)
+    .map(([date, counts]: [string, any]) => ({
       date,
-      positive: Math.round((data.positive / data.count) * 100),
-      neutral: Math.round((data.neutral / data.count) * 100),
-      negative: Math.round((data.negative / data.count) * 100)
-    };
-  });
+      positive: Math.round((counts.positive / counts.total) * 100),
+      neutral: Math.round((counts.neutral / counts.total) * 100),
+      negative: Math.round((counts.negative / counts.total) * 100)
+    }));
 }
 
 function getKeywordsData(analysisData: any) {
@@ -484,6 +528,30 @@ function generateRecommendations(analysisData: any) {
   }
   
   return recommendations;
+}
+
+function getTrendAnalysis(trendData: any[]) {
+  if (trendData.length < 2) return '';
+
+  const firstPoint = trendData[0];
+  const lastPoint = trendData[trendData.length - 1];
+  
+  const positiveChange = lastPoint.positive - firstPoint.positive;
+  const negativeChange = lastPoint.negative - firstPoint.negative;
+
+  if (Math.abs(positiveChange) > Math.abs(negativeChange)) {
+    if (positiveChange > 0) {
+      return `There is a positive trend with an increase of ${positiveChange}% in positive sentiment from ${firstPoint.date} to ${lastPoint.date}. This suggests improving customer satisfaction over time.`;
+    } else {
+      return `There is a declining trend with a decrease of ${Math.abs(positiveChange)}% in positive sentiment from ${firstPoint.date} to ${lastPoint.date}. This may indicate areas requiring attention.`;
+    }
+  } else {
+    if (negativeChange > 0) {
+      return `There is an increase in negative sentiment by ${negativeChange}% from ${firstPoint.date} to ${lastPoint.date}. This trend suggests growing customer concerns that should be addressed.`;
+    } else {
+      return `There is a decrease in negative sentiment by ${Math.abs(negativeChange)}% from ${firstPoint.date} to ${lastPoint.date}. This indicates improving customer satisfaction trends.`;
+    }
+  }
 }
 
 export default SentimentReport;
