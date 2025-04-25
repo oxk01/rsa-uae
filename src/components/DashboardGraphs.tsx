@@ -108,23 +108,23 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           </TabsList>
         </div>
         
-        <TabsContent value="charts" className="space-y-6">
+        <TabsContent value="charts" className="space-y-8">
           {/* Row 1: Sentiment Overview and Sentiment Trend */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Sentiment Overview - Pie Chart */}
             <DashboardCard
               title="Overall Sentiment Distribution"
               icon={<PieChartIcon className="h-4 w-4" />}
             >
-              <div className="h-[300px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
+              <div className="h-[320px] flex items-center justify-center">
+                <ResponsiveContainer width="100%" height="100%" className="max-w-[500px] mx-auto">
+                  <PieChart margin={{ top: 15, right: 15, left: 15, bottom: 15 }}>
                     <Pie
                       data={sentimentOverviewData}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
-                      outerRadius={100}
+                      outerRadius={90}
                       fill="#8884d8"
                       paddingAngle={2}
                       dataKey="value"
@@ -136,11 +136,12 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                     </Pie>
                     <Tooltip 
                       formatter={(value, name) => [`${value} reviews`, name]}
+                      wrapperStyle={{ zIndex: 100 }}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex justify-center gap-6 mt-2">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
                   <span className="text-sm">Positive</span>
@@ -161,11 +162,11 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               title="Sentiment Trends Over Time"
               icon={<LineChartIcon className="h-4 w-4" />}
             >
-              <div className="h-[300px]">
+              <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart
                     data={trendData}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 30 }}
+                    margin={{ top: 15, right: 30, left: 0, bottom: 40 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                     <XAxis 
@@ -176,14 +177,14 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                       fontSize={12}
                     />
                     <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip wrapperStyle={{ zIndex: 100 }} />
+                    <Legend verticalAlign="top" height={36} />
                     <Line
                       type="monotone"
                       dataKey="positive"
                       name="Positive"
                       stroke={COLORS.positive}
-                      activeDot={{ r: 8 }}
+                      activeDot={{ r: 6 }}
                       strokeWidth={2}
                     />
                     <Line
@@ -191,7 +192,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                       dataKey="neutral"
                       name="Neutral"
                       stroke={COLORS.neutral}
-                      activeDot={{ r: 8 }}
+                      activeDot={{ r: 6 }}
                       strokeWidth={2}
                     />
                     <Line
@@ -199,7 +200,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                       dataKey="negative"
                       name="Negative"
                       stroke={COLORS.negative}
-                      activeDot={{ r: 8 }}
+                      activeDot={{ r: 6 }}
                       strokeWidth={2}
                     />
                   </LineChart>
@@ -209,18 +210,18 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           </div>
           
           {/* Row 2: Word Cloud and Source Distribution */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Word Cloud */}
             <DashboardCard
               title="Frequent Words in Reviews"
               icon={<Hash className="h-4 w-4" />}
             >
-              <div className="h-[300px] relative">
-                <div className="absolute inset-0 flex flex-wrap justify-center items-center p-4">
-                  {wordCloudData.slice(0, 50).map((word, i) => (
+              <div className="h-[320px] relative overflow-hidden">
+                <div className="absolute inset-0 flex flex-wrap justify-center items-center p-6">
+                  {wordCloudData.slice(0, 40).map((word, i) => (
                     <div
                       key={i}
-                      className="px-2 py-1"
+                      className="px-2 py-1 mb-1"
                       style={{
                         fontSize: `${getWordSize(word.value, maxCount, minCount)}px`,
                         color: getSentimentColor(word.sentiment),
@@ -232,18 +233,18 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                   ))}
                 </div>
               </div>
-              <div className="flex justify-center gap-6 mt-4">
+              <div className="flex justify-center gap-6 mt-2">
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
-                  <span className="text-sm">Positive Words</span>
+                  <span className="text-sm">Positive</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
-                  <span className="text-sm">Neutral Words</span>
+                  <span className="text-sm">Neutral</span>
                 </div>
                 <div className="flex items-center">
                   <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
-                  <span className="text-sm">Negative Words</span>
+                  <span className="text-sm">Negative</span>
                 </div>
               </div>
             </DashboardCard>
@@ -253,17 +254,18 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               title="Sentiment by Platform/Source"
               icon={<BarChart3 className="h-4 w-4" />}
             >
-              <div className="h-[300px]">
+              <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={sourceData}
-                    margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    margin={{ top: 20, right: 15, left: 0, bottom: 20 }}
+                    barSize={30}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
                     <XAxis dataKey="source" />
                     <YAxis />
-                    <Tooltip />
-                    <Legend />
+                    <Tooltip wrapperStyle={{ zIndex: 100 }} />
+                    <Legend verticalAlign="top" height={36} />
                     <Bar 
                       dataKey="positive" 
                       name="Positive" 
@@ -289,34 +291,36 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
           </div>
           
           {/* Row 3: Most Mentioned Aspects and Model Evaluation */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Most Mentioned Aspects - Horizontal Bar Chart */}
             <DashboardCard
               title="Most Mentioned Aspects"
               icon={<BarChart2 className="h-4 w-4" />}
             >
-              <div className="h-[300px]">
+              <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     layout="vertical"
-                    data={mentionedAspectsData}
-                    margin={{ top: 20, right: 30, left: 70, bottom: 5 }}
+                    data={mentionedAspectsData.slice(0, 7)} // Limit to prevent overcrowding
+                    margin={{ top: 5, right: 30, left: 80, bottom: 5 }}
+                    barSize={24}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} horizontal={true} vertical={false} />
                     <XAxis type="number" />
                     <YAxis 
                       dataKey="aspect" 
                       type="category" 
-                      width={60} 
+                      width={70} 
+                      tick={{ fontSize: 12 }}
                     />
-                    <Tooltip />
+                    <Tooltip wrapperStyle={{ zIndex: 100 }} />
                     <Bar 
                       dataKey="count" 
                       name="Mentions" 
                       fill="#8884d8" 
                       radius={[0, 4, 4, 0]}
                     >
-                      {mentionedAspectsData.map((entry, index) => (
+                      {mentionedAspectsData.slice(0, 7).map((entry, index) => (
                         <Cell 
                           key={`cell-${index}`} 
                           fill={COLORS.mentioned[index % COLORS.mentioned.length]} 
@@ -334,19 +338,24 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               title="Model Evaluation"
               icon={<Activity className="h-4 w-4" />}
             >
-              <div className="h-[300px]">
+              <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
                     data={confusionMatrixData}
                     margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                    barSize={30}
                   >
                     <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                    <XAxis dataKey="confidence" />
+                    <XAxis 
+                      dataKey="confidence"
+                      tick={{ fontSize: 12 }}
+                    />
                     <YAxis 
                       label={{ 
                         value: 'Accuracy (%)', 
                         angle: -90, 
-                        position: 'insideLeft' 
+                        position: 'insideLeft',
+                        offset: -5
                       }} 
                     />
                     <Tooltip 
@@ -356,6 +365,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                         }
                         return [`${value}%`, 'Accuracy'];
                       }}
+                      wrapperStyle={{ zIndex: 100 }}
                     />
                     <ReferenceLine y={80} label="Excellent" stroke="#10b981" strokeDasharray="3 3" />
                     <ReferenceLine y={60} label="Good" stroke="#f59e0b" strokeDasharray="3 3" />
@@ -376,14 +386,14 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="text-sm text-gray-500 mt-4">
+              <div className="text-sm text-gray-500 mt-2">
                 <p>Model accuracy evaluation across different confidence levels</p>
               </div>
             </DashboardCard>
           </div>
         </TabsContent>
         
-        <TabsContent value="details" className="space-y-6">
+        <TabsContent value="details" className="space-y-8">
           {/* Aspect-based Sentiment Breakdown - Grouped Bar Chart */}
           <DashboardCard
             title="Aspect-based Sentiment Breakdown"
@@ -393,12 +403,19 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={aspectData}
-                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
+                  barSize={24}
                 >
                   <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
-                  <XAxis dataKey="aspect" />
+                  <XAxis 
+                    dataKey="aspect" 
+                    tick={{ fontSize: 12 }}
+                    angle={-30}
+                    textAnchor="end"
+                    height={60}
+                  />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip wrapperStyle={{ zIndex: 100 }} />
                   <Legend />
                   <Bar 
                     dataKey="positive" 
