@@ -15,7 +15,6 @@ import ChatAssistant from "@/components/ChatAssistant";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import Dashboard from "./pages/Dashboard";
 import Demo from "./pages/Demo";
 import Blog from "./pages/Blog";
 import Contact from "./pages/Contact";
@@ -26,7 +25,6 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Pricing from "./pages/Pricing";
 
 const App = () => {
-  // Create a new QueryClient instance inside the component
   const queryClient = new QueryClient();
 
   return (
@@ -52,7 +50,6 @@ const App = () => {
                     <Route path="/privacy" element={<ProtectedRoute><PrivacyPolicy /></ProtectedRoute>} />
                     <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
                     <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
-                    <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                     <Route path="/demo" element={<ProtectedRoute><Demo /></ProtectedRoute>} />
                     <Route path="/blog" element={<ProtectedRoute><Blog /></ProtectedRoute>} />
                     
