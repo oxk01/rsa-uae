@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -123,7 +122,6 @@ const Dashboard = () => {
           formattedDate = "Unknown";
         }
         
-        // Add null checks for sentiment
         const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
         
         const reviewSnippet = analysis.reviewText 
@@ -162,7 +160,6 @@ const Dashboard = () => {
         });
       } 
       else if (analysis.reviewText) {
-        // Make sure sentiment is defined before using it
         const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
         const sentimentLabel = sentiment.positive > sentiment.negative ? 'positive' : 
           sentiment.negative > sentiment.positive ? 'negative' : 'neutral';
@@ -260,7 +257,6 @@ const Dashboard = () => {
     const keywordsMap: { [key: string]: number } = {};
     
     savedAnalyses.forEach(analysis => {
-      // Add null check for keywords property
       if (analysis.keywords && Array.isArray(analysis.keywords)) {
         analysis.keywords.forEach(keyword => {
           if (keywordsMap[keyword.word]) {
@@ -289,7 +285,6 @@ const Dashboard = () => {
     };
     
     savedAnalyses.forEach(analysis => {
-      // Add null check for keywords property
       if (analysis.keywords && Array.isArray(analysis.keywords)) {
         analysis.keywords.forEach(keyword => {
           if (keyword.word === 'quality' || keyword.word === 'price' || keyword.word === 'service') {
@@ -425,7 +420,6 @@ const Dashboard = () => {
     let totalNegative = 0;
     
     savedAnalyses.forEach(analysis => {
-      // Add null checks for sentiment
       const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
       totalPositive += sentiment.positive || 0;
       totalNeutral += sentiment.neutral || 0;
@@ -447,7 +441,6 @@ const Dashboard = () => {
   const averageAccuracy = calculateAverageAccuracy();
 
   const enhancedReviews = savedAnalyses.map(analysis => {
-    // Add null checks for sentiment
     const sentiment = analysis.sentiment || { positive: 0, neutral: 0, negative: 0 };
     
     let sentimentLabel = "Neutral";
@@ -461,12 +454,16 @@ const Dashboard = () => {
     
     const reviewText = analysis.reviewText || `Analysis for ${analysis.title} with ${analysis.reviewCount} reviews.`;
     
+    const source = analysis.source || (analysis.title && typeof analysis.title === 'string' && analysis.title.includes('.') 
+      ? 'excel' 
+      : 'text');
+    
     return {
       ...analysis,
       sentimentLabel,
       rating,
       reviewText,
-      source: analysis.source || (analysis.title.includes('.') ? 'excel' : 'text')
+      source
     };
   });
 
