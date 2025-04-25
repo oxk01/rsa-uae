@@ -45,20 +45,6 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
               data={data}
               margin={{ top: 10, right: 30, left: 0, bottom: 40 }}
             >
-              <defs>
-                <linearGradient id="colorPositive" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#42b883" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#42b883" stopOpacity={0.2}/>
-                </linearGradient>
-                <linearGradient id="colorNeutral" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#f6c23e" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#f6c23e" stopOpacity={0.2}/>
-                </linearGradient>
-                <linearGradient id="colorNegative" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#e64a3b" stopOpacity={0.8}/>
-                  <stop offset="95%" stopColor="#e64a3b" stopOpacity={0.2}/>
-                </linearGradient>
-              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#eee" vertical={false} />
               <XAxis 
                 dataKey="date" 
@@ -74,6 +60,8 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                 axisLine={{ stroke: '#eee' }}
                 tickLine={false}
                 domain={[0, 100]}
+                tickCount={5}
+                ticks={[0, 25, 50, 75, 100]}
               />
               <Tooltip
                 contentStyle={{ 
@@ -82,49 +70,40 @@ const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
                   border: '1px solid #e5e7eb',
                   boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
                 }}
-                formatter={(value: number, name: string) => {
-                  const formattedName = typeof name === 'string' ? name.charAt(0).toUpperCase() + name.slice(1) : name;
-                  return [`${value}%`, formattedName];
-                }}
+                formatter={(value: number) => [`${value}%`]}
                 labelFormatter={(label) => `Date: ${formatTimestamp(String(label))}`}
               />
               <Legend 
                 verticalAlign="top" 
                 height={36}
-                wrapperStyle={{
-                  fontSize: '14px',
-                  paddingBottom: '10px'
-                }}
+                formatter={(value) => value.charAt(0).toUpperCase() + value.slice(1)}
               />
               <Line
                 type="monotone"
                 dataKey="positive"
+                name="Positive"
                 stroke="#42b883"
                 strokeWidth={2}
                 dot={{ stroke: '#42b883', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, strokeWidth: 0, fill: '#42b883' }}
-                fillOpacity={1}
-                fill="url(#colorPositive)"
               />
               <Line
                 type="monotone"
                 dataKey="neutral"
+                name="Neutral"
                 stroke="#f6c23e"
                 strokeWidth={2}
                 dot={{ stroke: '#f6c23e', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, strokeWidth: 0, fill: '#f6c23e' }}
-                fillOpacity={1}
-                fill="url(#colorNeutral)"
               />
               <Line
                 type="monotone"
                 dataKey="negative"
+                name="Negative"
                 stroke="#e64a3b"
                 strokeWidth={2}
                 dot={{ stroke: '#e64a3b', strokeWidth: 2, r: 4 }}
                 activeDot={{ r: 6, strokeWidth: 0, fill: '#e64a3b' }}
-                fillOpacity={1}
-                fill="url(#colorNegative)"
               />
             </LineChart>
           </ResponsiveContainer>
