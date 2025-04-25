@@ -1,4 +1,3 @@
-
 import * as XLSX from 'xlsx';
 
 export interface ParsedReview {
@@ -62,8 +61,7 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
         const reviews: ParsedReview[] = [];
         const dataRows = jsonData.slice(1);
         
-        // Increase chunk size for better performance with large datasets
-        const CHUNK_SIZE = 2500;
+        const CHUNK_SIZE = 1000;
         let processedCount = 0;
         
         const processChunk = (startIdx: number) => {
@@ -126,8 +124,7 @@ export const parseExcelFile = async (file: File): Promise<ParsedReview[]> => {
           processedCount += (endIdx - startIdx);
           
           if (processedCount < dataRows.length) {
-            // Use requestAnimationFrame for better UI responsiveness during processing
-            requestAnimationFrame(() => processChunk(endIdx));
+            setTimeout(() => processChunk(endIdx), 0);
           } else {
             resolve(reviews);
           }

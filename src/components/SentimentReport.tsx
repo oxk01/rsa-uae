@@ -1,4 +1,5 @@
-import React, { useMemo } from 'react';
+
+import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart, Line } from 'recharts';
@@ -17,6 +18,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     day: 'numeric' 
   });
   
+  // Extract data for charts
   const sentimentData = getSentimentData(analysisData);
   const aspectData = getAspectData(analysisData);
   const trendData = getTrendData(analysisData);
@@ -24,58 +26,19 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const totalReviews = analysisData?.fileAnalysis?.totalReviews || 0;
   const accuracyScore = analysisData?.fileAnalysis?.accuracyScore || 0;
   
+  // Generate insights and recommendations
   const insights = generateInsights(analysisData);
   const recommendations = generateRecommendations(analysisData);
 
-  const processedAspectData = useMemo(() => {
-    if (!analysisData?.fileAnalysis?.aspects) {
-      return [];
-    }
-
-    // Process all aspects without limiting to top 10
-    const aspectGroups = analysisData.fileAnalysis.aspects.reduce((acc: any, aspect: any) => {
-      const name = aspect.name || aspect.aspect || 'Other';
-      if (!acc[name]) {
-        acc[name] = { positive: 0, neutral: 0, negative: 0, total: 0, mentions: [] };
-      }
-      
-      acc[name].total++;
-      acc[name].mentions.push(aspect);
-      
-      const sentiment = aspect.sentiment?.toLowerCase() || 'neutral';
-      switch(sentiment) {
-        case 'positive':
-          acc[name].positive++;
-          break;
-        case 'negative':
-          acc[name].negative++;
-          break;
-        default:
-          acc[name].neutral++;
-      }
-      
-      return acc;
-    }, {});
-
-    return Object.entries(aspectGroups)
-      .map(([name, counts]: [string, any]) => ({
-        name: name.charAt(0).toUpperCase() + name.slice(1),
-        positive: Math.round((counts.positive / counts.total) * 100),
-        neutral: Math.round((counts.neutral / counts.total) * 100),
-        negative: Math.round((counts.negative / counts.total) * 100),
-        total: counts.total,
-        mentions: counts.mentions
-      }))
-      .sort((a, b) => b.total - a.total); // Sort by total mentions
-  }, [analysisData]);
-
   return (
     <div className="p-6 bg-white">
+      {/* Header */}
       <div className="text-center mb-8">
         <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
       
+      {/* Executive Summary */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4">Executive Summary</h2>
         <p className="text-gray-700 mb-4">
@@ -103,6 +66,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
+      {/* Sentiment Distribution */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
           <PieChartIcon className="h-5 w-5 mr-2 text-blue-600" />
@@ -158,194 +122,92 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       
       <Separator className="my-6" />
       
+      {/* Key Insights */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4 flex items-center">
           <BarChart2 className="h-5 w-5 mr-2 text-blue-600" />
-          Aspect-Based Feedback Analysis
+          Aspect-Based Feedback
         </h2>
         <p className="text-gray-700 mb-4">
-          Analysis of {processedAspectData.length} aspects identified from {analysisData?.fileAnalysis?.totalReviews || 0} customer reviews,
-          showing detailed sentiment distribution for each aspect.
+          This section breaks down customer sentiment across different aspects of the product or service.
+          Understanding which aspects receive positive or negative feedback can help prioritize improvements.
         </p>
         
-        <div className="h-[800px] overflow-y-auto pr-4">
-          <ResponsiveContainer width="100%" height={Math.max(400, processedAspectData.length * 50)}>
+        <div className="h-[400px]">
+          <ResponsiveContainer width="100%" height="100%">
             <BarChart
-              data={processedAspectData}
-              margin={{ top: 20, right: 30, left: 160, bottom: 5 }}
-              layout="vertical"
+              data={aspectData}
+              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
             >
-              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-              <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-              <YAxis 
-                dataKey="name" 
-                type="category"
-                width={150}
-                tick={{ fontSize: 12 }}
-              />
-              <Tooltip
-                content={({ active, payload, label }) => {
-                  if (active && payload && payload.length) {
-                    const data = processedAspectData.find(d => d.name === label);
-                    return (
-                      <div className="bg-white p-4 rounded-lg shadow-lg border border-gray-200">
-                        <p className="font-medium text-gray-900 mb-2">{label}</p>
-                        <div className="space-y-1">
-                          <p className="text-sm text-green-600">Positive: {payload[0].value}%</p>
-                          <p className="text-sm text-gray-600">Neutral: {payload[1].value}%</p>
-                          <p className="text-sm text-red-600">Negative: {payload[2].value}%</p>
-                          <p className="text-sm font-medium text-gray-700 mt-2">
-                            Total mentions: {data?.total || 0}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  }
-                  return null;
-                }}
-              />
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
               <Legend />
-              <Bar 
-                dataKey="positive" 
-                name="Positive" 
-                stackId="a" 
-                fill="#4ade80"
-                radius={[4, 0, 0, 4]}
-              />
-              <Bar 
-                dataKey="neutral" 
-                name="Neutral" 
-                stackId="a" 
-                fill="#94a3b8"
-              />
-              <Bar 
-                dataKey="negative" 
-                name="Negative" 
-                stackId="a" 
-                fill="#f87171"
-                radius={[0, 4, 4, 0]}
-              />
+              <Bar dataKey="positive" stackId="a" fill="#4ade80" name="Positive" />
+              <Bar dataKey="neutral" stackId="a" fill="#94a3b8" name="Neutral" />
+              <Bar dataKey="negative" stackId="a" fill="#f87171" name="Negative" />
             </BarChart>
           </ResponsiveContainer>
         </div>
         
-        <div className="mt-6 space-y-4">
-          <h3 className="text-lg font-medium">Key Insights:</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="p-4 bg-green-50 border-green-200">
-              <h4 className="font-medium text-green-800 mb-2">Most Positive Aspects:</h4>
-              <ul className="list-disc pl-5 space-y-2">
-                {processedAspectData
-                  .sort((a, b) => b.positive - a.positive)
-                  .slice(0, 3)
-                  .map((aspect, idx) => (
-                    <li key={idx} className="text-gray-700">
-                      <span className="font-medium">{aspect.name}</span>:{' '}
-                      {aspect.positive}% positive feedback ({aspect.total} mentions)
-                    </li>
-                  ))}
-              </ul>
-            </Card>
-            <Card className="p-4 bg-red-50 border-red-200">
-              <h4 className="font-medium text-red-800 mb-2">Areas for Improvement:</h4>
-              <ul className="list-disc pl-5 space-y-2">
-                {processedAspectData
-                  .sort((a, b) => b.negative - a.negative)
-                  .slice(0, 3)
-                  .map((aspect, idx) => (
-                    <li key={idx} className="text-gray-700">
-                      <span className="font-medium">{aspect.name}</span>:{' '}
-                      {aspect.negative}% negative feedback ({aspect.total} mentions)
-                    </li>
-                  ))}
-              </ul>
-            </Card>
-          </div>
+        <div className="mt-4">
+          <h3 className="text-lg font-medium mb-2">Key Findings:</h3>
+          <ul className="list-disc pl-5 space-y-2 text-gray-700">
+            {aspectData.slice(0, 3).map((aspect, idx) => (
+              <li key={idx}>
+                <span className="font-medium">{aspect.name}:</span>{' '}
+                {aspect.positive > aspect.negative 
+                  ? `Received mostly positive feedback (${aspect.positive}% positive).`
+                  : `Received mostly negative feedback (${aspect.negative}% negative).`
+                }
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
       
       <Separator className="my-6" />
       
+      {/* Trends Over Time */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4">Trends Over Time</h2>
         <p className="text-gray-700 mb-4">
           This chart shows how sentiment has changed over time, helping identify trends and the impact of any changes or events.
         </p>
         
-        <div className="h-[400px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart
-              data={trendData}
-              margin={{ top: 20, right: 30, left: 20, bottom: 60 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" stroke="#eee" />
-              <XAxis 
-                dataKey="date" 
-                angle={-45}
-                textAnchor="end"
-                interval={0}
-                height={60}
-                tick={{ fontSize: 12 }}
-              />
-              <YAxis
-                tick={{ fontSize: 12 }}
-                domain={[0, 100]}
-                label={{ 
-                  value: 'Sentiment %', 
-                  angle: -90, 
-                  position: 'insideLeft',
-                  style: { textAnchor: 'middle' }
-                }}
-              />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: 'white',
-                  borderRadius: '8px',
-                  border: '1px solid #e5e7eb',
-                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-                }}
-                formatter={(value: number) => [`${value}%`]}
-              />
-              <Legend
-                verticalAlign="top"
-                height={36}
-              />
-              <Line
-                type="monotone"
-                dataKey="positive"
-                stroke="#4ade80"
-                strokeWidth={2}
-                name="Positive"
-                dot={{ stroke: '#4ade80', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="neutral"
-                stroke="#94a3b8"
-                strokeWidth={2}
-                name="Neutral"
-                dot={{ stroke: '#94a3b8', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
-              />
-              <Line
-                type="monotone"
-                dataKey="negative"
-                stroke="#f87171"
-                strokeWidth={2}
-                name="Negative"
-                dot={{ stroke: '#f87171', strokeWidth: 2, r: 4 }}
-                activeDot={{ r: 6, stroke: '#fff', strokeWidth: 2 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
+        {trendData.length > 1 ? (
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={trendData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="positive" stroke="#4ade80" name="Positive" />
+                <Line type="monotone" dataKey="neutral" stroke="#94a3b8" name="Neutral" />
+                <Line type="monotone" dataKey="negative" stroke="#f87171" name="Negative" />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <Card className="p-4 bg-gray-50">
+            <p className="text-gray-500 text-center">Insufficient time-series data for trend analysis.</p>
+          </Card>
+        )}
+        
         {trendData.length > 1 && (
-          <div className="mt-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mt-4">
             <h3 className="text-lg font-medium mb-2">Trend Analysis:</h3>
             <p className="text-gray-700">
-              {getTrendAnalysis(trendData)}
+              {trendData[0].positive > trendData[trendData.length-1].positive
+                ? "The data shows a decreasing trend in positive sentiment over time, which may indicate emerging issues that need attention."
+                : "The data shows an improving trend in positive sentiment over time, suggesting that recent changes have been well-received by customers."
+              }
             </p>
           </div>
         )}
@@ -353,6 +215,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       
       <Separator className="my-6" />
       
+      {/* Word Cloud Section */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4">Most Mentioned Keywords</h2>
         <p className="text-gray-700 mb-4">
@@ -380,6 +243,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       
       <Separator className="my-6" />
       
+      {/* Recommendations */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold border-b pb-2 mb-4">Actionable Recommendations</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -412,6 +276,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   );
 };
 
+// Helper functions to extract and format data
 function getSentimentData(analysisData: any) {
   if (!analysisData?.fileAnalysis?.sentimentBreakdown) {
     return [
@@ -432,88 +297,89 @@ function getSentimentData(analysisData: any) {
 
 function getAspectData(analysisData: any) {
   if (!analysisData?.fileAnalysis?.aspects || !analysisData.fileAnalysis.aspects.length) {
-    return [];
+    return [
+      { name: 'Product', positive: 60, neutral: 20, negative: 20 },
+      { name: 'Service', positive: 40, neutral: 30, negative: 30 },
+      { name: 'Price', positive: 30, neutral: 20, negative: 50 }
+    ];
   }
   
-  const aspectGroups = analysisData.fileAnalysis.aspects.reduce((acc: any, aspect: any) => {
-    const name = aspect.aspect || aspect.name || 'Other';
-    if (!acc[name]) {
-      acc[name] = { positive: 0, neutral: 0, negative: 0, total: 0 };
-    }
-    
-    const count = aspect.count || 1;
-    acc[name].total += count;
-    
-    switch(aspect.sentiment?.toLowerCase()) {
-      case 'positive':
-        acc[name].positive += count;
-        break;
-      case 'negative':
-        acc[name].negative += count;
-        break;
-      default:
-        acc[name].neutral += count;
-        break;
-    }
-    
-    return acc;
-  }, {});
+  const aspectCounts: Record<string, {positive: number, neutral: number, negative: number}> = {};
+  const aspects = analysisData.fileAnalysis.aspects;
   
-  return Object.entries(aspectGroups)
-    .map(([name, counts]: [string, any]) => ({
+  // Group by aspect name and count sentiments
+  aspects.forEach((aspect: any) => {
+    const name = aspect.aspect || aspect.name || 'Other';
+    if (!aspectCounts[name]) {
+      aspectCounts[name] = {positive: 0, neutral: 0, negative: 0};
+    }
+    
+    if (aspect.sentiment === 'positive') {
+      aspectCounts[name].positive += aspect.count || 1;
+    } else if (aspect.sentiment === 'negative') {
+      aspectCounts[name].negative += aspect.count || 1;
+    } else {
+      aspectCounts[name].neutral += aspect.count || 1;
+    }
+  });
+  
+  // Convert to array and calculate percentages
+  return Object.entries(aspectCounts).map(([name, counts]) => {
+    const total = counts.positive + counts.neutral + counts.negative;
+    return {
       name,
-      positive: Math.round((counts.positive / counts.total) * 100),
-      neutral: Math.round((counts.neutral / counts.total) * 100),
-      negative: Math.round((counts.negative / counts.total) * 100)
-    }))
-    .sort((a, b) => b.positive - a.positive);
+      positive: Math.round((counts.positive / total) * 100),
+      neutral: Math.round((counts.neutral / total) * 100),
+      negative: Math.round((counts.negative / total) * 100)
+    };
+  });
 }
 
 function getTrendData(analysisData: any) {
   if (!analysisData?.fileAnalysis?.reviews || !analysisData.fileAnalysis.reviews.length) {
     return [];
   }
-
+  
   const reviews = [...analysisData.fileAnalysis.reviews]
-    .sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
-
-  const groupedByDate = reviews.reduce((acc: any, review: any) => {
-    const date = new Date(review.date).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    .sort((a: any, b: any) => {
+      const dateA = new Date(a.date || 0).getTime();
+      const dateB = new Date(b.date || 0).getTime();
+      return dateA - dateB;
     });
-
-    if (!acc[date]) {
-      acc[date] = {
-        positive: 0,
-        neutral: 0,
-        negative: 0,
-        total: 0
-      };
+  
+  // Group by date
+  const dateGroups: Record<string, {positive: number, neutral: number, negative: number, count: number}> = {};
+  
+  reviews.forEach((review: any) => {
+    const date = review.date || new Date().toISOString().split('T')[0];
+    const formattedDate = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    
+    if (!dateGroups[formattedDate]) {
+      dateGroups[formattedDate] = {positive: 0, neutral: 0, negative: 0, count: 0};
     }
-
+    
     if (review.sentiment) {
-      if (review.sentiment.positive > review.sentiment.negative) {
-        acc[date].positive++;
-      } else if (review.sentiment.negative > review.sentiment.positive) {
-        acc[date].negative++;
+      if (review.sentiment.positive && review.sentiment.positive > review.sentiment.negative) {
+        dateGroups[formattedDate].positive++;
+      } else if (review.sentiment.negative && review.sentiment.negative > review.sentiment.positive) {
+        dateGroups[formattedDate].negative++;
       } else {
-        acc[date].neutral++;
+        dateGroups[formattedDate].neutral++;
       }
-      acc[date].total++;
     }
-
-    return acc;
-  }, {});
-
-  return Object.entries(groupedByDate)
-    .map(([date, counts]: [string, any]) => ({
+    
+    dateGroups[formattedDate].count++;
+  });
+  
+  // Convert to array and calculate percentages
+  return Object.entries(dateGroups).map(([date, data]) => {
+    return {
       date,
-      positive: Math.round((counts.positive / counts.total) * 100),
-      neutral: Math.round((counts.neutral / counts.total) * 100),
-      negative: Math.round((counts.negative / counts.total) * 100)
-    }));
+      positive: Math.round((data.positive / data.count) * 100),
+      neutral: Math.round((data.neutral / data.count) * 100),
+      negative: Math.round((data.negative / data.count) * 100)
+    };
+  });
 }
 
 function getKeywordsData(analysisData: any) {
@@ -542,6 +408,7 @@ function generateInsights(analysisData: any) {
     return ["No data available for insights."];
   }
   
+  // Overall sentiment insight
   const sentimentBreakdown = analysisData.fileAnalysis.sentimentBreakdown || {};
   if (sentimentBreakdown.positive > sentimentBreakdown.negative) {
     insights.push(`Overall positive sentiment with ${sentimentBreakdown.positive || 0}% of reviews being positive, indicating general customer satisfaction.`);
@@ -551,6 +418,7 @@ function generateInsights(analysisData: any) {
     insights.push(`Mixed sentiment with ${sentimentBreakdown.positive || 0}% positive, ${sentimentBreakdown.negative || 0}% negative, indicating varied customer experiences.`);
   }
   
+  // Aspect insights
   const aspects = analysisData.fileAnalysis.aspects || [];
   if (aspects.length > 0) {
     const positiveAspects = aspects.filter((a: any) => a.sentiment === 'positive');
@@ -575,11 +443,13 @@ function generateInsights(analysisData: any) {
     }
   }
   
+  // Add accuracy insight
   const accuracyScore = analysisData.fileAnalysis.accuracyScore || 0;
   if (accuracyScore > 0) {
     insights.push(`The sentiment analysis model achieved ${accuracyScore}% accuracy in detecting sentiment patterns.`);
   }
   
+  // Ensure we have at least 3 insights
   if (insights.length < 3) {
     insights.push("Regular monitoring of customer feedback can help identify emerging trends and issues.");
   }
@@ -594,6 +464,7 @@ function generateRecommendations(analysisData: any) {
     return ["Collect more customer feedback to generate specific recommendations."];
   }
   
+  // Aspect-based recommendations
   const aspects = analysisData.fileAnalysis.aspects || [];
   if (aspects.length > 0) {
     const negativeAspects = aspects
@@ -609,6 +480,7 @@ function generateRecommendations(analysisData: any) {
     }
   }
   
+  // Overall sentiment recommendations
   const sentimentBreakdown = analysisData.fileAnalysis.sentimentBreakdown || {};
   if (sentimentBreakdown.negative > 30) {
     recommendations.push("Implement a customer feedback loop to promptly address concerns and improve satisfaction.");
@@ -620,36 +492,13 @@ function generateRecommendations(analysisData: any) {
     recommendations.push("Leverage positive customer sentiment in marketing materials and testimonials.");
   }
   
+  // Ensure we have at least 3 recommendations
   if (recommendations.length < 3) {
     recommendations.push("Establish a regular reporting cadence to track sentiment trends over time.");
     recommendations.push("Implement targeted improvements based on the most frequently mentioned negative aspects.");
   }
   
   return recommendations;
-}
-
-function getTrendAnalysis(trendData: any[]) {
-  if (trendData.length < 2) return '';
-
-  const firstPoint = trendData[0];
-  const lastPoint = trendData[trendData.length - 1];
-  
-  const positiveChange = lastPoint.positive - firstPoint.positive;
-  const negativeChange = lastPoint.negative - firstPoint.negative;
-
-  if (Math.abs(positiveChange) > Math.abs(negativeChange)) {
-    if (positiveChange > 0) {
-      return `There is a positive trend with an increase of ${positiveChange}% in positive sentiment from ${firstPoint.date} to ${lastPoint.date}. This suggests improving customer satisfaction over time.`;
-    } else {
-      return `There is a declining trend with a decrease of ${Math.abs(positiveChange)}% in positive sentiment from ${firstPoint.date} to ${lastPoint.date}. This may indicate areas requiring attention.`;
-    }
-  } else {
-    if (negativeChange > 0) {
-      return `There is an increase in negative sentiment by ${negativeChange}% from ${firstPoint.date} to ${lastPoint.date}. This trend suggests growing customer concerns that should be addressed.`;
-    } else {
-      return `There is a decrease in negative sentiment by ${Math.abs(negativeChange)}% from ${firstPoint.date} to ${lastPoint.date}. This indicates improving customer satisfaction trends.`;
-    }
-  }
 }
 
 export default SentimentReport;

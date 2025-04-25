@@ -12,18 +12,11 @@ interface WordCloudProps {
 
 const WordCloudVisualization = ({ data }: WordCloudProps) => {
   const formattedData = useMemo(() => {
-    // Limit the number of words for better performance and visualization
-    const maxWords = 150;
-    
-    // Sort by value and take only the top words
-    return data
-      .sort((a, b) => b.value - a.value)
-      .slice(0, maxWords)
-      .map(item => ({
-        text: item.text,
-        value: item.value,
-        color: getSentimentColor(item.sentiment || 'neutral')
-      }));
+    return data.map(item => ({
+      text: item.text,
+      value: item.value,
+      color: getSentimentColor(item.sentiment || 'neutral')
+    }));
   }, [data]);
 
   const options = {
@@ -34,15 +27,12 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
     fontSizes: [12, 80] as [number, number],
     fontStyle: 'normal',
     fontWeight: 'normal',
-    padding: 3,
+    padding: 2,
     rotations: 3,
     rotationAngles: [0, 90] as [number, number],
     scale: 'sqrt' as const,
     spiral: 'archimedean' as const,
-    transitionDuration: 1000,
-    // Add some additional options for better performance with large datasets
-    random: Math.random,
-    rotateRatio: 0.5,
+    transitionDuration: 1000
   };
 
   const getWordColor = (word: any) => word.color || '#3b82f6';
@@ -56,7 +46,6 @@ const WordCloudVisualization = ({ data }: WordCloudProps) => {
           callbacks={{
             getWordColor
           }}
-          maxWords={150} // Limit the number of words rendered
         />
       ) : (
         <div className="h-full flex items-center justify-center">
