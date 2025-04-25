@@ -10,40 +10,10 @@ import {
   analyzeSentiment, 
   extractKeywords, 
   extractAspects, 
-  ParsedReview 
+  ParsedReview,
+  KeywordItem,
+  Review
 } from '@/utils/excelParser';
-import { KeywordItem, Review } from '@/components/RecentReviews/types';
-
-const analyzeSentimentForText = async (text: string) => {
-  await new Promise(resolve => setTimeout(resolve, 1500)); 
-  
-  const { sentiment, score, accuracy } = analyzeSentiment(text);
-  
-  const aspects = extractAspects(text, sentiment);
-  
-  const keywords = extractKeywords(text, sentiment);
-  const keyPhrasesText = keywords.map(keyword => keyword.word);
-  
-  return {
-    text,
-    overallSentiment: {
-      sentiment,
-      score
-    },
-    aspects: aspects,
-    keyPhrases: keyPhrasesText,
-    fileAnalysis: {
-      totalReviews: 1,
-      sentimentBreakdown: {
-        positive: sentiment === 'positive' ? 1 : 0,
-        neutral: sentiment === 'neutral' ? 1 : 0,
-        negative: sentiment === 'negative' ? 1 : 0
-      },
-      isRealData: true,
-      accuracyScore: accuracy
-    }
-  };
-};
 
 const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, status: string) => void) => {
   try {
@@ -233,27 +203,18 @@ const analyzeFile = async (file: File, onProgressUpdate?: (progress: number, sta
 type AnalysisState = 'input' | 'analyzing' | 'results';
 
 const Demo = () => {
-  const [reviewText, setReviewText] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [analysisState, setAnalysisState] = useState<AnalysisState>('input');
   const [analysisResult, setAnalysisResult] = useState<any>(null);
-  const [characterCount, setCharacterCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const [status, setStatus] = useState('');
   const { toast } = useToast();
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   
-  const handleReviewChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    setReviewText(text);
-    setCharacterCount(text.length);
-  };
-  
   const handleFileChange = (file: File | null) => {
     if (file) {
       setFile(file);
-      setReviewText('');
       toast({
         title: "File uploaded",
         description: `${file.name} has been uploaded for analysis. Ready to process all data points.`,
@@ -267,10 +228,10 @@ const Demo = () => {
   };
   
   const handleAnalyze = async () => {
-    if (!reviewText && !file) {
+    if (!file) {
       toast({
         title: "Input required",
-        description: "Please enter a review or upload a file to analyze.",
+        description: "Please upload a file to analyze.",
         variant: "destructive",
       });
       return;
@@ -281,26 +242,14 @@ const Demo = () => {
     setStatus('Starting analysis...');
     
     try {
-      let result;
-      
-      if (file) {
-        result = await analyzeFile(file, handleProgressUpdate);
-      } else {
-        setProgress(50);
-        setStatus('Analyzing review text...');
-        result = await analyzeSentimentForText(reviewText);
-        setProgress(100);
-        setStatus('Analysis complete!');
-      }
+      const result = await analyzeFile(file, handleProgressUpdate);
       
       setAnalysisResult(result);
       setAnalysisState('results');
       
       toast({
         title: "Analysis complete",
-        description: file 
-          ? `Successfully analyzed ${result.fileAnalysis.totalReviews} reviews with ${result.fileAnalysis.accuracyScore}% accuracy.` 
-          : `Review analysis complete with ${result.fileAnalysis.accuracyScore}% accuracy.`,
+        description: `Successfully analyzed ${result.fileAnalysis.totalReviews} reviews with ${result.fileAnalysis.accuracyScore}% accuracy.`,
       });
     } catch (error) {
       console.error("Analysis error:", error);
@@ -313,144 +262,8 @@ const Demo = () => {
     }
   };
   
-  const handleSaveToDashboard = () => {
-    try {
-      let savedAnalyses = [];
-      try {
-        const savedAnalysesStr = localStorage.getItem('rsa_saved_analyses');
-        if (savedAnalysesStr) {
-          savedAnalyses = JSON.parse(savedAnalysesStr);
-          
-          if (!Array.isArray(savedAnalyses)) {
-            console.error("Saved analyses is not an array:", savedAnalyses);
-            savedAnalyses = [];
-          }
-        }
-      } catch (parseError) {
-        console.error("Error parsing saved analyses from localStorage:", parseError);
-        savedAnalyses = [];
-      }
-      
-      const MAX_ANALYSES = 50;  // Maximum number of individual reviews to store
-      const MAX_BATCH_SIZE = 10; // Maximum number of reviews to save at once from a file
-      
-      if (file && analysisResult?.fileAnalysis?.reviews) {
-        const fileReviews = analysisResult.fileAnalysis.reviews as Review[];
-        const reviewsToSave = fileReviews.slice(0, MAX_BATCH_SIZE);
-        
-        const newAnalyses = reviewsToSave.map((review: any) => ({
-          id: Date.now() + Math.random(),
-          title: review.title || file.name,
-          date: new Date().toISOString().split('T')[0],
-          reviewCount: 1,
-          sentiment: review.sentiment || {
-            positive: 0,
-            neutral: 0,
-            negative: 0
-          },
-          keywords: review.keywords?.slice(0, 5) || [],
-          reviewText: review.reviewText?.substring(0, 500) || "",
-          source: 'excel',
-          rating: review.rating || "0/5",
-          sentimentLabel: review.sentimentLabel || "neutral",
-          accuracyScore: review.accuracyScore || analysisResult.fileAnalysis.accuracyScore || 0
-        }));
-        
-        const overallAnalysis = {
-          id: Date.now(),
-          title: file.name,
-          date: new Date().toISOString().split('T')[0],
-          reviewCount: analysisResult.fileAnalysis.totalReviews || 0,
-          dataPoints: analysisResult.fileAnalysis.dataPoints || analysisResult.fileAnalysis.totalReviews || 0,
-          sentiment: analysisResult.fileAnalysis.sentimentBreakdown || {
-            positive: 0,
-            neutral: 0, 
-            negative: 0
-          },
-          keywords: (analysisResult.keyPhrases || []).slice(0, 5).map((phrase: string) => ({
-            word: phrase,
-            sentiment: analysisResult.overallSentiment?.sentiment || "neutral",
-            count: 1
-          })),
-          accuracyScore: analysisResult.fileAnalysis.accuracyScore || 0
-        };
-        
-        savedAnalyses = [overallAnalysis, ...newAnalyses, ...savedAnalyses.slice(0, MAX_ANALYSES - newAnalyses.length - 1)];
-      } else {
-        const newAnalysis = {
-          id: Date.now(),
-          title: file ? file.name : `Review Analysis ${new Date().toLocaleDateString()}`,
-          date: new Date().toISOString().split('T')[0],
-          reviewCount: analysisResult?.fileAnalysis?.totalReviews || 1,
-          sentiment: analysisResult?.fileAnalysis?.sentimentBreakdown || {
-            positive: analysisResult?.overallSentiment?.sentiment === 'positive' ? 100 : 0,
-            neutral: analysisResult?.overallSentiment?.sentiment === 'neutral' ? 100 : 0,
-            negative: analysisResult?.overallSentiment?.sentiment === 'negative' ? 100 : 0
-          },
-          keywords: (analysisResult?.keyPhrases || []).slice(0, 5).map((phrase: string) => ({
-            word: phrase,
-            sentiment: analysisResult?.overallSentiment?.sentiment || "neutral",
-            count: 1
-          })),
-          reviewText: reviewText?.substring(0, 500) || "",
-          source: 'text',
-          accuracyScore: analysisResult?.fileAnalysis?.accuracyScore || 0
-        };
-        
-        savedAnalyses.unshift(newAnalysis);
-      }
-      
-      try {
-        const dataString = JSON.stringify(savedAnalyses);
-        const estimatedSize = new Blob([dataString]).size;
-        
-        if (estimatedSize > 4 * 1024 * 1024) {
-          const reducedAnalyses = savedAnalyses.slice(0, Math.max(5, Math.floor(savedAnalyses.length / 2)));
-          localStorage.setItem('rsa_saved_analyses', JSON.stringify(reducedAnalyses));
-          
-          toast({
-            title: "Storage limit reached",
-            description: "Some older analyses were removed to make space for new ones.",
-          });
-        } else {
-          localStorage.setItem('rsa_saved_analyses', dataString);
-        }
-      } catch (storageError) {
-        console.error("Storage error:", storageError);
-        
-        try {
-          const minimalSave = [savedAnalyses[0]];
-          localStorage.setItem('rsa_saved_analyses', JSON.stringify(minimalSave));
-          
-          toast({
-            title: "Storage limit reached",
-            description: "Only the most recent analysis could be saved. Previous analyses were removed.",
-          });
-        } catch (finalError) {
-          throw new Error("Cannot save any data - storage completely full");
-        }
-      }
-      
-      toast({
-        title: "Analysis saved",
-        description: file ? 
-          `${Math.min(MAX_BATCH_SIZE, analysisResult?.fileAnalysis?.totalReviews || 0)} reviews from the file have been saved to your dashboard.` : 
-          "Your analysis has been saved to your dashboard.",
-      });
-      
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 1000);
-    } catch (error) {
-      console.error("Error saving to dashboard:", error);
-      
-      throw error;
-    }
-  };
-  
   const handleStartOver = () => {
     setAnalysisState('input');
-    setReviewText('');
     setFile(null);
     setAnalysisResult(null);
     setProgress(0);
@@ -465,9 +278,6 @@ const Demo = () => {
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {analysisState === 'input' && (
             <ReviewInput 
-              reviewText={reviewText}
-              onReviewChange={handleReviewChange}
-              characterCount={characterCount}
               onFileChange={handleFileChange}
               onAnalyze={handleAnalyze}
               file={file}
@@ -481,9 +291,9 @@ const Demo = () => {
           {analysisState === 'results' && analysisResult && (
             <ReviewResults 
               result={analysisResult}
-              onSave={handleSaveToDashboard}
+              onSave={() => {}} // We'll remove save functionality if not needed
               onStartOver={handleStartOver}
-              displayMode={file && analysisResult.fileAnalysis.totalReviews > 10 ? 'table' : 'cards'}
+              displayMode="table"
             />
           )}
         </div>
