@@ -61,9 +61,10 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       // Get all sections to process them separately for better page breaks
       const sections = reportElement.querySelectorAll('section');
       let yOffset = 15; // Start with some margin
+      let pageNumber = 1;
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 10; // margin in mm
+      const margin = 15; // Increased margin for better spacing
       const contentWidth = pageWidth - (margin * 2);
       
       // Add title to first page
@@ -77,18 +78,27 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           year: 'numeric', month: 'long', day: 'numeric' 
         })}`;
         pdf.text(dateText, pageWidth / 2, yOffset + 8, { align: 'center' });
-        yOffset += 20;
+        yOffset += 25; // Increased spacing after title
       }
       
-      // Process each section separately
+      // Add page number to first page
+      pdf.setFontSize(10);
+      pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+      
+      // Process each section separately - one section per page
       for (let i = 0; i < sections.length; i++) {
-        // Check if we need to add a new page
+        // Start each section on a new page (except the first section which follows the title)
         if (i > 0) {
           pdf.addPage();
+          pageNumber++;
           yOffset = 15; // Reset y position for new page
+          
+          // Add page number
+          pdf.setFontSize(10);
+          pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
         }
         
-        const section = sections[i];
+        const section = sections[i] as HTMLElement;
         
         // Add section title
         const sectionTitle = section.querySelector('h2');
@@ -96,12 +106,12 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           pdf.setFontSize(16);
           pdf.setFont('helvetica', 'bold');
           pdf.text(sectionTitle.textContent || '', margin, yOffset);
-          yOffset += 10;
+          yOffset += 12; // Increased spacing after section title
           pdf.setFont('helvetica', 'normal');
           pdf.setFontSize(12);
         }
         
-        // Capture each section as an image
+        // Capture each section as an image, excluding the title which we've already added
         const canvas = await html2canvas(section, {
           scale: 2,
           logging: false,
@@ -116,15 +126,19 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         const imgWidth = contentWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Check if image fits on current page, if not add a new page
-        if (yOffset + imgHeight > pageHeight - margin) {
-          pdf.addPage();
-          yOffset = margin;
+        // Scale down the image if it's too tall for the page
+        const availableHeight = pageHeight - yOffset - margin - 15; // 15px for footer/page number
+        let finalImgHeight = imgHeight;
+        let finalImgWidth = imgWidth;
+        
+        if (imgHeight > availableHeight) {
+          const scaleFactor = availableHeight / imgHeight;
+          finalImgHeight = imgHeight * scaleFactor;
+          finalImgWidth = imgWidth * scaleFactor;
         }
         
         // Add image to page
-        pdf.addImage(imgData, 'PNG', margin, yOffset, imgWidth, imgHeight);
-        yOffset += imgHeight + 10; // Add some space after the image
+        pdf.addImage(imgData, 'PNG', margin, yOffset, finalImgWidth, finalImgHeight);
       }
       
       pdf.save('sentiment_analysis_report.pdf');
