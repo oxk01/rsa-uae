@@ -239,68 +239,116 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             * {
               -webkit-print-color-adjust: exact !important;
               print-color-adjust: exact !important;
+              color-adjust: exact !important;
             }
             
+            /* Document structure */
             #sentiment-report-content {
               padding: 0 !important;
               margin: 0 !important;
+              font-family: "Times New Roman", serif !important;
+              line-height: 1.5 !important;
             }
             
             /* Section spacing and layout */
             section {
               page-break-inside: avoid;
               break-inside: avoid;
-              margin-bottom: 2.5rem !important;
+              margin-bottom: 3rem !important;
               clear: both;
+              padding: 0.5rem 0 !important;
             }
             
             /* Typography */
             h1 {
               font-size: 24pt !important;
-              margin-bottom: 1rem !important;
+              font-weight: bold !important;
+              margin: 2rem 0 1.5rem !important;
+              color: #1a365d !important;
+              text-align: center !important;
             }
             
             h2 {
               font-size: 18pt !important;
-              margin-top: 1.5rem !important;
-              margin-bottom: 1rem !important;
-              color: #1e40af !important;
+              font-weight: bold !important;
+              margin: 2rem 0 1rem !important;
+              color: #1a365d !important;
               page-break-after: avoid;
             }
             
-            p, ul {
-              font-size: 11pt !important;
-              line-height: 1.5 !important;
-              margin-bottom: 0.75rem !important;
+            h3 {
+              font-size: 16pt !important;
+              font-weight: bold !important;
+              margin: 1.5rem 0 0.75rem !important;
+              color: #1a365d !important;
+            }
+            
+            p, ul, ol {
+              font-size: 12pt !important;
+              line-height: 1.6 !important;
+              margin: 0.75rem 0 !important;
+              color: #1f2937 !important;
+            }
+            
+            ul, ol {
+              padding-left: 1.5rem !important;
+            }
+            
+            li {
+              margin-bottom: 0.5rem !important;
             }
             
             /* Card and container formatting */
             .card {
               break-inside: avoid;
-              margin-bottom: 1.5rem !important;
+              margin: 1.5rem 0 !important;
+              padding: 1.5rem !important;
               border: 1px solid #e5e7eb !important;
-              padding: 1rem !important;
+              background-color: #ffffff !important;
+              box-shadow: none !important;
             }
             
+            /* Chart containers */
+            .chart-container {
+              page-break-inside: avoid;
+              margin: 2rem 0 !important;
+              min-height: 300px !important;
+            }
+            
+            /* Tables */
+            table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+              margin: 1.5rem 0 !important;
+              page-break-inside: avoid;
+            }
+            
+            th, td {
+              padding: 0.75rem !important;
+              border: 1px solid #e5e7eb !important;
+              text-align: left !important;
+            }
+            
+            th {
+              background-color: #f3f4f6 !important;
+              font-weight: bold !important;
+            }
+            
+            /* Images and visualizations */
+            img, svg {
+              max-width: 100% !important;
+              height: auto !important;
+              margin: 1rem 0 !important;
+              page-break-inside: avoid;
+            }
+            
+            /* Grid layouts */
             .grid {
               display: block !important;
             }
             
             .grid > * {
-              margin-bottom: 2rem !important;
               width: 100% !important;
-            }
-            
-            /* Chart and visualization containers */
-            .chart-container {
-              page-break-inside: avoid;
-              margin: 1.5rem 0 !important;
-              height: auto !important;
-              min-height: 300px !important;
-            }
-            
-            /* Ensure proper spacing between sections */
-            .mb-8, .mb-12 {
               margin-bottom: 2rem !important;
             }
             
@@ -309,27 +357,24 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
               display: none !important;
             }
             
-            /* Ensure proper image handling */
-            img, svg {
-              max-width: 100% !important;
-              height: auto !important;
-            }
-            
-            /* Table formatting */
-            table {
-              width: 100% !important;
-              border-collapse: collapse !important;
-              margin-bottom: 1.5rem !important;
-            }
-            
-            th, td {
-              padding: 0.5rem !important;
-              border: 1px solid #e5e7eb !important;
-            }
-            
-            /* Ensure text remains readable */
+            /* Ensure proper text colors */
             .text-gray-500, .text-gray-600, .text-gray-700 {
-              color: #374151 !important;
+              color: #1f2937 !important;
+            }
+            
+            /* Page breaks */
+            .page-break-before {
+              page-break-before: always !important;
+            }
+            
+            .page-break-after {
+              page-break-after: always !important;
+            }
+            
+            /* Links */
+            a {
+              text-decoration: none !important;
+              color: #1a365d !important;
             }
           }
         `}

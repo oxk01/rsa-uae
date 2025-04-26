@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import SentimentReport from './SentimentReport';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
+import { pdfStyles } from '@/styles/pdfStyles';
 
 interface GenerateReportButtonProps {
   analysisData: any;
@@ -58,39 +59,48 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = {
-        top: 20,
-        bottom: 20,
-        left: 20,
-        right: 20
+        top: 25,
+        bottom: 25,
+        left: 25,
+        right: 25
       };
       const contentWidth = pageWidth - (margin.left + margin.right);
       
       pdf.setProperties({
         title: 'Sentiment Analysis Report',
         subject: 'Analysis Results',
-        creator: 'Sentiment Analysis Tool'
+        creator: 'Sentiment Analysis Tool',
+        author: 'Report Generator'
       });
       
       let yOffset = margin.top;
       let pageNumber = 1;
-      
-      pdf.setFont('helvetica', 'bold');
-      pdf.setFontSize(20);
-      
-      const title = 'Sentiment Analysis Report';
-      pdf.text(title, pageWidth / 2, yOffset, { align: 'center' });
-      yOffset += 10;
-      
-      pdf.setFont('helvetica', 'normal');
-      pdf.setFontSize(12);
-      const dateText = `Generated on ${new Date().toLocaleDateString()}`;
-      pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
-      yOffset += 20;
+
+      const setupPage = () => {
+        pdf.setFont(pdfStyles.fonts.normal);
+        pdf.setFontSize(pdfStyles.sizes.body);
+        pdf.setTextColor(pdfStyles.colors.text);
+      };
       
       const addPageNumber = (pageNum: number) => {
-        pdf.setFontSize(10);
-        pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - margin.bottom, { align: 'right' });
+        pdf.setFontSize(pdfStyles.sizes.caption);
+        pdf.setTextColor(pdfStyles.colors.subtext);
+        pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - (margin.bottom / 2), { align: 'right' });
       };
+
+      pdf.setFont(pdfStyles.fonts.bold);
+      pdf.setFontSize(pdfStyles.sizes.title);
+      pdf.setTextColor(pdfStyles.colors.primary);
+      pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
+      
+      yOffset += pdfStyles.spacing.headerMargin;
+      pdf.setFont(pdfStyles.fonts.normal);
+      pdf.setFontSize(pdfStyles.sizes.body);
+      pdf.setTextColor(pdfStyles.colors.subtext);
+      const dateText = `Generated on ${new Date().toLocaleDateString()}`;
+      pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
+      yOffset += pdfStyles.spacing.sectionMargin;
+      
       addPageNumber(pageNumber);
       
       const sections = reportElement.querySelectorAll('section');
@@ -99,16 +109,17 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           pdf.addPage();
           pageNumber++;
           yOffset = margin.top;
+          setupPage();
           addPageNumber(pageNumber);
         }
         
         const title = section.querySelector('h2');
         if (title) {
-          pdf.setFont('helvetica', 'bold');
-          pdf.setFontSize(16);
+          pdf.setFont(pdfStyles.fonts.bold);
+          pdf.setFontSize(pdfStyles.sizes.sectionHeader);
+          pdf.setTextColor(pdfStyles.colors.primary);
           pdf.text(title.textContent || '', margin.left, yOffset);
-          yOffset += 15;
-          pdf.setFont('helvetica', 'normal');
+          yOffset += pdfStyles.spacing.headerMargin;
         }
         
         const canvas = await html2canvas(section, {
@@ -127,12 +138,12 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         
         if (yOffset + imgHeight > pageHeight - margin.bottom) {
           const availableHeight = pageHeight - margin.bottom - yOffset;
-          const scaleFactor = availableHeight / imgHeight;
           
-          if (scaleFactor < 0.5) {
+          if (availableHeight < imgHeight * 0.3) {
             pdf.addPage();
             pageNumber++;
             yOffset = margin.top;
+            setupPage();
             addPageNumber(pageNumber);
           } else {
             imgWidth *= scaleFactor;
@@ -146,10 +157,12 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           margin.left,
           yOffset,
           imgWidth,
-          imgHeight
+          imgHeight,
+          undefined,
+          'FAST'
         );
         
-        yOffset += imgHeight + 20;
+        yOffset += imgHeight + pdfStyles.spacing.sectionMargin;
       }
       
       pdf.save('sentiment_analysis_report.pdf');
