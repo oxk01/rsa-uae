@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -30,7 +29,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
     
     setIsGenerating(true);
     
-    // Simulate report generation time
     setTimeout(() => {
       setIsGenerating(false);
       setShowReport(true);
@@ -51,94 +49,81 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       const reportElement = document.getElementById('sentiment-report');
       if (!reportElement) return;
       
-      // Define PDF options
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
         format: 'a4',
       });
       
-      // Get all sections to process them separately for better page breaks
       const sections = reportElement.querySelectorAll('section');
-      let yOffset = 15; // Start with some margin
+      let yOffset = 20;
       let pageNumber = 1;
+      
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 15; // Increased margin for better spacing
-      const contentWidth = pageWidth - (margin * 2);
+      const margin = 20;
+      const contentWidth = pageWidth - (2 * margin);
       
-      // Add title to first page
-      const titleElement = reportElement.querySelector('h1');
-      if (titleElement) {
-        pdf.setFontSize(18);
-        pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
-        
-        pdf.setFontSize(12);
-        const dateText = `Generated on ${new Date().toLocaleDateString('en-US', { 
-          year: 'numeric', month: 'long', day: 'numeric' 
-        })}`;
-        pdf.text(dateText, pageWidth / 2, yOffset + 8, { align: 'center' });
-        yOffset += 25; // Increased spacing after title
-      }
+      pdf.setFontSize(20);
+      pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
+      yOffset += 10;
       
-      // Add page number to first page
-      pdf.setFontSize(10);
-      pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+      pdf.setFontSize(12);
+      const dateText = `Generated on ${new Date().toLocaleDateString()}`;
+      pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
+      yOffset += 20;
       
-      // Process each section separately - one section per page
-      for (let i = 0; i < sections.length; i++) {
-        // Start each section on a new page (except the first section which follows the title)
-        if (i > 0) {
+      const addPageNumber = (pageNum: number) => {
+        pdf.setFontSize(10);
+        pdf.text(`Page ${pageNum}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+      };
+      addPageNumber(pageNumber);
+      
+      for (const section of sections) {
+        if (yOffset > pageHeight - 60) {
           pdf.addPage();
           pageNumber++;
-          yOffset = 15; // Reset y position for new page
-          
-          // Add page number
-          pdf.setFontSize(10);
-          pdf.text(`Page ${pageNumber}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+          yOffset = 20;
+          addPageNumber(pageNumber);
         }
         
-        const section = sections[i] as HTMLElement;
-        
-        // Add section title
-        const sectionTitle = section.querySelector('h2');
-        if (sectionTitle) {
+        const title = section.querySelector('h2');
+        if (title) {
           pdf.setFontSize(16);
           pdf.setFont('helvetica', 'bold');
-          pdf.text(sectionTitle.textContent || '', margin, yOffset);
-          yOffset += 12; // Increased spacing after section title
+          pdf.text(title.textContent || '', margin, yOffset);
+          yOffset += 15;
           pdf.setFont('helvetica', 'normal');
-          pdf.setFontSize(12);
         }
         
-        // Capture each section as an image, excluding the title which we've already added
         const canvas = await html2canvas(section, {
           scale: 2,
           logging: false,
           useCORS: true,
           allowTaint: true,
-          // Skip title as we've already added it
           ignoreElements: (element) => element.tagName.toLowerCase() === 'h2'
         });
         
-        // Calculate image dimensions to fit within page width
-        const imgData = canvas.toDataURL('image/png');
         const imgWidth = contentWidth;
         const imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        // Scale down the image if it's too tall for the page
-        const availableHeight = pageHeight - yOffset - margin - 15; // 15px for footer/page number
-        let finalImgHeight = imgHeight;
-        let finalImgWidth = imgWidth;
-        
-        if (imgHeight > availableHeight) {
-          const scaleFactor = availableHeight / imgHeight;
-          finalImgHeight = imgHeight * scaleFactor;
-          finalImgWidth = imgWidth * scaleFactor;
+        if (yOffset + imgHeight > pageHeight - margin) {
+          pdf.addPage();
+          pageNumber++;
+          yOffset = 20;
+          addPageNumber(pageNumber);
         }
         
-        // Add image to page
-        pdf.addImage(imgData, 'PNG', margin, yOffset, finalImgWidth, finalImgHeight);
+        pdf.addImage(
+          canvas.toDataURL('image/png'),
+          'PNG',
+          margin,
+          yOffset,
+          imgWidth,
+          imgHeight
+        );
+        
+        yOffset += imgHeight + 20;
       }
       
       pdf.save('sentiment_analysis_report.pdf');
@@ -163,38 +148,31 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         throw new Error("No data available");
       }
       
-      // Prepare CSV content
       let csvContent = "data:text/csv;charset=utf-8,";
       
-      // Headers
       csvContent += "Aspect,Sentiment,Count,Confidence\n";
       
-      // Add aspect data
       const aspects = analysisData.fileAnalysis.aspects || [];
       aspects.forEach((aspect: any) => {
         csvContent += `${aspect.aspect || aspect.name || "Unknown"},${aspect.sentiment || "neutral"},${aspect.count || 1},${aspect.confidence || "N/A"}\n`;
       });
       
-      // Add review data if available
       if (analysisData.fileAnalysis.reviews && analysisData.fileAnalysis.reviews.length) {
         csvContent += "\nDate,Sentiment,Review Text\n";
         analysisData.fileAnalysis.reviews.forEach((review: any) => {
           const date = review.date || "N/A";
           const sentiment = review.sentiment?.sentiment || "neutral";
-          // Escape quotes in the text
           const text = review.reviewText ? `"${review.reviewText.replace(/"/g, '""')}"` : "N/A";
           csvContent += `${date},${sentiment},${text}\n`;
         });
       }
       
-      // Create download link
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
       link.setAttribute("download", "sentiment_analysis_report.csv");
       document.body.appendChild(link);
       
-      // Trigger download
       link.click();
       document.body.removeChild(link);
       

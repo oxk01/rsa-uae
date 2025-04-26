@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -41,7 +40,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   };
 
   return (
-    <div className="p-6 bg-white print:p-0" id="sentiment-report-content">
+    <div className="p-6 bg-white space-y-12 print:p-0" id="sentiment-report-content">
       <div className="text-center mb-8" id="report-header">
         <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
@@ -235,31 +234,42 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       {/* Add custom CSS for better PDF printing */}
       <style>
         {`
-        @media print {
-          section {
-            page-break-inside: avoid;
-            break-inside: avoid;
-            margin-bottom: 30px;
+          @media print {
+            section {
+              page-break-inside: avoid;
+              break-inside: avoid;
+              margin-bottom: 40px;
+            }
+            
+            h2 {
+              margin-top: 0;
+              padding-top: 0;
+              margin-bottom: 1.5rem;
+            }
+            
+            .card {
+              break-inside: avoid;
+              margin-bottom: 1.5rem;
+            }
+            
+            .grid {
+              display: block;
+            }
+            
+            .grid > * {
+              margin-bottom: 2rem;
+            }
+
+            p, ul {
+              margin-bottom: 1rem;
+            }
+
+            .chart-container {
+              margin: 2rem 0;
+              page-break-inside: avoid;
+            }
           }
-          
-          h2 {
-            margin-top: 0;
-            padding-top: 0;
-          }
-          
-          .card {
-            break-inside: avoid;
-          }
-          
-          .grid {
-            display: block;
-          }
-          
-          .grid > * {
-            margin-bottom: 20px;
-          }
-        }
-      `}
+        `}
       </style>
     </div>
   );
