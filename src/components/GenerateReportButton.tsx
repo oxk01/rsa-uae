@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -59,12 +58,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = {
-        top: 25,
-        bottom: 25,
-        left: 25,
-        right: 25
-      };
+      const margin = pdfStyles.spacing.pageMargin;
       const contentWidth = pageWidth - (margin.left + margin.right);
       
       pdf.setProperties({
@@ -81,23 +75,24 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         pdf.setFont(pdfStyles.fonts.normal);
         pdf.setFontSize(pdfStyles.sizes.body);
         pdf.setTextColor(pdfStyles.colors.text);
+        pdf.setLineHeightFactor(pdfStyles.spacing.lineHeight);
       };
       
       const addPageNumber = (pageNum: number) => {
         pdf.setFontSize(pdfStyles.sizes.caption);
-        pdf.setTextColor(pdfStyles.colors.subtext);
+        pdf.setTextColor(pdfStyles.colors.text);
         pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - (margin.bottom / 2), { align: 'right' });
       };
 
       pdf.setFont(pdfStyles.fonts.bold);
       pdf.setFontSize(pdfStyles.sizes.title);
-      pdf.setTextColor(pdfStyles.colors.primary);
+      pdf.setTextColor(pdfStyles.colors.header);
       pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
       
       yOffset += pdfStyles.spacing.headerMargin;
       pdf.setFont(pdfStyles.fonts.normal);
       pdf.setFontSize(pdfStyles.sizes.body);
-      pdf.setTextColor(pdfStyles.colors.subtext);
+      pdf.setTextColor(pdfStyles.colors.text);
       const dateText = `Generated on ${new Date().toLocaleDateString()}`;
       pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
       yOffset += pdfStyles.spacing.sectionMargin;
@@ -118,7 +113,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         if (title) {
           pdf.setFont(pdfStyles.fonts.bold);
           pdf.setFontSize(pdfStyles.sizes.sectionHeader);
-          pdf.setTextColor(pdfStyles.colors.primary);
+          pdf.setTextColor(pdfStyles.colors.header);
           pdf.text(title.textContent || '', margin.left, yOffset);
           yOffset += pdfStyles.spacing.headerMargin;
         }
@@ -147,7 +142,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
             setupPage();
             addPageNumber(pageNumber);
           } else {
-            // Define scaleFactor based on available height
             const scaleFactor = availableHeight / imgHeight;
             imgWidth *= scaleFactor;
             imgHeight = availableHeight;
