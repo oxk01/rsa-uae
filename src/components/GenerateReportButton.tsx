@@ -55,19 +55,33 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         format: 'a4',
       });
       
-      const sections = reportElement.querySelectorAll('section');
-      let yOffset = 20;
-      let pageNumber = 1;
-      
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 20;
-      const contentWidth = pageWidth - (2 * margin);
+      const margin = {
+        top: 20,
+        bottom: 20,
+        left: 20,
+        right: 20
+      };
+      const contentWidth = pageWidth - (margin.left + margin.right);
       
+      pdf.setProperties({
+        title: 'Sentiment Analysis Report',
+        subject: 'Analysis Results',
+        creator: 'Sentiment Analysis Tool'
+      });
+      
+      let yOffset = margin.top;
+      let pageNumber = 1;
+      
+      pdf.setFont('helvetica', 'bold');
       pdf.setFontSize(20);
-      pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
+      
+      const title = 'Sentiment Analysis Report';
+      pdf.text(title, pageWidth / 2, yOffset, { align: 'center' });
       yOffset += 10;
       
+      pdf.setFont('helvetica', 'normal');
       pdf.setFontSize(12);
       const dateText = `Generated on ${new Date().toLocaleDateString()}`;
       pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
@@ -75,23 +89,24 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       
       const addPageNumber = (pageNum: number) => {
         pdf.setFontSize(10);
-        pdf.text(`Page ${pageNum}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+        pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - margin.bottom, { align: 'right' });
       };
       addPageNumber(pageNumber);
       
+      const sections = reportElement.querySelectorAll('section');
       for (const section of sections) {
-        if (yOffset > pageHeight - 60) {
+        if (yOffset > pageHeight - margin.bottom - 60) {
           pdf.addPage();
           pageNumber++;
-          yOffset = 20;
+          yOffset = margin.top;
           addPageNumber(pageNumber);
         }
         
         const title = section.querySelector('h2');
         if (title) {
-          pdf.setFontSize(16);
           pdf.setFont('helvetica', 'bold');
-          pdf.text(title.textContent || '', margin, yOffset);
+          pdf.setFontSize(16);
+          pdf.text(title.textContent || '', margin.left, yOffset);
           yOffset += 15;
           pdf.setFont('helvetica', 'normal');
         }
@@ -101,23 +116,34 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           logging: false,
           useCORS: true,
           allowTaint: true,
-          ignoreElements: (element) => element.tagName.toLowerCase() === 'h2'
+          ignoreElements: (element) => {
+            return element.tagName.toLowerCase() === 'h2' ||
+                   element.classList.contains('print-hide');
+          }
         });
         
-        const imgWidth = contentWidth;
-        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        let imgWidth = contentWidth;
+        let imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        if (yOffset + imgHeight > pageHeight - margin) {
-          pdf.addPage();
-          pageNumber++;
-          yOffset = 20;
-          addPageNumber(pageNumber);
+        if (yOffset + imgHeight > pageHeight - margin.bottom) {
+          const availableHeight = pageHeight - margin.bottom - yOffset;
+          const scaleFactor = availableHeight / imgHeight;
+          
+          if (scaleFactor < 0.5) {
+            pdf.addPage();
+            pageNumber++;
+            yOffset = margin.top;
+            addPageNumber(pageNumber);
+          } else {
+            imgWidth *= scaleFactor;
+            imgHeight = availableHeight;
+          }
         }
         
         pdf.addImage(
           canvas.toDataURL('image/png'),
           'PNG',
-          margin,
+          margin.left,
           yOffset,
           imgWidth,
           imgHeight

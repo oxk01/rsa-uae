@@ -231,42 +231,105 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </div>
       </section>
 
-      {/* Add custom CSS for better PDF printing */}
+      {/* Enhanced print styles for PDF generation */}
       <style>
         {`
           @media print {
+            /* Global print styles */
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+            }
+            
+            #sentiment-report-content {
+              padding: 0 !important;
+              margin: 0 !important;
+            }
+            
+            /* Section spacing and layout */
             section {
               page-break-inside: avoid;
               break-inside: avoid;
-              margin-bottom: 40px;
+              margin-bottom: 2.5rem !important;
+              clear: both;
+            }
+            
+            /* Typography */
+            h1 {
+              font-size: 24pt !important;
+              margin-bottom: 1rem !important;
             }
             
             h2 {
-              margin-top: 0;
-              padding-top: 0;
-              margin-bottom: 1.5rem;
+              font-size: 18pt !important;
+              margin-top: 1.5rem !important;
+              margin-bottom: 1rem !important;
+              color: #1e40af !important;
+              page-break-after: avoid;
             }
             
+            p, ul {
+              font-size: 11pt !important;
+              line-height: 1.5 !important;
+              margin-bottom: 0.75rem !important;
+            }
+            
+            /* Card and container formatting */
             .card {
               break-inside: avoid;
-              margin-bottom: 1.5rem;
+              margin-bottom: 1.5rem !important;
+              border: 1px solid #e5e7eb !important;
+              padding: 1rem !important;
             }
             
             .grid {
-              display: block;
+              display: block !important;
             }
             
             .grid > * {
-              margin-bottom: 2rem;
+              margin-bottom: 2rem !important;
+              width: 100% !important;
             }
-
-            p, ul {
-              margin-bottom: 1rem;
-            }
-
+            
+            /* Chart and visualization containers */
             .chart-container {
-              margin: 2rem 0;
               page-break-inside: avoid;
+              margin: 1.5rem 0 !important;
+              height: auto !important;
+              min-height: 300px !important;
+            }
+            
+            /* Ensure proper spacing between sections */
+            .mb-8, .mb-12 {
+              margin-bottom: 2rem !important;
+            }
+            
+            /* Hide elements not needed in PDF */
+            .print-hide {
+              display: none !important;
+            }
+            
+            /* Ensure proper image handling */
+            img, svg {
+              max-width: 100% !important;
+              height: auto !important;
+            }
+            
+            /* Table formatting */
+            table {
+              width: 100% !important;
+              border-collapse: collapse !important;
+              margin-bottom: 1.5rem !important;
+            }
+            
+            th, td {
+              padding: 0.5rem !important;
+              border: 1px solid #e5e7eb !important;
+            }
+            
+            /* Ensure text remains readable */
+            .text-gray-500, .text-gray-600, .text-gray-700 {
+              color: #374151 !important;
             }
           }
         `}
