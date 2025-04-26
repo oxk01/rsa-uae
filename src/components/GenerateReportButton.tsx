@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -146,6 +147,8 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
             setupPage();
             addPageNumber(pageNumber);
           } else {
+            // Define scaleFactor based on available height
+            const scaleFactor = availableHeight / imgHeight;
             imgWidth *= scaleFactor;
             imgHeight = availableHeight;
           }
