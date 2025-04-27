@@ -18,8 +18,13 @@ export const generateInsights = (analysisData: AnalysisData): string[] => {
     ];
   }
   
-  const sentiment = analysisData?.overallSentiment?.sentiment || 'neutral';
-  const score = analysisData?.overallSentiment?.score || 50;
+  // Extract sentiment data with proper type checking
+  const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
+    ? analysisData?.overallSentiment 
+    : { sentiment: 'neutral', score: 50 };
+    
+  const sentiment = overallSentimentObj?.sentiment || 'neutral';
+  const score = overallSentimentObj?.score || 50;
   const aspects = analysisData?.fileAnalysis?.aspects || [];
   
   // Add sentiment-based insights
@@ -43,8 +48,8 @@ export const generateInsights = (analysisData: AnalysisData): string[] => {
       return bPositive - aPositive;
     });
     
-    if (positiveAspects.length > 0 && positiveAspects[0].aspect) {
-      insights.push(`"${positiveAspects[0].aspect}" is the most positively perceived aspect`);
+    if (positiveAspects.length > 0 && (positiveAspects[0].aspect || positiveAspects[0].name)) {
+      insights.push(`"${positiveAspects[0].aspect || positiveAspects[0].name}" is the most positively perceived aspect`);
     }
     
     // Find most negative aspect
@@ -54,8 +59,8 @@ export const generateInsights = (analysisData: AnalysisData): string[] => {
       return bNegative - aNegative;
     });
     
-    if (negativeAspects.length > 0 && negativeAspects[0].aspect) {
-      insights.push(`"${negativeAspects[0].aspect}" is the most negatively perceived aspect`);
+    if (negativeAspects.length > 0 && (negativeAspects[0].aspect || negativeAspects[0].name)) {
+      insights.push(`"${negativeAspects[0].aspect || negativeAspects[0].name}" is the most negatively perceived aspect`);
     }
     
     // Add insight about aspect variety
@@ -89,7 +94,12 @@ export const generateRecommendations = (analysisData: AnalysisData): string[] =>
     ];
   }
   
-  const sentiment = analysisData?.overallSentiment?.sentiment || 'neutral';
+  // Extract sentiment data with proper type checking
+  const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
+    ? analysisData?.overallSentiment 
+    : { sentiment: 'neutral', score: 50 };
+    
+  const sentiment = overallSentimentObj?.sentiment || 'neutral';
   const aspects = analysisData?.fileAnalysis?.aspects || [];
   
   // Add sentiment-based recommendations
@@ -115,11 +125,11 @@ export const generateRecommendations = (analysisData: AnalysisData): string[] =>
         return bNegative - aNegative;
       });
     
-    if (negativeAspects.length > 0 && negativeAspects[0].aspect) {
-      recommendations.push(`Focus improvement efforts on "${negativeAspects[0].aspect}"`);
+    if (negativeAspects.length > 0 && (negativeAspects[0].aspect || negativeAspects[0].name)) {
+      recommendations.push(`Focus improvement efforts on "${negativeAspects[0].aspect || negativeAspects[0].name}"`);
       
-      if (negativeAspects.length > 1 && negativeAspects[1].aspect) {
-        recommendations.push(`Consider reviewing "${negativeAspects[1].aspect}" as a secondary priority`);
+      if (negativeAspects.length > 1 && (negativeAspects[1].aspect || negativeAspects[1].name)) {
+        recommendations.push(`Consider reviewing "${negativeAspects[1].aspect || negativeAspects[1].name}" as a secondary priority`);
       }
     }
     
@@ -132,8 +142,8 @@ export const generateRecommendations = (analysisData: AnalysisData): string[] =>
         return bPositive - aPositive;
       });
     
-    if (positiveAspects.length > 0 && positiveAspects[0].aspect) {
-      recommendations.push(`Leverage "${positiveAspects[0].aspect}" as a key strength in communications`);
+    if (positiveAspects.length > 0 && (positiveAspects[0].aspect || positiveAspects[0].name)) {
+      recommendations.push(`Leverage "${positiveAspects[0].aspect || positiveAspects[0].name}" as a key strength in communications`);
     }
   } else {
     recommendations.push("Implement a more detailed feedback collection system");
@@ -145,4 +155,3 @@ export const generateRecommendations = (analysisData: AnalysisData): string[] =>
   
   return recommendations.slice(0, 5); // Return top 5 recommendations
 };
-

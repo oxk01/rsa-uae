@@ -15,8 +15,13 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     day: 'numeric' 
   });
 
-  const sentiment = analysisData?.overallSentiment?.sentiment || 'neutral';
-  const score = analysisData?.overallSentiment?.score || 50;
+  // Extract sentiment data with proper type checking
+  const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
+    ? analysisData?.overallSentiment 
+    : { sentiment: 'neutral', score: 50 };
+    
+  const sentiment = overallSentimentObj?.sentiment || 'neutral';
+  const score = overallSentimentObj?.score || 50;
   const keyPhrases = analysisData?.fileAnalysis?.keywords || [];
   const aspects = analysisData?.fileAnalysis?.aspects || [];
   const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown || {
@@ -28,6 +33,14 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   // Generate insights and recommendations
   const insights = generateInsights(analysisData);
   const recommendations = generateRecommendations(analysisData);
+
+  // Convert AspectData[] to AspectProps[] by ensuring required properties
+  const formattedAspects = aspects.map(aspect => ({
+    aspect: aspect.aspect || aspect.name || 'Unknown',
+    sentiment: aspect.sentiment || 'neutral',
+    confidence: aspect.confidence,
+    context: aspect.context
+  }));
 
   return (
     <div className="p-6 space-y-6" id="sentiment-report">
@@ -45,7 +58,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         <KeyPhrases phrases={keyPhrases} sentiment={sentiment} />
       </div>
 
-      <AspectsAnalysis aspects={aspects} />
+      <AspectsAnalysis aspects={formattedAspects} />
 
       <Card className="p-4 mb-6">
         <h3 className="font-semibold mb-2 flex items-center">
