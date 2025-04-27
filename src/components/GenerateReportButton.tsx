@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -53,15 +54,17 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         description: "Generating PDF, please wait...",
       });
       
-      // Wait for visualizations to render
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait for visualizations to fully render
+      await new Promise(resolve => setTimeout(resolve, 2000));
 
+      console.log("Starting PDF generation...");
       const pdf = await generatePDF(reportElement, {
         title: 'Sentiment Analysis Report',
         date: `Generated on ${new Date().toLocaleDateString()}`
       });
 
       if (pdf) {
+        console.log("PDF generated successfully, saving...");
         pdf.save('sentiment_analysis_report.pdf');
         toast({
           title: "PDF Downloaded",
@@ -151,6 +154,18 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
               View and download your comprehensive analysis report
             </DialogDescription>
           </DialogHeader>
+          
+          <div className="flex justify-end mb-4">
+            <Button
+              size="sm"
+              onClick={handleDownloadPDF}
+              disabled={isDownloading}
+              className="flex items-center gap-2"
+            >
+              <Download className="h-4 w-4" />
+              {isDownloading ? "Downloading..." : "Download PDF"}
+            </Button>
+          </div>
           
           <div id="sentiment-report" ref={reportRef}>
             <SentimentReport analysisData={analysisData} />

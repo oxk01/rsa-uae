@@ -10,51 +10,46 @@ export const renderContent = async (
   reportElement: HTMLElement,
   totalPages: number
 ) => {
-  // Apply enhanced styles before capturing
-  enhanceStyles(reportElement);
-  
-  // Wait for all charts and visualizations to render
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  const canvas = await captureContent(reportElement);
-  const imgData = canvas.toDataURL('image/png');
-  
-  const imgWidth = pageData.contentWidth;
-  const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
-  // Calculate number of pages needed for content
-  const contentHeight = pageData.maxContentHeight - pageData.margin.top;
-  const pagesNeeded = Math.ceil(imgHeight / contentHeight);
-  
-  // Add content pages
-  for (let i = 0; i < pagesNeeded; i++) {
-    pdf.addPage();
-    pageData.pageNumber++;
+  try {
+    console.log('Starting content rendering process...');
     
-    // Add header with section title
-    addHeader(pdf, pageData, pageData.pageNumber);
+    // Apply enhanced styles before capturing
+    enhanceStyles(reportElement);
     
-    const destHeight = Math.min(contentHeight, imgHeight - (i * contentHeight));
+    // Wait for all charts and visualizations to render
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
-    // Add section header based on current page
-    addSectionHeader(pdf, pageData);
+    console.log('Capturing content...');
+    const canvas = await captureContent(reportElement);
+    console.log('Content captured, converting to image data...');
+    const imgData = canvas.toDataURL('image/png');
     
-    // Calculate source dimensions for current slice
-    const sourceY = (i * contentHeight * canvas.height) / imgHeight;
-    const sourceHeight = (destHeight * canvas.height) / imgHeight;
+    const imgWidth = pageData.contentWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
     
-    // Add image using the correct parameter signature for jsPDF
-    pdf.addImage(
-      imgData,                  // imageData
-      'PNG',                    // format
-      pageData.margin.left,     // x
-      pageData.margin.top,      // y
-      imgWidth,                 // width
-      destHeight,               // height
-    );
+    // Calculate number of pages needed for content
+    const contentHeight = pageData.maxContentHeight - pageData.margin.top;
+    const pagesNeeded = Math.ceil(imgHeight / contentHeight);
     
-    // Handle image slicing by first drawing the full image and then applying clipping
-    if (i > 0) {
+    console.log(`Content will span ${pagesNeeded} pages`);
+    
+    // Add content pages
+    for (let i = 0; i < pagesNeeded; i++) {
+      pdf.addPage();
+      pageData.pageNumber++;
+      
+      // Add header with section title
+      addHeader(pdf, pageData, pageData.pageNumber);
+      
+      const destHeight = Math.min(contentHeight, imgHeight - (i * contentHeight));
+      
+      // Add section header based on current page
+      addSectionHeader(pdf, pageData);
+      
+      // Calculate source dimensions for current slice
+      const sourceY = (i * contentHeight * canvas.height) / imgHeight;
+      const sourceHeight = (destHeight * canvas.height) / imgHeight;
+      
       // Save the current graphics state
       pdf.saveGraphicsState();
       
@@ -67,19 +62,42 @@ export const renderContent = async (
       );
       pdf.clip();
       
+      // Add image using the correct parameter signature for jsPDF
+      pdf.addImage(
+        imgData,                  // imageData
+        'PNG',                    // format
+        pageData.margin.left - (i * 0), // x - adjust position for each slice
+        pageData.margin.top - (sourceY * imgWidth / canvas.width), // y - adjust based on slice
+        imgWidth,                 // width
+        imgHeight                 // height - use full height (clipping will show just the slice)
+      );
+      
       // Restore the graphics state
       pdf.restoreGraphicsState();
+      
+      // Add footer with page number
+      addFooter(pdf, pageData);
+      addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
+      
+      console.log(`Added page ${pageData.pageNumber} of content`);
     }
     
-    // Add footer with page number
-    addFooter(pdf, pageData);
-    addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
+    console.log('Content rendering complete');
+  } catch (error) {
+    console.error('Error rendering content:', error);
+    
+    // Add error page
+    pdf.addPage();
+    pdf.setTextColor(200, 0, 0);
+    pdf.setFontSize(16);
+    pdf.text('Error generating complete report. Please try again.', 
+      pdf.internal.pageSize.getWidth() / 2, 100, { align: 'center' });
   }
 };
 
 const enhanceStyles = (el: HTMLElement) => {
   // Update font styles for all text elements
-  const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
+  const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h5, h6, span, li');
   textElements.forEach((element: Element) => {
     (element as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
     (element as HTMLElement).style.color = pdfStyles.colors.text;
@@ -217,20 +235,54 @@ const addSectionTitles = (el: HTMLElement) => {
 };
 
 const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
-  // Wait for visualizations to render fully
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  // Create enhanced canvas with high quality
-  return html2canvas(element, {
-    scale: 2,           // Higher quality
-    logging: false,
-    useCORS: true,
-    allowTaint: true,
-    width: element.offsetWidth,
-    height: element.offsetHeight,
-    windowWidth: element.offsetWidth,
-    windowHeight: element.offsetHeight
-  });
+  // Make sure all visualizations are properly rendered
+  try {
+    // Create a deep clone of the element to avoid modifying the original
+    const clonedElement = element.cloneNode(true) as HTMLElement;
+    
+    // Ensure all visualizations are expanded and visible
+    const charts = clonedElement.querySelectorAll('.recharts-wrapper');
+    charts.forEach(chart => {
+      (chart as HTMLElement).style.height = '400px';
+      (chart as HTMLElement).style.overflow = 'visible';
+      (chart as HTMLElement).style.display = 'block';
+    });
+    
+    // Wait for any async rendering to complete
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // Create enhanced canvas with high quality
+    const canvas = await html2canvas(clonedElement, {
+      scale: 2,           // Higher quality
+      logging: false,
+      useCORS: true,
+      allowTaint: true,
+      width: element.offsetWidth,
+      height: element.offsetHeight,
+      windowWidth: element.offsetWidth,
+      windowHeight: element.offsetHeight,
+      backgroundColor: "#ffffff"
+    });
+    
+    console.log(`Canvas captured with dimensions: ${canvas.width}x${canvas.height}`);
+    return canvas;
+    
+  } catch (error) {
+    console.error('Error capturing content:', error);
+    // Return a basic canvas with error message
+    const canvas = document.createElement('canvas');
+    canvas.width = 800;
+    canvas.height = 600;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#ff0000';
+      ctx.font = '24px Arial';
+      ctx.fillText('Error capturing report content', 100, 300);
+    }
+    return canvas;
+  }
 };
 
 const addSectionHeader = (pdf: jsPDF, pageData: PageData) => {
