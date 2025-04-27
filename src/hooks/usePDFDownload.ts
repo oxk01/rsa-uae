@@ -25,8 +25,18 @@ export const usePDFDownload = () => {
         description: "Generating PDF, please wait...",
       });
       
-      // Wait for visualizations to render completely
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      // Wait longer for visualizations to render completely
+      await new Promise(resolve => setTimeout(resolve, 3000));
+
+      // Ensure all SVGs and canvas elements are fully rendered
+      const svgs = reportElement.querySelectorAll('svg');
+      const canvases = reportElement.querySelectorAll('canvas');
+      
+      if (svgs.length === 0 && canvases.length === 0) {
+        console.warn('No SVG or canvas elements found. Visualizations might not be rendered properly.');
+      } else {
+        console.log(`Found ${svgs.length} SVG and ${canvases.length} canvas elements`);
+      }
 
       const pdf = await generatePDF(reportElement, {
         title: options.title,
