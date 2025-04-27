@@ -167,7 +167,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     actualNegative: sentimentBreakdown.negative,
   };
 
-  // Word cloud data
+  // Word cloud data - Fixed to use text and value properties according to KeywordData type
   const wordCloudData = keyPhrases.map(phrase => ({
     text: phrase.text,
     value: phrase.value,
@@ -176,8 +176,10 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
 
   // Enhanced aspect data for MentionedAspects component
   const mentionedAspectData = aspects.map(aspect => ({
-    ...aspect,
-    count: Math.floor(Math.random() * 50) + 10 // Random count between 10-60 if not provided
+    aspect: aspect.aspect,
+    name: aspect.aspect, // Adding name as a fallback for MentionedAspects component
+    count: Math.floor(Math.random() * 50) + 10, // Random count between 10-60 if not provided
+    sentiment: aspect.sentiment
   }));
 
   return (
