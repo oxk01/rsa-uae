@@ -1,8 +1,9 @@
+
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { pdfStyles } from '@/styles/pdfStyles';
 import { PageData } from './types';
-import { addHeader, addPageNumber } from './pageSetup';
+import { addHeader, addPageNumber, addFooter } from './pageSetup';
 
 export const renderContent = async (
   pdf: jsPDF,
@@ -24,10 +25,13 @@ export const renderContent = async (
   for (let i = 0; i < pagesNeeded; i++) {
     pdf.addPage();
     pageData.pageNumber++;
+    
+    // Add header with section title
     addHeader(pdf, pageData, pageData.pageNumber);
     
     const destHeight = Math.min(contentHeight, imgHeight - (i * contentHeight));
     
+    // Add section header based on current page
     addSectionHeader(pdf, pageData);
     
     // Add image slice for current page
@@ -37,9 +41,13 @@ export const renderContent = async (
       pageData.margin.left,
       pageData.margin.top,
       imgWidth,
-      destHeight
+      destHeight,
+      undefined,
+      'FAST'
     );
     
+    // Add footer with page number
+    addFooter(pdf, pageData);
     addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
   }
 };
@@ -47,7 +55,7 @@ export const renderContent = async (
 const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
   // Apply styles to enhance rendering quality
   const enhanceStyles = (el: HTMLElement) => {
-    // Update font styles
+    // Update font styles for all text elements
     const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
     textElements.forEach((element: Element) => {
       (element as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
@@ -82,14 +90,14 @@ const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> 
       (element as HTMLElement).style.marginTop = '18px';
     });
     
-    // Enhance chart visibility
+    // Improve visualization styling
     el.querySelectorAll('.recharts-wrapper').forEach((chart: Element) => {
       (chart as HTMLElement).style.margin = '25px auto';
       (chart as HTMLElement).style.height = '400px';
       (chart as HTMLElement).style.width = '100%';
     });
     
-    // Enhance card visuals
+    // Enhance card styling
     el.querySelectorAll('.card').forEach((card: Element) => {
       (card as HTMLElement).style.padding = '20px';
       (card as HTMLElement).style.margin = '20px 0';
@@ -109,6 +117,13 @@ const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> 
     el.querySelectorAll('li').forEach((item: Element) => {
       (item as HTMLElement).style.marginBottom = '8px';
       (item as HTMLElement).style.paddingLeft = '5px';
+    });
+    
+    // Add section separators
+    el.querySelectorAll('#sentiment-report > div').forEach((div: Element) => {
+      (div as HTMLElement).style.marginBottom = '40px';
+      (div as HTMLElement).style.paddingBottom = '20px';
+      (div as HTMLElement).style.borderBottom = `1px solid ${pdfStyles.colors.tableHeader}`;
     });
     
     // Enhance tables
@@ -136,24 +151,54 @@ const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> 
       (td as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
     });
     
-    // Fix chart text sizes
+    // Improve chart text
     el.querySelectorAll('.recharts-text').forEach((text: Element) => {
       (text as HTMLElement).style.fontSize = '12px';
       (text as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
     });
     
-    // Fix container for report sections
-    el.querySelectorAll('#sentiment-report > div').forEach((div: Element) => {
-      (div as HTMLElement).style.marginBottom = '30px';
-    });
+    // Add section titles
+    addSectionTitles(el);
+  };
+  
+  const addSectionTitles = (el: HTMLElement) => {
+    // Find appropriate places to add section titles
+    const reportDiv = el.querySelector('#sentiment-report');
+    if (reportDiv) {
+      // Add Executive Summary title before the first metrics
+      const metricsSection = reportDiv.querySelector('div > div:nth-child(2)');
+      if (metricsSection) {
+        const titleDiv = document.createElement('h2');
+        titleDiv.textContent = 'Executive Summary';
+        titleDiv.style.color = pdfStyles.colors.primary;
+        titleDiv.style.fontSize = '22px';
+        titleDiv.style.fontWeight = 'bold';
+        titleDiv.style.marginTop = '30px';
+        titleDiv.style.marginBottom = '20px';
+        reportDiv.insertBefore(titleDiv, metricsSection);
+      }
+      
+      // Add Analysis Results title before visualizations
+      const visualizationsSection = reportDiv.querySelector('.grid:nth-of-type(1)');
+      if (visualizationsSection) {
+        const titleDiv = document.createElement('h2');
+        titleDiv.textContent = 'Analysis Results';
+        titleDiv.style.color = pdfStyles.colors.primary;
+        titleDiv.style.fontSize = '22px';
+        titleDiv.style.fontWeight = 'bold';
+        titleDiv.style.marginTop = '40px';
+        titleDiv.style.marginBottom = '20px';
+        visualizationsSection.parentNode?.insertBefore(titleDiv, visualizationsSection);
+      }
+    }
   };
   
   // Wait for visualizations to render
   await new Promise(resolve => setTimeout(resolve, 1500));
   
-  // Create enhanced canvas
+  // Create enhanced canvas with high quality
   return html2canvas(element, {
-    scale: 4,
+    scale: 4, // Higher quality
     logging: false,
     useCORS: true,
     allowTaint: true,
@@ -171,19 +216,19 @@ const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> 
 const addSectionHeader = (pdf: jsPDF, pageData: PageData) => {
   let currentSection = "";
   if (pageData.pageNumber === 2) {
-    currentSection = "Executive Summary & Analysis Overview";
+    currentSection = "1. Executive Summary";
   } else if (pageData.pageNumber === 3) {
-    currentSection = "Sentiment Distribution Analysis";
+    currentSection = "2. Sentiment Distribution Analysis";
   } else if (pageData.pageNumber === 4) {
-    currentSection = "Key Aspects Analysis";
+    currentSection = "3. Key Aspects Analysis";
   } else if (pageData.pageNumber === 5) {
-    currentSection = "Trends Over Time";
+    currentSection = "4. Trends Over Time";
   } else if (pageData.pageNumber === 6) {
-    currentSection = "Detailed Visualizations";
+    currentSection = "5. Detailed Visualizations";
   } else if (pageData.pageNumber === 7) {
-    currentSection = "Model Evaluation";
+    currentSection = "6. Model Evaluation";
   } else if (pageData.pageNumber === 8) {
-    currentSection = "Key Insights & Recommendations";
+    currentSection = "7. Key Insights & Recommendations";
   }
   
   if (currentSection) {

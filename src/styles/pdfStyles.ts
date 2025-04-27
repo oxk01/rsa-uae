@@ -1,3 +1,4 @@
+
 export const pdfStyles = {
   fonts: {
     title: 'helvetica-bold',
@@ -7,44 +8,44 @@ export const pdfStyles = {
     bold: 'helvetica-bold',
   },
   sizes: {
-    title: 14,              // Updated to 14pt as requested
-    sectionHeader: 14,      // Consistent with title size
-    subHeader: 13,          // Slightly smaller than title
-    body: 12,               // Body text at 12pt as requested
-    caption: 11,            // Slightly smaller captions
-    pageNumber: 10,         // Legible page numbers
+    title: 16,              // Larger title for better hierarchy
+    sectionHeader: 14,      // Clear section headers
+    subHeader: 13,          // Distinguishable subheaders
+    body: 11,               // Standard readable body text
+    caption: 10,            // Smaller caption text
+    pageNumber: 9,          // Subtle page numbers
   },
   spacing: {
-    sectionMargin: 25,      // Increased space between sections
-    paragraphMargin: 12,    // Better paragraph separation
+    sectionMargin: 30,      // Better separation between sections
+    paragraphMargin: 12,    // Clear paragraph separation
     headerMargin: 18,       // More space after headers
-    pageMargin: {          // Professional document margins
-      top: 40,
-      bottom: 40,
-      left: 40,
-      right: 40
+    pageMargin: {           // Professional document margins
+      top: 30,
+      bottom: 30,
+      left: 25,
+      right: 25
     },
-    lineHeight: 1.5,        // Improved line height for readability
+    lineHeight: 1.4,        // Improved readability
     contentSpacing: 15,     // Better element separation
     listItemSpacing: 8,     // Clearer list spacing
   },
   colors: {
-    primary: '#2c3e50',      // Professional dark blue for headers
-    text: '#333333',         // Dark gray for better readability
-    header: '#2c3e50',       // Consistent with primary
-    subtext: '#5a6b7b',      // Medium gray for secondary text
-    background: '#FFFFFF',   // Clean white background
-    accent: '#3498db',       // Blue accent for highlights
-    positive: '#27ae60',     // Green for positive sentiment
-    neutral: '#f39c12',      // Amber for neutral sentiment
-    negative: '#e74c3c',     // Red for negative sentiment
-    tableHeader: '#f5f7fa',  // Light gray for table headers
+    primary: '#5e60ce',     // Professional purple for headers
+    text: '#333333',        // Dark gray for better readability
+    header: '#5e60ce',      // Consistent with primary
+    subtext: '#5a6b7b',     // Medium gray for secondary text
+    background: '#FFFFFF',  // Clean white background
+    accent: '#6930c3',      // Purple accent for highlights
+    positive: '#4cc9f0',    // Blue for positive sentiment
+    neutral: '#bde0fe',     // Light blue for neutral sentiment
+    negative: '#fb6f92',    // Pink for negative sentiment
+    tableHeader: '#f8f9fa',  // Light background for table headers
     sectionBg: '#f8f9fa'     // Light background for sections
   },
   layout: {
     maxContentHeight: 0.85, // Slightly more content per page
     minMarginBetweenElements: 10,  // Clearer spacing
-    chartHeight: 300,        // Increased chart height for better visibility
+    chartHeight: 300,        // Increased chart height
     tableRowHeight: 18,      // More readable table rows
     headerIndent: 5,         // Indent for hierarchical headers
   },

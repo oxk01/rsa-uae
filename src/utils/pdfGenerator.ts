@@ -4,21 +4,25 @@ import { PDFGeneratorOptions } from './pdf/types';
 import { setupPDFDocument, addPageNumber } from './pdf/pageSetup';
 import { addCoverPage } from './pdf/coverPage';
 import { renderContent } from './pdf/contentRenderer';
-import { pdfStyles } from '@/styles/pdfStyles';  // Add this import
+import { pdfStyles } from '@/styles/pdfStyles';  // Import pdfStyles
 
 export const generatePDF = async (reportElement: HTMLElement, options: PDFGeneratorOptions) => {
   if (!reportElement) return null;
   
   try {
+    console.log('Beginning PDF generation process...');
+    
     // Initialize PDF document and page data
     const { pdf, pageData } = setupPDFDocument();
     
     // Create cover page with table of contents
     addCoverPage(pdf, pageData, {
       title: options.title,
-      subtitle: 'Comprehensive Analysis of Customer Feedback',
+      subtitle: 'A Comprehensive Analysis of Customer Feedback',
       date: options.date,
     });
+    
+    console.log('Cover page added, capturing content...');
     
     // Calculate total pages (cover page + content pages)
     const contentPages = Math.ceil(reportElement.scrollHeight / (pageData.maxContentHeight - pageData.margin.top));
@@ -43,7 +47,6 @@ const handleError = (): jsPDF => {
   const { pdf, pageData } = setupPDFDocument();
   let yOffset = pageData.margin.top;
   
-  pdf.addPage();
   pdf.setFontSize(pdfStyles.sizes.body);
   pdf.setTextColor(pdfStyles.colors.text);
   pdf.text("Error generating full report visualization.", pageData.margin.left, yOffset);
@@ -52,4 +55,3 @@ const handleError = (): jsPDF => {
   
   return pdf;
 };
-
