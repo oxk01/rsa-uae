@@ -22,43 +22,61 @@ export const renderContent = async (
     // Apply styles before capturing
     enhanceStyles(clonedElement);
     
-    // Force layout and wait for visualizations
+    // Append to body but make it invisible to user
     document.body.appendChild(clonedElement);
-    clonedElement.style.position = 'absolute';
+    clonedElement.style.position = 'fixed';
     clonedElement.style.left = '-9999px';
     clonedElement.style.width = `${pageData.contentWidth}px`;
     clonedElement.style.backgroundColor = '#ffffff';
     
-    // Wait longer for images and charts
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Force layout recalculation and give time for visualizations
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Increased delay to 5 seconds
     
     console.log('Capturing content with html2canvas...');
+    
     try {
+      // Set scale to 1 for better performance and reliability
       const canvas = await html2canvas(clonedElement, {
-        scale: 2,
+        scale: 1,
         useCORS: true,
         allowTaint: true,
         logging: false,
         backgroundColor: '#ffffff',
+        width: pageData.contentWidth,
+        height: clonedElement.scrollHeight || 1000, // Ensure minimum height
+        foreignObjectRendering: false, // Disable foreign object rendering which can cause issues
         onclone: (doc, ele) => {
-          console.log('Clone created for rendering');
-          // Additional preprocessing can be done here if needed
+          console.log('Clone created for rendering with dimensions:', 
+            ele.offsetWidth, 'x', ele.offsetHeight);
+          
+          // Force all SVGs to have explicit dimensions
+          const svgs = ele.querySelectorAll('svg');
+          svgs.forEach(svg => {
+            if (!svg.getAttribute('width')) svg.setAttribute('width', '300');
+            if (!svg.getAttribute('height')) svg.setAttribute('height', '200');
+          });
         }
       });
+      
+      // Check if canvas was created successfully
+      if (!canvas || canvas.width === 0 || canvas.height === 0) {
+        throw new Error('Canvas dimensions are zero');
+      }
       
       console.log(`Canvas captured with dimensions: ${canvas.width}x${canvas.height}`);
       
       // Remove the cloned element
       document.body.removeChild(clonedElement);
       
-      const imgData = canvas.toDataURL('image/png');
+      // Get image data with quality setting of 0.8 (80%)
+      const imgData = canvas.toDataURL('image/jpeg', 0.8);
       
       const imgWidth = pageData.contentWidth;
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const imgHeight = Math.max((canvas.height * imgWidth) / canvas.width, 100);
       
       // Calculate pages needed
-      const contentHeight = pageData.maxContentHeight - pageData.margin.top;
-      const pagesNeeded = Math.ceil(imgHeight / contentHeight);
+      const contentHeight = pageData.maxContentHeight - pageData.margin.top - 20;
+      const pagesNeeded = Math.max(1, Math.ceil(imgHeight / contentHeight));
       
       console.log(`Content will span ${pagesNeeded} pages`);
       
@@ -76,19 +94,49 @@ export const renderContent = async (
         
         addSectionHeader(pdf, pageData);
         
-        if (i === 0) {
-          // For first page, use normal image adding
-          pdf.addImage(
-            imgData,
-            'PNG',
-            pageData.margin.left,
-            pageData.margin.top,
-            imgWidth,
-            destHeight
-          );
-        } else {
-          // For subsequent pages, use the image handler with proper positioning
-          addPageImage(pdf, pageData, imgData, imgWidth, destHeight, false);
+        // Use simplified image adding approach
+        try {
+          if (imgData && destHeight > 0) {
+            // Extract the part of the image we need for this page
+            const pageCanvas = document.createElement('canvas');
+            pageCanvas.width = canvas.width;
+            pageCanvas.height = sourceHeight;
+            
+            const ctx = pageCanvas.getContext('2d');
+            if (ctx) {
+              ctx.drawImage(
+                canvas, 
+                0, sourceY, 
+                canvas.width, sourceHeight,
+                0, 0, 
+                canvas.width, sourceHeight
+              );
+              
+              const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.8);
+              
+              // Add image to PDF using our handler
+              addPageImage(
+                pdf, 
+                pageData, 
+                pageImgData, 
+                imgWidth, 
+                destHeight, 
+                i === 0
+              );
+            } else {
+              throw new Error("Could not get 2D context from canvas");
+            }
+          } else {
+            throw new Error(`Invalid image data or dimensions: ${destHeight}`);
+          }
+        } catch (imgError) {
+          console.error('Error adding page image:', imgError);
+          
+          // Fallback: just add text
+          pdf.setTextColor(0, 0, 0);
+          pdf.setFontSize(12);
+          pdf.text(`Page ${i+1} content (image rendering failed)`, 
+            pageData.margin.left, pageData.margin.top + 20);
         }
         
         addFooter(pdf, pageData);

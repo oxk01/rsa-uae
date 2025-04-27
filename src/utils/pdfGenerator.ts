@@ -29,7 +29,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     
     // Pre-processing: remove any elements that shouldn't be in the PDF
     const clonedElement = reportElement.cloneNode(true) as HTMLElement;
-    const headerButtons = clonedElement.querySelectorAll('button');
+    const headerButtons = clonedElement.querySelectorAll('button, [role="button"]');
     headerButtons.forEach(button => {
       if (button.parentNode) {
         button.parentNode.removeChild(button);
@@ -41,7 +41,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     console.log(`Content height: ${contentHeight}px`);
     
     // Calculate total pages (cover page + content pages)
-    const contentPages = Math.ceil(contentHeight / (pageData.maxContentHeight - pageData.margin.top));
+    const contentPages = Math.max(1, Math.ceil(contentHeight / (pageData.maxContentHeight - pageData.margin.top)));
     const totalPages = contentPages + 1; // Cover page + content pages
     
     console.log(`Estimated ${totalPages} total pages (1 cover page + ${contentPages} content pages)`);
@@ -49,13 +49,14 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     // Add page number to cover page
     addPageNumber(pdf, pageData, 1, totalPages);
     
-    // Render report content - passing the original element, not the clone
-    // This ensures we're capturing the fully rendered state
+    // Render report content using the original element for accurate rendering
     const contentRendered = await renderContent(pdf, pageData, reportElement, totalPages);
     
     if (!contentRendered) {
       console.error("Content rendering failed");
-      return handleError("Failed to render report content");
+      // Even if content rendering fails, we'll return the PDF with at least the cover page
+      // and potentially a fallback text-only rendering
+      return pdf;
     }
     
     console.log(`Generated enhanced PDF with ${totalPages} pages`);

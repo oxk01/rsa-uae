@@ -11,28 +11,17 @@ export const addPageImage = (
   isFirstPage: boolean
 ) => {
   try {
-    if (isFirstPage) {
-      // For the first page, add the full image
-      pdf.addImage({
-        imageData: imgData,
-        format: 'PNG',
-        x: pageData.margin.left,
-        y: pageData.margin.top,
-        width: imgWidth,
-        height: destHeight,
-        compression: 'FAST'
-      });
-    } else {
-      // For subsequent pages, use standard addImage method with proper parameters
-      pdf.addImage(
-        imgData,
-        'PNG',
-        pageData.margin.left,
-        pageData.margin.top,
-        imgWidth,
-        destHeight
-      );
-    }
+    // Simple approach - use the basic image add method without extra parameters that might cause issues
+    pdf.addImage({
+      imageData: imgData,
+      format: 'JPEG', // Use JPEG instead of PNG for better compression
+      x: pageData.margin.left,
+      y: pageData.margin.top,
+      width: imgWidth,
+      height: destHeight,
+      compression: 'MEDIUM' // Use medium compression for balance of quality/size
+    });
+    
     console.log(`Added image to PDF at x=${pageData.margin.left}, y=${pageData.margin.top}, width=${imgWidth}, height=${destHeight}`);
   } catch (error) {
     console.error('Error adding image to PDF:', error);
