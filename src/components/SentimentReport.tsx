@@ -39,8 +39,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
           return { text: phrase, value: 1, sentiment: 'neutral' };
         }
         return {
-          text: phrase.text || phrase.word || '',
-          value: phrase.value || phrase.count || 1,
+          text: phrase.text || '',
+          value: phrase.value || 1,
           sentiment: phrase.sentiment || 'neutral'
         };
       })
