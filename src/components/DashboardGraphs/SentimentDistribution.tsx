@@ -1,15 +1,20 @@
 
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
-import { COLORS } from './constants';
+import { COLORS, getThemeColors } from './constants';
 import DashboardCard from '../DashboardCard';
 import { PieChart as PieChartIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface SentimentDistributionProps {
   data: any[];
 }
 
 const SentimentDistribution: React.FC<SentimentDistributionProps> = ({ data }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+
   return (
     <DashboardCard
       title="Overall Sentiment Distribution"
@@ -30,28 +35,38 @@ const SentimentDistribution: React.FC<SentimentDistributionProps> = ({ data }) =
               label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
             >
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS.overview[index % COLORS.overview.length]} />
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={colors.overview[index % colors.overview.length]}
+                  stroke={isDark ? '#1f2937' : '#ffffff'}
+                  strokeWidth={2}
+                />
               ))}
             </Pie>
             <Tooltip 
               formatter={(value, name) => [`${value} reviews`, name]}
               wrapperStyle={{ zIndex: 100 }}
+              contentStyle={{
+                backgroundColor: isDark ? '#1f2937' : '#ffffff',
+                borderColor: isDark ? '#374151' : '#e5e7eb',
+                color: isDark ? '#f3f4f6' : '#111827'
+              }}
             />
           </PieChart>
         </ResponsiveContainer>
       </div>
       <div className="flex justify-center gap-6 mt-2">
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
-          <span className="text-sm">Positive</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.positive }}></div>
+          <span className="text-sm ml-2">Positive</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
-          <span className="text-sm">Neutral</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.neutral }}></div>
+          <span className="text-sm ml-2">Neutral</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
-          <span className="text-sm">Negative</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.negative }}></div>
+          <span className="text-sm ml-2">Negative</span>
         </div>
       </div>
     </DashboardCard>
@@ -59,4 +74,3 @@ const SentimentDistribution: React.FC<SentimentDistributionProps> = ({ data }) =
 };
 
 export default SentimentDistribution;
-
