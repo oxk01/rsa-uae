@@ -2,15 +2,15 @@
 export const COLORS = {
   positive: {
     light: '#10b981',
-    dark: '#34d399'
+    dark: '#34d399'  // Brighter green for dark mode
   },
   neutral: {
     light: '#6b7280',
-    dark: '#9ca3af'
+    dark: '#9ca3af'  // Lighter gray for dark mode
   },
   negative: {
     light: '#ef4444',
-    dark: '#f87171'
+    dark: '#f87171'  // Brighter red for dark mode
   },
   overview: {
     light: ['#10b981', '#6b7280', '#ef4444'],
@@ -18,7 +18,7 @@ export const COLORS = {
   },
   aspects: {
     light: ['#8B5CF6', '#EC4899', '#F59E0B', '#10B981', '#3B82F6'],
-    dark: ['#A78BFA', '#F472B6', '#FBBF24', '#34D399', '#60A5FA']
+    dark: ['#A78BFA', '#F472B6', '#FBBF24', '#34D399', '#60A5FA']  // Brighter colors for dark mode
   },
   wordcloud: {
     light: {
