@@ -1,4 +1,3 @@
-
 export const pdfStyles = {
   fonts: {
     title: 'helvetica-bold',
@@ -8,11 +7,11 @@ export const pdfStyles = {
     bold: 'helvetica-bold',
   },
   sizes: {
-    title: 26,              // Larger, more impactful title
-    sectionHeader: 20,      // Clear section headers
-    subHeader: 16,          // Readable sub-headers
-    body: 12,               // Professional body text size
-    caption: 10,            // Readable captions
+    title: 14,              // Updated to 14pt as requested
+    sectionHeader: 14,      // Consistent with title size
+    subHeader: 13,          // Slightly smaller than title
+    body: 12,               // Body text at 12pt as requested
+    caption: 11,            // Slightly smaller captions
     pageNumber: 10,         // Legible page numbers
   },
   spacing: {
@@ -43,9 +42,9 @@ export const pdfStyles = {
     sectionBg: '#f8f9fa'     // Light background for sections
   },
   layout: {
-    maxContentHeight: 0.8,   // Allow more content per page
+    maxContentHeight: 0.85, // Slightly more content per page
     minMarginBetweenElements: 10,  // Clearer spacing
-    chartHeight: 220,        // Larger chart height
+    chartHeight: 300,        // Increased chart height for better visibility
     tableRowHeight: 18,      // More readable table rows
     headerIndent: 5,         // Indent for hierarchical headers
   },

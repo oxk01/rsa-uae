@@ -286,6 +286,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
       pageNumber++;
       addHeader(pageNumber);
       
+      // Calculate source and destination dimensions
       const sourceY = i * contentHeight * (canvas.height / imgHeight);
       const sourceHeight = Math.min(
         contentHeight * (canvas.height / imgHeight),
@@ -319,15 +320,15 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         pdf.text(currentSection, pageWidth / 2, margin.top / 2, { align: 'center' });
       }
       
-      // Add image slice for current page - Fix here: use the correct properties for addImage
-      pdf.addImage({
-        imageData: imgData,
-        format: 'PNG',
-        x: margin.left,
-        y: margin.top,
-        width: imgWidth,
-        height: destHeight,
-      });
+      // Add image slice for current page
+      pdf.addImage(
+        imgData,      // imageData
+        'PNG',        // format
+        margin.left,  // x
+        margin.top,   // y
+        imgWidth,     // width
+        destHeight    // height
+      );
       
       // Add page number
       addPageNumber(pageNumber);
