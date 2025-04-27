@@ -1,9 +1,10 @@
-
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useToast } from '@/hooks/use-toast';
+import { generatePDF } from '@/utils/pdfGenerator';
 import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
 import { SentimentReportProps } from './types';
 import HeaderSection from './Report/HeaderSection';
@@ -12,11 +13,58 @@ import VisualizationsSection from './Report/VisualizationsSection';
 import MetricsExplanation from './Report/MetricsExplanation';
 
 const SentimentReport = ({ analysisData }: SentimentReportProps) => {
+  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
+  const { toast } = useToast();
+  const reportRef = useRef<HTMLDivElement>(null);
+
   const currentDate = new Date().toLocaleDateString('en-US', { 
     year: 'numeric', 
     month: 'long', 
     day: 'numeric' 
   });
+
+  const handleDownloadPDF = async () => {
+    try {
+      setIsDownloadingPDF(true);
+      
+      const reportElement = reportRef.current;
+      if (!reportElement) {
+        throw new Error("Report element not found");
+      }
+
+      toast({
+        title: "Preparing Report",
+        description: "Generating PDF, please wait...",
+      });
+      
+      // Wait for visualizations to render
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      const pdf = await generatePDF(reportElement, {
+        title: 'Sentiment Analysis Report',
+        date: currentDate
+      });
+
+      if (pdf) {
+        pdf.save('sentiment_analysis_report.pdf');
+        toast({
+          title: "PDF Downloaded",
+          description: "Your report has been downloaded successfully.",
+        });
+      } else {
+        throw new Error("Failed to generate PDF");
+      }
+    } catch (error) {
+      console.error("Error generating PDF:", error);
+      toast({
+        title: "Download Failed",
+        description: "There was an error generating your PDF. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsDownloadingPDF(false);
+    }
+  };
 
   // Ensure we have valid sentiment data
   const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
@@ -86,11 +134,12 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const hasData = analysisData && Object.keys(analysisData).length > 0;
 
   return (
-    <div className="p-6 space-y-6" id="sentiment-report">
+    <div className="p-6 space-y-6" id="sentiment-report" ref={reportRef}>
       <HeaderSection 
         currentDate={currentDate}
         hasData={hasData}
-        onExport={() => {/* Export functionality */}}
+        onExportPDF={handleDownloadPDF}
+        isDownloadingPDF={isDownloadingPDF}
       />
 
       {!hasData ? (

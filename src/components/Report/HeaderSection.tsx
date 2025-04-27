@@ -1,16 +1,22 @@
 
 import React from 'react';
-import { Download, LayoutDashboard, FileText } from 'lucide-react';
+import { LayoutDashboard, FileText } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
 interface HeaderSectionProps {
   currentDate: string;
   hasData: boolean;
-  onExport: () => void;
+  onExportPDF: () => void;
+  isDownloadingPDF: boolean;
 }
 
-const HeaderSection: React.FC<HeaderSectionProps> = ({ currentDate, hasData, onExport }) => {
+const HeaderSection: React.FC<HeaderSectionProps> = ({ 
+  currentDate, 
+  hasData, 
+  onExportPDF,
+  isDownloadingPDF 
+}) => {
   return (
     <div className="mb-8" id="report-header">
       <div className="text-center">
@@ -33,23 +39,12 @@ const HeaderSection: React.FC<HeaderSectionProps> = ({ currentDate, hasData, onE
           <Button 
             variant="outline" 
             size="sm" 
-            onClick={onExport}
+            onClick={onExportPDF}
+            disabled={isDownloadingPDF}
             className="flex items-center gap-1 border-blue-300 hover:bg-blue-50"
           >
-            <Download className="h-4 w-4" />
-            Export to Excel
-          </Button>
-        )}
-        
-        {hasData && (
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={onExport}
-            className="flex items-center gap-1 border-green-300 hover:bg-green-50"
-          >
             <FileText className="h-4 w-4" />
-            Download PDF
+            {isDownloadingPDF ? "Downloading..." : "Download PDF"}
           </Button>
         )}
         
