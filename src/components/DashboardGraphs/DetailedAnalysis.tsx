@@ -21,6 +21,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
       <DashboardCard
         title="Aspect-based Sentiment Breakdown"
         icon={<BarChart3 className="h-4 w-4" />}
+        className={isDark ? "bg-gray-800/50" : ""}
       >
         <div className="h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -32,37 +33,58 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
               <XAxis 
                 dataKey="aspect" 
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 12, fill: isDark ? "#d1d5db" : "#374151" }}
                 angle={-30}
                 textAnchor="end"
                 height={60}
               />
-              <YAxis />
-              <Tooltip wrapperStyle={{ zIndex: 100 }} />
+              <YAxis 
+                tick={{ fill: isDark ? "#d1d5db" : "#374151" }}
+              />
+              <Tooltip 
+                wrapperStyle={{ zIndex: 100 }} 
+                contentStyle={{
+                  backgroundColor: isDark ? '#1f2937' : 'white',
+                  borderColor: isDark ? '#374151' : '#e5e7eb',
+                  color: isDark ? '#f3f4f6' : '#111827'
+                }}
+              />
               <Legend />
               <Bar 
                 dataKey="positive" 
                 name="Positive" 
-                fill={colors.positive} 
+                fill={colors.positive}
                 radius={[4, 4, 0, 0]}
               >
-                <LabelList dataKey="positive" position="top" />
+                <LabelList 
+                  dataKey="positive" 
+                  position="top" 
+                  fill={isDark ? "#d1d5db" : "#000000"}
+                />
               </Bar>
               <Bar 
                 dataKey="neutral" 
                 name="Neutral" 
-                fill={colors.neutral} 
+                fill={colors.neutral}
                 radius={[4, 4, 0, 0]}
               >
-                <LabelList dataKey="neutral" position="top" />
+                <LabelList 
+                  dataKey="neutral" 
+                  position="top"
+                  fill={isDark ? "#d1d5db" : "#000000"}
+                />
               </Bar>
               <Bar 
                 dataKey="negative" 
                 name="Negative" 
-                fill={colors.negative} 
+                fill={colors.negative}
                 radius={[4, 4, 0, 0]}
               >
-                <LabelList dataKey="negative" position="top" />
+                <LabelList 
+                  dataKey="negative" 
+                  position="top"
+                  fill={isDark ? "#d1d5db" : "#000000"}
+                />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
@@ -72,10 +94,11 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
       <DashboardCard
         title="Top Keywords Analysis"
         icon={<Hash className="h-4 w-4" />}
+        className={isDark ? "bg-gray-800/50" : ""}
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
+            <thead className={`text-xs uppercase ${isDark ? "bg-gray-800 text-gray-300" : "bg-gray-50 text-gray-700"}`}>
               <tr>
                 <th className="px-6 py-3">Word</th>
                 <th className="px-6 py-3">Count</th>
@@ -87,15 +110,17 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               {wordCloudData.slice(0, 20).map((word, i) => {
                 const maxCount = Math.max(...wordCloudData.map(w => w.value));
                 return (
-                  <tr key={i} className="bg-white border-b hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
+                  <tr key={i} className={`${isDark ? "bg-gray-700 border-gray-600 hover:bg-gray-600" : "bg-white border-b hover:bg-gray-50"}`}>
                     <td className="px-6 py-4 font-medium">{word.text}</td>
                     <td className="px-6 py-4">{word.value}</td>
                     <td className="px-6 py-4">
                       <span 
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          word.sentiment === 'positive' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
-                          word.sentiment === 'negative' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 
-                          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+                          word.sentiment === 'positive' 
+                            ? isDark ? 'bg-green-900 text-green-200' : 'bg-green-100 text-green-800'
+                            : word.sentiment === 'negative'
+                              ? isDark ? 'bg-red-900 text-red-200' : 'bg-red-100 text-red-800'
+                              : isDark ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-800'
                         }`}
                       >
                         {word.sentiment}
