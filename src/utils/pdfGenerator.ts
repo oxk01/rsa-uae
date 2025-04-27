@@ -9,7 +9,7 @@ import { pdfStyles } from '@/styles/pdfStyles';
 export const generatePDF = async (reportElement: HTMLElement, options: PDFGeneratorOptions) => {
   if (!reportElement) {
     console.error("No report element provided");
-    return null;
+    return handleError("No report element provided");
   }
   
   try {
@@ -43,19 +43,24 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     // Add page number to cover page
     addPageNumber(pdf, pageData, 1, totalPages);
     
-    // Render report content
-    await renderContent(pdf, pageData, clonedElement, totalPages);
+    // Render report content - pass the original element, not the clone
+    const contentRendered = await renderContent(pdf, pageData, reportElement, totalPages);
+    
+    if (!contentRendered) {
+      console.error("Content rendering failed");
+      return handleError("Failed to render report content");
+    }
     
     console.log(`Generated enhanced PDF with ${totalPages} pages`);
     return pdf;
     
   } catch (error) {
     console.error("Error generating PDF:", error);
-    return handleError();
+    return handleError(error instanceof Error ? error.message : "Unknown error");
   }
 };
 
-const handleError = (): jsPDF => {
+const handleError = (errorMessage: string = "Error generating PDF"): jsPDF => {
   const { pdf, pageData } = setupPDFDocument();
   let yOffset = pageData.margin.top;
   
@@ -68,7 +73,7 @@ const handleError = (): jsPDF => {
   pdf.setTextColor(pdfStyles.colors.text);
   pdf.text("Error generating full report visualization.", pageData.margin.left, yOffset);
   yOffset += 10;
-  pdf.text("Please try again or check browser console for errors.", pageData.margin.left, yOffset);
+  pdf.text(`Error details: ${errorMessage}`, pageData.margin.left, yOffset);
   yOffset += 20;
   pdf.text("Troubleshooting tips:", pageData.margin.left, yOffset);
   yOffset += 10;

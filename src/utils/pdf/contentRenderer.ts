@@ -1,3 +1,4 @@
+
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { pdfStyles } from '@/styles/pdfStyles';
@@ -13,15 +14,34 @@ export const renderContent = async (
   try {
     console.log('Starting content rendering process...');
     
-    // Apply enhanced styles before capturing
-    enhanceStyles(reportElement);
+    // Create a copy of the element to avoid modifying the original
+    const clonedElement = reportElement.cloneNode(true) as HTMLElement;
     
-    // Wait for all charts and visualizations to render
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Apply enhanced styles before capturing
+    enhanceStyles(clonedElement);
+    
+    // Force layout and wait for all visualizations to render
+    document.body.appendChild(clonedElement);
+    clonedElement.style.position = 'absolute';
+    clonedElement.style.left = '-9999px';
+    clonedElement.style.width = `${pageData.contentWidth}px`;
+    
+    // Wait for images and charts to render
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     console.log('Capturing content...');
-    const canvas = await captureContent(reportElement);
-    console.log('Content captured, converting to image data...');
+    const canvas = await html2canvas(clonedElement, {
+      scale: 2, // Higher quality
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+    
+    // Remove the cloned element
+    document.body.removeChild(clonedElement);
+    
+    console.log(`Canvas captured with dimensions: ${canvas.width}x${canvas.height}`);
     const imgData = canvas.toDataURL('image/png');
     
     const imgWidth = pageData.contentWidth;
@@ -41,39 +61,33 @@ export const renderContent = async (
       // Add header with section title
       addHeader(pdf, pageData, pageData.pageNumber);
       
-      const destHeight = Math.min(contentHeight, imgHeight - (i * contentHeight));
+      // Determine how much of the image to show on this page
+      const sourceY = i * (contentHeight * canvas.height / imgHeight);
+      const sourceHeight = Math.min(contentHeight * canvas.height / imgHeight, 
+                                   canvas.height - sourceY);
+      const destHeight = Math.min(contentHeight, imgHeight - i * contentHeight);
       
       // Add section header based on current page
       addSectionHeader(pdf, pageData);
       
-      // Calculate source dimensions for current slice
-      const sourceY = (i * contentHeight * canvas.height) / imgHeight;
-      const sourceHeight = (destHeight * canvas.height) / imgHeight;
-      
-      // Save the current graphics state
-      pdf.saveGraphicsState();
-      
-      // Define a clipping region for the current page slice
-      pdf.rect(
-        pageData.margin.left, 
-        pageData.margin.top, 
-        imgWidth, 
-        destHeight
-      );
-      pdf.clip();
-      
-      // Add image using the correct parameter signature for jsPDF
+      // Add the appropriate slice of the image to this page
       pdf.addImage(
-        imgData,                  // imageData
-        'PNG',                    // format
-        pageData.margin.left - (i * 0), // x - adjust position for each slice
-        pageData.margin.top - (sourceY * imgWidth / canvas.width), // y - adjust based on slice
-        imgWidth,                 // width
-        imgHeight                 // height - use full height (clipping will show just the slice)
+        imgData,
+        'PNG',
+        pageData.margin.left,
+        pageData.margin.top,
+        imgWidth,
+        imgHeight,
+        null,
+        'FAST',
+        0,
+        {
+          srcX: 0,
+          srcY: sourceY,
+          srcWidth: canvas.width,
+          srcHeight: sourceHeight
+        }
       );
-      
-      // Restore the graphics state
-      pdf.restoreGraphicsState();
       
       // Add footer with page number
       addFooter(pdf, pageData);
@@ -83,25 +97,28 @@ export const renderContent = async (
     }
     
     console.log('Content rendering complete');
+    return true;
   } catch (error) {
     console.error('Error rendering content:', error);
     
     // Add error page
     pdf.addPage();
-    pdf.setTextColor(200, 0, 0);
+    pdf.setTextColor(255, 0, 0);
     pdf.setFontSize(16);
     pdf.text('Error generating complete report. Please try again.', 
       pdf.internal.pageSize.getWidth() / 2, 100, { align: 'center' });
+    
+    return false;
   }
 };
 
 const enhanceStyles = (el: HTMLElement) => {
   // Update font styles for all text elements
-  const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h5, h6, span, li');
+  const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
   textElements.forEach((element: Element) => {
     (element as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
-    (element as HTMLElement).style.color = pdfStyles.colors.text;
-    (element as HTMLElement).style.lineHeight = pdfStyles.spacing.lineHeight.toString();
+    (element as HTMLElement).style.color = '#333333';
+    (element as HTMLElement).style.lineHeight = '1.4';
   });
   
   // Enhance headings
@@ -115,87 +132,29 @@ const enhanceStyles = (el: HTMLElement) => {
     (element as HTMLElement).style.paddingBottom = '8px';
   });
   
-  el.querySelectorAll('h2').forEach((element: Element) => {
-    (element as HTMLElement).style.color = pdfStyles.colors.primary;
-    (element as HTMLElement).style.fontSize = '20px';
-    (element as HTMLElement).style.fontWeight = 'bold';
-    (element as HTMLElement).style.marginBottom = '15px';
-    (element as HTMLElement).style.marginTop = '20px';
-  });
-  
-  el.querySelectorAll('h3').forEach((element: Element) => {
-    (element as HTMLElement).style.color = pdfStyles.colors.primary;
-    (element as HTMLElement).style.fontSize = '18px';
-    (element as HTMLElement).style.fontWeight = 'bold';
-    (element as HTMLElement).style.marginBottom = '12px';
-    (element as HTMLElement).style.marginTop = '18px';
-  });
-  
-  // Improve visualization styling
+  // Enhance visualization containers to ensure they render properly
   el.querySelectorAll('.recharts-wrapper').forEach((chart: Element) => {
     (chart as HTMLElement).style.margin = '25px auto';
-    (chart as HTMLElement).style.height = '400px';
+    (chart as HTMLElement).style.height = 'auto';
+    (chart as HTMLElement).style.minHeight = '300px';
     (chart as HTMLElement).style.width = '100%';
+  });
+  
+  // Fix SVG rendering
+  el.querySelectorAll('svg').forEach((svg: Element) => {
+    (svg as SVGElement).setAttribute('width', '100%');
+    (svg as SVGElement).setAttribute('height', '300');
+    (svg as SVGElement).style.display = 'block';
+    (svg as SVGElement).style.margin = '0 auto';
   });
   
   // Enhance card styling
   el.querySelectorAll('.card').forEach((card: Element) => {
     (card as HTMLElement).style.padding = '20px';
     (card as HTMLElement).style.margin = '20px 0';
-    (card as HTMLElement).style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
     (card as HTMLElement).style.borderRadius = '8px';
     (card as HTMLElement).style.backgroundColor = pdfStyles.colors.background;
     (card as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
-  });
-  
-  // Improve list formatting
-  el.querySelectorAll('ul, ol').forEach((list: Element) => {
-    (list as HTMLElement).style.paddingLeft = '25px';
-    (list as HTMLElement).style.marginTop = '12px';
-    (list as HTMLElement).style.marginBottom = '12px';
-  });
-  
-  el.querySelectorAll('li').forEach((item: Element) => {
-    (item as HTMLElement).style.marginBottom = '8px';
-    (item as HTMLElement).style.paddingLeft = '5px';
-  });
-  
-  // Add section separators
-  el.querySelectorAll('#sentiment-report > div').forEach((div: Element) => {
-    (div as HTMLElement).style.marginBottom = '40px';
-    (div as HTMLElement).style.paddingBottom = '20px';
-    (div as HTMLElement).style.borderBottom = `1px solid ${pdfStyles.colors.tableHeader}`;
-  });
-  
-  // Enhance tables
-  el.querySelectorAll('table').forEach((table: Element) => {
-    (table as HTMLElement).style.width = '100%';
-    (table as HTMLElement).style.borderCollapse = 'collapse';
-    (table as HTMLElement).style.marginTop = '15px';
-    (table as HTMLElement).style.marginBottom = '15px';
-    (table as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
-  });
-  
-  el.querySelectorAll('th').forEach((th: Element) => {
-    (th as HTMLElement).style.backgroundColor = pdfStyles.colors.tableHeader;
-    (th as HTMLElement).style.color = pdfStyles.colors.primary;
-    (th as HTMLElement).style.padding = '12px';
-    (th as HTMLElement).style.fontSize = '14px';
-    (th as HTMLElement).style.fontWeight = 'bold';
-    (th as HTMLElement).style.textAlign = 'left';
-    (th as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
-  });
-  
-  el.querySelectorAll('td').forEach((td: Element) => {
-    (td as HTMLElement).style.padding = '10px';
-    (td as HTMLElement).style.fontSize = '12px';
-    (td as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
-  });
-  
-  // Improve chart text
-  el.querySelectorAll('.recharts-text').forEach((text: Element) => {
-    (text as HTMLElement).style.fontSize = '12px';
-    (text as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
   });
   
   // Add section titles
@@ -234,57 +193,6 @@ const addSectionTitles = (el: HTMLElement) => {
   }
 };
 
-const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
-  // Make sure all visualizations are properly rendered
-  try {
-    // Create a deep clone of the element to avoid modifying the original
-    const clonedElement = element.cloneNode(true) as HTMLElement;
-    
-    // Ensure all visualizations are expanded and visible
-    const charts = clonedElement.querySelectorAll('.recharts-wrapper');
-    charts.forEach(chart => {
-      (chart as HTMLElement).style.height = '400px';
-      (chart as HTMLElement).style.overflow = 'visible';
-      (chart as HTMLElement).style.display = 'block';
-    });
-    
-    // Wait for any async rendering to complete
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    
-    // Create enhanced canvas with high quality
-    const canvas = await html2canvas(clonedElement, {
-      scale: 2,           // Higher quality
-      logging: false,
-      useCORS: true,
-      allowTaint: true,
-      width: element.offsetWidth,
-      height: element.offsetHeight,
-      windowWidth: element.offsetWidth,
-      windowHeight: element.offsetHeight,
-      backgroundColor: "#ffffff"
-    });
-    
-    console.log(`Canvas captured with dimensions: ${canvas.width}x${canvas.height}`);
-    return canvas;
-    
-  } catch (error) {
-    console.error('Error capturing content:', error);
-    // Return a basic canvas with error message
-    const canvas = document.createElement('canvas');
-    canvas.width = 800;
-    canvas.height = 600;
-    const ctx = canvas.getContext('2d');
-    if (ctx) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ff0000';
-      ctx.font = '24px Arial';
-      ctx.fillText('Error capturing report content', 100, 300);
-    }
-    return canvas;
-  }
-};
-
 const addSectionHeader = (pdf: jsPDF, pageData: PageData) => {
   let currentSection = "";
   if (pageData.pageNumber === 2) {
@@ -305,7 +213,7 @@ const addSectionHeader = (pdf: jsPDF, pageData: PageData) => {
   
   if (currentSection) {
     pdf.setFont(pdfStyles.fonts.heading);
-    pdf.setFontSize(pdfStyles.sizes.body);
+    pdf.setFontSize(pdfStyles.sizes.sectionHeader);
     pdf.setTextColor(pdfStyles.colors.primary);
     pdf.text(currentSection, pageData.pageWidth / 2, pageData.margin.top / 2, { align: 'center' });
   }

@@ -55,7 +55,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       });
       
       // Wait for visualizations to fully render
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
 
       console.log("Starting PDF generation...");
       const pdf = await generatePDF(reportElement, {
