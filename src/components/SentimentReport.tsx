@@ -1,9 +1,10 @@
+
 import React from 'react';
+import SentimentScore from './Report/SentimentScore';
+import KeyPhrases from './Report/KeyPhrases';
+import AspectsAnalysis from './Report/AspectsAnalysis';
+import { ChartBar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-import { Separator } from '@/components/ui/separator';
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import WordCloudVisualization from './WordCloudVisualization';
-import HeatmapMatrix from './HeatmapMatrix';
 
 interface SentimentReportProps {
   analysisData: any;
@@ -16,369 +17,62 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     day: 'numeric' 
   });
 
-  const sentimentData = [
-    { name: 'Positive', value: 65, color: '#10b981' },
-    { name: 'Neutral', value: 20, color: '#6b7280' },
-    { name: 'Negative', value: 15, color: '#ef4444' },
-  ];
-
-  const aspectData = [
-    { aspect: 'Quality', positive: 87, neutral: 8, negative: 5 },
-    { aspect: 'Delivery', positive: 83, neutral: 10, negative: 7 },
-    { aspect: 'Comfort', positive: 81, neutral: 12, negative: 7 },
-    { aspect: 'Service', positive: 78, neutral: 14, negative: 8 },
-    { aspect: 'Price', positive: 76, neutral: 15, negative: 9 },
-    { aspect: 'Size', positive: 70, neutral: 18, negative: 12 },
-    { aspect: 'Shipping', positive: 68, neutral: 22, negative: 10 },
-  ];
-
-  const heatmapData = {
-    predictedPositive: 68,
-    predictedNegative: 10,
-    actualPositive: 5,
-    actualNegative: 17
+  const sentiment = analysisData?.overallSentiment?.sentiment || 'neutral';
+  const score = analysisData?.overallSentiment?.score || 50;
+  const keyPhrases = analysisData?.fileAnalysis?.keywords || [];
+  const aspects = analysisData?.fileAnalysis?.aspects || [];
+  const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown || {
+    positive: 33,
+    neutral: 33,
+    negative: 34
   };
 
+  // Generate insights and recommendations
+  const insights = generateInsights(analysisData);
+  const recommendations = generateRecommendations(analysisData);
+
   return (
-    <div className="p-6 bg-white space-y-12 print:p-0" id="sentiment-report-content">
+    <div className="p-6 space-y-6" id="sentiment-report">
       <div className="text-center mb-8" id="report-header">
         <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
 
-      {/* Executive Summary */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Executive Summary</h2>
-        <div className="space-y-4">
-          <p className="text-gray-700">
-            This report analyzes customer sentiment across multiple aspects of our product/service.
-            The analysis reveals a predominantly positive sentiment (65%), with key strengths in
-            product quality (87% positive) and delivery experience (83% positive).
-          </p>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+        <SentimentScore 
+          sentiment={sentiment}
+          score={score}
+          breakdown={sentimentBreakdown}
+        />
+        <KeyPhrases phrases={keyPhrases} sentiment={sentiment} />
+      </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="p-4 border-l-4 border-l-blue-500">
-              <h3 className="font-medium mb-2 text-blue-700">Key Findings:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
-                <li>Quality and Delivery receive the highest positive ratings</li>
-                <li>Customer service maintains a strong 78% satisfaction rate</li>
-                <li>Shipping experience shows room for improvement at 68% positive</li>
-              </ul>
-            </Card>
-            <Card className="p-4 border-l-4 border-l-green-500">
-              <h3 className="font-medium mb-2 text-green-700">Recommendations:</h3>
-              <ul className="list-disc pl-5 space-y-2 text-sm text-gray-600">
-                <li>Focus on improving shipping processes</li>
-                <li>Address size-related concerns</li>
-                <li>Maintain high quality standards</li>
-              </ul>
-            </Card>
-          </div>
-        </div>
-      </section>
+      <AspectsAnalysis aspects={aspects} />
 
-      {/* Distribution of Sentiment */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Distribution of Sentiment</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="h-[300px]">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={sentimentData}
-                  cx="50%"
-                  cy="50%"
-                  labelLine={false}
-                  outerRadius={100}
-                  fill="#8884d8"
-                  dataKey="value"
-                  label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                >
-                  {sentimentData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-          <div className="space-y-4">
-            <h3 className="text-lg font-medium">Analysis</h3>
-            <p className="text-gray-700">
-              The sentiment distribution shows a strong positive trend with 65% of feedback being
-              favorable. Neutral sentiment accounts for 20% of responses, while negative feedback
-              represents 15%. This indicates overall customer satisfaction while highlighting
-              areas for potential improvement.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Aspect-Based Feedback */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Aspect-Based Feedback</h2>
-        <div className="h-[400px] mb-6">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart
-              data={aspectData}
-              layout="vertical"
-              margin={{ top: 5, right: 30, left: 100, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} />
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis dataKey="aspect" type="category" width={100} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="positive" name="Positive" stackId="a" fill="#10b981" />
-              <Bar dataKey="neutral" name="Neutral" stackId="a" fill="#6b7280" />
-              <Bar dataKey="negative" name="Negative" stackId="a" fill="#ef4444" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="space-y-4">
-          <p className="text-gray-700">
-            The aspect-based analysis reveals that Quality (87%) and Delivery (83%) are our strongest
-            performing areas. Service maintains a solid performance at 78% positive feedback.
-            Shipping and Size aspects show the most room for improvement, with positive ratings
-            of 68% and 70% respectively.
-          </p>
-        </div>
-      </section>
-
-      {/* Model Evaluation */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Model Evaluation</h2>
-        <HeatmapMatrix data={heatmapData} />
-        <div className="mt-4 space-y-4">
-          <p className="text-gray-700">
-            Our sentiment analysis model shows strong performance with:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 text-gray-700">
-            <li>68% True Positive rate for correctly identified positive sentiments</li>
-            <li>17% True Negative rate for correctly identified negative sentiments</li>
-            <li>Only 5% False Positive and 10% False Negative rates, indicating good reliability</li>
-          </ul>
-        </div>
-      </section>
-
-      {/* Most Mentioned Keywords */}
-      <section className="mb-12">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Most Mentioned Keywords</h2>
-        <div className="h-[300px] border rounded-md p-4 mb-4">
-          <WordCloudVisualization data={analysisData?.fileAnalysis?.keywords || []} />
-        </div>
-        <p className="text-gray-700">
-          The word cloud visualization highlights the most frequently mentioned terms in customer
-          feedback, with size indicating frequency and color representing sentiment. This helps
-          identify key themes and topics that matter most to our customers.
-        </p>
-      </section>
-
-      {/* Actionable Recommendations */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 text-blue-800">Actionable Recommendations</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="p-6 bg-green-50 border-green-200">
-            <h3 className="font-semibold text-green-800 mb-3">Short-term Actions:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Establish a regular reporting cadence to track sentiment trends over time.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Address immediate concerns in shipping and delivery processes based on recent feedback.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-600 mt-1">•</span>
-                <span className="text-green-800">
-                  Implement quick fixes for commonly reported size-related issues.
-                </span>
-              </li>
+      <Card className="p-4 mb-6">
+        <h3 className="font-semibold mb-2 flex items-center">
+          <ChartBar className="h-4 w-4 mr-2" />
+          Key Insights & Recommendations
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Insights:</h4>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
+              {insights.map((insight, idx) => (
+                <li key={idx}>{insight}</li>
+              ))}
             </ul>
-          </Card>
-
-          <Card className="p-6 bg-blue-50 border-blue-200">
-            <h3 className="font-semibold text-blue-800 mb-3">Long-term Strategy:</h3>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Implement targeted improvements based on the most frequently mentioned negative aspects.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Consider implementing a continuous feedback loop to monitor sentiment changes over time.
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-1">•</span>
-                <span className="text-blue-800">
-                  Develop a comprehensive size guide and fit recommendation system.
-                </span>
-              </li>
+          </div>
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 mb-2">Recommendations:</h4>
+            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
+              {recommendations.map((recommendation, idx) => (
+                <li key={idx}>{recommendation}</li>
+              ))}
             </ul>
-          </Card>
+          </div>
         </div>
-        <div className="mt-4 text-gray-600 text-sm">
-          <p>These recommendations are based on the analysis of customer feedback and sentiment trends. Regular monitoring and implementation of these suggestions can help improve overall customer satisfaction.</p>
-        </div>
-      </section>
-
-      {/* Enhanced print styles for PDF generation */}
-      <style>
-        {`
-          @media print {
-            /* Global print styles */
-            * {
-              -webkit-print-color-adjust: exact !important;
-              print-color-adjust: exact !important;
-              color-adjust: exact !important;
-            }
-            
-            /* Document structure */
-            #sentiment-report-content {
-              padding: 0 !important;
-              margin: 0 !important;
-              font-family: "Times New Roman", serif !important;
-              line-height: 1.5 !important;
-            }
-            
-            /* Section spacing and layout */
-            section {
-              page-break-inside: avoid;
-              break-inside: avoid;
-              margin-bottom: 3rem !important;
-              clear: both;
-              padding: 0.5rem 0 !important;
-            }
-            
-            /* Typography */
-            h1 {
-              font-size: 24pt !important;
-              font-weight: bold !important;
-              margin: 2rem 0 1.5rem !important;
-              color: #1a365d !important;
-              text-align: center !important;
-            }
-            
-            h2 {
-              font-size: 18pt !important;
-              font-weight: bold !important;
-              margin: 2rem 0 1rem !important;
-              color: #1a365d !important;
-              page-break-after: avoid;
-            }
-            
-            h3 {
-              font-size: 16pt !important;
-              font-weight: bold !important;
-              margin: 1.5rem 0 0.75rem !important;
-              color: #1a365d !important;
-            }
-            
-            p, ul, ol {
-              font-size: 12pt !important;
-              line-height: 1.6 !important;
-              margin: 0.75rem 0 !important;
-              color: #1f2937 !important;
-            }
-            
-            ul, ol {
-              padding-left: 1.5rem !important;
-            }
-            
-            li {
-              margin-bottom: 0.5rem !important;
-            }
-            
-            /* Card and container formatting */
-            .card {
-              break-inside: avoid;
-              margin: 1.5rem 0 !important;
-              padding: 1.5rem !important;
-              border: 1px solid #e5e7eb !important;
-              background-color: #ffffff !important;
-              box-shadow: none !important;
-            }
-            
-            /* Chart containers */
-            .chart-container {
-              page-break-inside: avoid;
-              margin: 2rem 0 !important;
-              min-height: 300px !important;
-            }
-            
-            /* Tables */
-            table {
-              width: 100% !important;
-              border-collapse: collapse !important;
-              margin: 1.5rem 0 !important;
-              page-break-inside: avoid;
-            }
-            
-            th, td {
-              padding: 0.75rem !important;
-              border: 1px solid #e5e7eb !important;
-              text-align: left !important;
-            }
-            
-            th {
-              background-color: #f3f4f6 !important;
-              font-weight: bold !important;
-            }
-            
-            /* Images and visualizations */
-            img, svg {
-              max-width: 100% !important;
-              height: auto !important;
-              margin: 1rem 0 !important;
-              page-break-inside: avoid;
-            }
-            
-            /* Grid layouts */
-            .grid {
-              display: block !important;
-            }
-            
-            .grid > * {
-              width: 100% !important;
-              margin-bottom: 2rem !important;
-            }
-            
-            /* Hide elements not needed in PDF */
-            .print-hide {
-              display: none !important;
-            }
-            
-            /* Ensure proper text colors */
-            .text-gray-500, .text-gray-600, .text-gray-700 {
-              color: #1f2937 !important;
-            }
-            
-            /* Page breaks */
-            .page-break-before {
-              page-break-before: always !important;
-            }
-            
-            .page-break-after {
-              page-break-after: always !important;
-            }
-            
-            /* Links */
-            a {
-              text-decoration: none !important;
-              color: #1a365d !important;
-            }
-          }
-        `}
-      </style>
+      </Card>
     </div>
   );
 };

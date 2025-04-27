@@ -4,9 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SentimentReport from './SentimentReport';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
-import { pdfStyles } from '@/styles/pdfStyles';
+import { generatePDF } from '@/utils/pdfGenerator';
 
 interface GenerateReportButtonProps {
   analysisData: any;
@@ -29,7 +27,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
     }
     
     setIsGenerating(true);
-    
     setTimeout(() => {
       setIsGenerating(false);
       setShowReport(true);
@@ -44,111 +41,19 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
     try {
       const reportElement = document.getElementById('sentiment-report');
       if (!reportElement) return;
-      
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
+
+      const pdf = await generatePDF(reportElement, {
+        title: 'Sentiment Analysis Report',
+        date: `Generated on ${new Date().toLocaleDateString()}`
       });
-      
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = pdfStyles.spacing.pageMargin;
-      const contentWidth = pageWidth - (margin.left + margin.right);
-      const maxContentHeight = pageHeight * pdfStyles.layout.maxContentHeight;
-      
-      const setupPage = () => {
-        pdf.setFont(pdfStyles.fonts.normal);
-        pdf.setFontSize(pdfStyles.sizes.body);
-        pdf.setTextColor(pdfStyles.colors.text);
-        pdf.setLineHeightFactor(pdfStyles.spacing.lineHeight);
-      };
-      
-      const addPageNumber = (pageNum: number) => {
-        pdf.setFontSize(pdfStyles.sizes.caption);
-        pdf.setTextColor(pdfStyles.colors.text);
-        pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - (margin.bottom / 2), { align: 'right' });
-      };
-      
-      let yOffset = margin.top;
-      let pageNumber = 1;
-      
-      pdf.setFont(pdfStyles.fonts.bold);
-      pdf.setFontSize(pdfStyles.sizes.title);
-      pdf.setTextColor(pdfStyles.colors.header);
-      pdf.text('Sentiment Analysis Report', pageWidth / 2, yOffset, { align: 'center' });
-      
-      yOffset += pdfStyles.spacing.headerMargin;
-      pdf.setFont(pdfStyles.fonts.normal);
-      pdf.setFontSize(pdfStyles.sizes.body);
-      pdf.setTextColor(pdfStyles.colors.text);
-      const dateText = `Generated on ${new Date().toLocaleDateString()}`;
-      pdf.text(dateText, pageWidth / 2, yOffset, { align: 'center' });
-      yOffset += pdfStyles.spacing.sectionMargin;
-      
-      addPageNumber(pageNumber);
-      
-      const sections = reportElement.querySelectorAll('section');
-      for (const section of sections) {
-        if (yOffset > maxContentHeight) {
-          pdf.addPage();
-          pageNumber++;
-          yOffset = margin.top;
-          setupPage();
-          addPageNumber(pageNumber);
-        }
-        
-        const title = section.querySelector('h2');
-        if (title) {
-          pdf.setFont(pdfStyles.fonts.bold);
-          pdf.setFontSize(pdfStyles.sizes.sectionHeader);
-          pdf.setTextColor(pdfStyles.colors.header);
-          pdf.text(title.textContent || '', margin.left, yOffset);
-          yOffset += pdfStyles.spacing.headerMargin;
-        }
-        
-        const canvas = await html2canvas(section, {
-          scale: 2,
-          logging: false,
-          useCORS: true,
-          allowTaint: true,
-          ignoreElements: (element) => {
-            return element.tagName.toLowerCase() === 'h2' ||
-                   element.classList.contains('print-hide');
-          }
+
+      if (pdf) {
+        pdf.save('sentiment_analysis_report.pdf');
+        toast({
+          title: "PDF Downloaded",
+          description: "Your report has been downloaded successfully.",
         });
-        
-        let imgWidth = contentWidth;
-        let imgHeight = (canvas.height * imgWidth) / canvas.width;
-        
-        if (yOffset + imgHeight > maxContentHeight) {
-          pdf.addPage();
-          pageNumber++;
-          yOffset = margin.top;
-          setupPage();
-          addPageNumber(pageNumber);
-        }
-        
-        pdf.addImage(
-          canvas.toDataURL('image/png'),
-          'PNG',
-          margin.left,
-          yOffset,
-          imgWidth,
-          imgHeight,
-          undefined,
-          'FAST'
-        );
-        
-        yOffset += imgHeight + pdfStyles.spacing.sectionMargin + pdfStyles.spacing.contentSpacing;
       }
-      
-      pdf.save('sentiment_analysis_report.pdf');
-      
-      toast({
-        title: "PDF Downloaded",
-        description: "Your report has been downloaded successfully.",
-      });
     } catch (error) {
       console.error("Error generating PDF:", error);
       toast({
