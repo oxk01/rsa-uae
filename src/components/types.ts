@@ -47,6 +47,7 @@ export interface AspectData {
   positive?: number;
   neutral?: number;
   negative?: number;
+  context?: string; // Added the context property to match the data structure
 }
 
 export interface KeywordData {

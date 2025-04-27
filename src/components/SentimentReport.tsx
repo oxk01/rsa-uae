@@ -39,8 +39,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     aspect: aspect.aspect || aspect.name || 'Unknown',
     sentiment: aspect.sentiment || 'neutral',
     confidence: aspect.confidence,
-    // Add safe access for context property which might not exist in AspectData
-    context: aspect.context || undefined
+    context: aspect.context
   }));
 
   return (
