@@ -5,7 +5,8 @@ import { PageData } from './types';
 import { addHeader, addPageNumber, addFooter } from './pageSetup';
 import { enhanceStyles } from './styleEnhancer';
 import { addSectionHeader } from './sectionHeaders';
-import { addPageImage } from './imageHandler';
+import { addPageImage, prepareGraphicsElements } from './imageHandler';
+import { pdfStyles } from '@/styles/pdfStyles';
 
 export const renderContent = async (
   pdf: jsPDF,
@@ -14,13 +15,17 @@ export const renderContent = async (
   totalPages: number
 ) => {
   try {
-    console.log('Starting content rendering process...');
+    console.log('Starting content rendering process with enhanced graphics handling...');
     
     // Create a copy of the element to work with
     const clonedElement = reportElement.cloneNode(true) as HTMLElement;
     
-    // Apply styles before capturing
+    // Apply styles and prepare graphics elements before capturing
     enhanceStyles(clonedElement);
+    prepareGraphicsElements(clonedElement);
+    
+    // Process each visualization section separately for better quality
+    const sections = clonedElement.querySelectorAll('.card');
     
     // Append to body but make it invisible to user
     document.body.appendChild(clonedElement);
@@ -30,145 +35,202 @@ export const renderContent = async (
     clonedElement.style.backgroundColor = '#ffffff';
     
     // Force layout recalculation and give time for visualizations
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Increased delay to 5 seconds
+    console.log('Waiting for visualizations to fully render...');
+    await new Promise(resolve => setTimeout(resolve, 8000)); // Increased delay to 8 seconds
     
-    console.log('Capturing content with html2canvas...');
+    // Add page for overall content
+    pdf.addPage();
+    pageData.pageNumber++;
+    addHeader(pdf, pageData, pageData.pageNumber);
+    addSectionHeader(pdf, pageData);
     
-    try {
-      // Set scale to 1 for better performance and reliability
-      const canvas = await html2canvas(clonedElement, {
-        scale: 1,
-        useCORS: true,
-        allowTaint: true,
-        logging: false,
-        backgroundColor: '#ffffff',
-        width: pageData.contentWidth,
-        height: clonedElement.scrollHeight || 1000, // Ensure minimum height
-        foreignObjectRendering: false, // Disable foreign object rendering which can cause issues
-        onclone: (doc, ele) => {
-          console.log('Clone created for rendering with dimensions:', 
-            ele.offsetWidth, 'x', ele.offsetHeight);
-          
-          // Force all SVGs to have explicit dimensions
-          const svgs = ele.querySelectorAll('svg');
-          svgs.forEach(svg => {
-            if (!svg.getAttribute('width')) svg.setAttribute('width', '300');
-            if (!svg.getAttribute('height')) svg.setAttribute('height', '200');
-          });
-        }
+    // Add introduction text
+    const yPosition = pageData.margin.top + 40;
+    pdf.setFontSize(pdfStyles.sizes.body);
+    pdf.setTextColor(pdfStyles.colors.text);
+    pdf.text("This sentiment analysis report provides a comprehensive overview of customer feedback analysis. The following pages contain detailed visualizations of sentiment trends, key metrics, and actionable insights derived from the data.", 
+      pageData.margin.left, yPosition, { 
+        maxWidth: pageData.contentWidth, 
+        align: 'justify' 
       });
+    
+    addFooter(pdf, pageData);
+    addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
+    
+    // One-by-one capture each visualization section separately
+    console.log('Capturing each visualization section separately...');
+    
+    for (let i = 0; i < sections.length; i++) {
+      const section = sections[i] as HTMLElement;
+      const sectionTitle = section.querySelector('h3')?.textContent || `Section ${i+1}`;
       
-      // Check if canvas was created successfully
-      if (!canvas || canvas.width === 0 || canvas.height === 0) {
-        throw new Error('Canvas dimensions are zero');
-      }
+      console.log(`Capturing section: ${sectionTitle}`);
       
-      console.log(`Canvas captured with dimensions: ${canvas.width}x${canvas.height}`);
-      
-      // Remove the cloned element
-      document.body.removeChild(clonedElement);
-      
-      // Get image data with quality setting of 0.8 (80%)
-      const imgData = canvas.toDataURL('image/jpeg', 0.8);
-      
-      const imgWidth = pageData.contentWidth;
-      const imgHeight = Math.max((canvas.height * imgWidth) / canvas.width, 100);
-      
-      // Calculate pages needed
-      const contentHeight = pageData.maxContentHeight - pageData.margin.top - 20;
-      const pagesNeeded = Math.max(1, Math.ceil(imgHeight / contentHeight));
-      
-      console.log(`Content will span ${pagesNeeded} pages`);
-      
-      // Add content pages
-      for (let i = 0; i < pagesNeeded; i++) {
+      try {
+        // Create a container for this section to capture it individually
+        const sectionContainer = document.createElement('div');
+        sectionContainer.style.backgroundColor = '#ffffff';
+        sectionContainer.style.padding = '20px';
+        sectionContainer.style.width = `${pageData.contentWidth}px`;
+        
+        // Clone the section to avoid modifying the original
+        const sectionClone = section.cloneNode(true) as HTMLElement;
+        sectionContainer.appendChild(sectionClone);
+        
+        document.body.appendChild(sectionContainer);
+        
+        // Process section-specific elements
+        const sectionVisuals = sectionContainer.querySelectorAll('.recharts-wrapper, svg, canvas');
+        sectionVisuals.forEach(visual => {
+          if (visual instanceof SVGElement) {
+            visual.setAttribute('width', '500');
+            visual.setAttribute('height', '300');
+          }
+        });
+        
+        // Give time for section to render fully
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Capture this section with html2canvas
+        const canvas = await html2canvas(sectionContainer, {
+          scale: 1.5, // Higher scale for better quality
+          useCORS: true,
+          allowTaint: true,
+          logging: false,
+          backgroundColor: '#ffffff',
+          onclone: (doc, ele) => {
+            console.log(`Cloned section ${i+1} with dimensions:`, 
+              ele.offsetWidth, 'x', ele.offsetHeight);
+          }
+        });
+        
+        // Add a new page for this section
         pdf.addPage();
         pageData.pageNumber++;
         
         addHeader(pdf, pageData, pageData.pageNumber);
         
-        // Calculate source and destination dimensions for this page
-        const sourceY = i * (contentHeight * canvas.height / imgHeight);
-        const sourceHeight = Math.min(contentHeight * canvas.height / imgHeight, canvas.height - sourceY);
-        const destHeight = Math.min(contentHeight, imgHeight - i * contentHeight);
+        // Add section title
+        pdf.setFontSize(pdfStyles.sizes.sectionHeader);
+        pdf.setTextColor(pdfStyles.colors.header);
+        pdf.text(sectionTitle, 
+          pageData.margin.left, 
+          pageData.margin.top + 15);
         
-        addSectionHeader(pdf, pageData);
+        // Convert section to image
+        const imgData = canvas.toDataURL('image/jpeg', 1.0); // Highest quality
         
-        // Use simplified image adding approach
-        try {
-          if (imgData && destHeight > 0) {
-            // Extract the part of the image we need for this page
-            const pageCanvas = document.createElement('canvas');
-            pageCanvas.width = canvas.width;
-            pageCanvas.height = sourceHeight;
-            
-            const ctx = pageCanvas.getContext('2d');
-            if (ctx) {
-              ctx.drawImage(
-                canvas, 
-                0, sourceY, 
-                canvas.width, sourceHeight,
-                0, 0, 
-                canvas.width, sourceHeight
-              );
-              
-              const pageImgData = pageCanvas.toDataURL('image/jpeg', 0.8);
-              
-              // Add image to PDF using our handler
-              addPageImage(
-                pdf, 
-                pageData, 
-                pageImgData, 
-                imgWidth, 
-                destHeight, 
-                i === 0
-              );
-            } else {
-              throw new Error("Could not get 2D context from canvas");
-            }
-          } else {
-            throw new Error(`Invalid image data or dimensions: ${destHeight}`);
-          }
-        } catch (imgError) {
-          console.error('Error adding page image:', imgError);
-          
-          // Fallback: just add text
-          pdf.setTextColor(0, 0, 0);
-          pdf.setFontSize(12);
-          pdf.text(`Page ${i+1} content (image rendering failed)`, 
-            pageData.margin.left, pageData.margin.top + 20);
+        const imgWidth = pageData.contentWidth - 20;
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        // Add section visualization image
+        addPageImage(
+          pdf,
+          pageData,
+          imgData,
+          imgWidth,
+          imgHeight,
+          false
+        );
+        
+        // Add explanation text based on section title
+        let explanationText = "";
+        if (sectionTitle.includes("Sentiment Distribution")) {
+          explanationText = "This chart displays the distribution of sentiment across all analyzed reviews. The proportions show positive, neutral, and negative sentiment percentages, providing insight into overall customer satisfaction levels.";
+        } else if (sectionTitle.includes("Trend")) {
+          explanationText = "This visualization tracks sentiment changes over time, helping identify patterns, seasonal variations, and the impact of specific events or product changes on customer sentiment.";
+        } else if (sectionTitle.includes("Aspect")) {
+          explanationText = "This chart highlights the most frequently mentioned product or service aspects in customer feedback, along with their associated sentiment, helping prioritize improvement areas.";
+        } else if (sectionTitle.includes("Words")) {
+          explanationText = "The word cloud visualizes frequently used terms in customer reviews. Word size indicates frequency, while colors represent associated sentiment (green for positive, gray for neutral, red for negative).";
+        } else if (sectionTitle.includes("Evaluation")) {
+          explanationText = "This chart shows the model's evaluation metrics, indicating the confidence level and accuracy of the sentiment analysis predictions across different categories.";
+        } else if (sectionTitle.includes("Matrix")) {
+          explanationText = "The confusion matrix displays the accuracy of sentiment predictions by comparing predicted sentiment against actual sentiment, helping assess the reliability of the analysis.";
+        } else {
+          explanationText = "This visualization provides valuable insights into customer sentiment patterns and key metrics identified during the analysis process.";
         }
+        
+        pdf.setFontSize(pdfStyles.sizes.body);
+        pdf.setTextColor(pdfStyles.colors.text);
+        pdf.text(explanationText, 
+          pageData.margin.left, 
+          pageData.margin.top + imgHeight + 40, { 
+            maxWidth: pageData.contentWidth, 
+            align: 'justify' 
+          });
         
         addFooter(pdf, pageData);
         addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
         
-        console.log(`Added page ${pageData.pageNumber} of content`);
+        // Remove the temporary section container
+        document.body.removeChild(sectionContainer);
+        
+      } catch (sectionError) {
+        console.error(`Error capturing section ${i+1}:`, sectionError);
       }
-      
-      console.log('Content rendering complete');
-      return true;
-    } catch (canvasError) {
-      console.error('Error in html2canvas:', canvasError);
-      
-      // Clean up the DOM even if there was an error
-      if (document.body.contains(clonedElement)) {
-        document.body.removeChild(clonedElement);
-      }
-      
-      // Create simplified fallback using direct text rendering
-      createFallbackContent(pdf, pageData, reportElement);
-      return false;
     }
+    
+    // Remove the original cloned element
+    if (document.body.contains(clonedElement)) {
+      document.body.removeChild(clonedElement);
+    }
+    
+    console.log('All visualizations processed successfully');
+    
+    // Add summary page
+    pdf.addPage();
+    pageData.pageNumber++;
+    
+    addHeader(pdf, pageData, pageData.pageNumber);
+    
+    // Add summary title
+    pdf.setFontSize(pdfStyles.sizes.sectionHeader);
+    pdf.setTextColor(pdfStyles.colors.header);
+    pdf.text("Summary and Recommendations", 
+      pageData.pageWidth / 2, 
+      pageData.margin.top + 20, { align: 'center' });
+    
+    // Add summary text
+    pdf.setFontSize(pdfStyles.sizes.body);
+    pdf.setTextColor(pdfStyles.colors.text);
+    
+    let summaryY = pageData.margin.top + 50;
+    pdf.text("Summary:", pageData.margin.left, summaryY);
+    summaryY += 10;
+    
+    pdf.text("This report provides a comprehensive analysis of customer sentiment across multiple dimensions. The visualizations highlight key patterns in feedback, most mentioned aspects, and overall sentiment trends. Based on this analysis, we can identify areas of strength and opportunities for improvement.", 
+      pageData.margin.left, summaryY, {
+        maxWidth: pageData.contentWidth,
+        align: 'justify'
+      });
+    
+    summaryY += 40;
+    pdf.text("Key Recommendations:", pageData.margin.left, summaryY);
+    summaryY += 10;
+    
+    const recommendations = [
+      "Focus on improving aspects with the highest negative sentiment scores",
+      "Capitalize on positive feedback trends by amplifying successful features",
+      "Address recurring themes in neutral feedback to convert to positive sentiment",
+      "Continue monitoring sentiment trends to measure the impact of implemented changes"
+    ];
+    
+    recommendations.forEach((rec, index) => {
+      pdf.text(`${index + 1}. ${rec}`, pageData.margin.left + 5, summaryY);
+      summaryY += 15;
+    });
+    
+    addFooter(pdf, pageData);
+    addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
+    
+    return true;
+    
   } catch (error) {
     console.error('Error rendering content:', error);
     
-    // Add error page
-    pdf.addPage();
-    pdf.setTextColor(255, 0, 0);
-    pdf.setFontSize(16);
-    pdf.text('Error generating complete report. Please try again.', 
-      pdf.internal.pageSize.getWidth() / 2, 100, { align: 'center' });
-    
+    // Create a simple fallback page with error information
+    createFallbackContent(pdf, pageData, reportElement);
     return false;
   }
 };
