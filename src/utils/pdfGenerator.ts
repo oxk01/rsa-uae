@@ -32,35 +32,34 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
   
   const addPageNumber = (pageNum: number) => {
     pdf.setFontSize(pdfStyles.sizes.caption);
-    pdf.setTextColor(pdfStyles.colors.text);
+    pdf.setTextColor(pdfStyles.colors.subtext);
     pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - (margin.bottom / 2), { align: 'right' });
   };
   
   let yOffset = margin.top;
   let pageNumber = 1;
   
-  // Title Page
+  // Enhanced Title Page
   pdf.setFont(pdfStyles.fonts.bold);
   pdf.setFontSize(pdfStyles.sizes.title);
-  pdf.setTextColor(pdfStyles.colors.header);
+  pdf.setTextColor(pdfStyles.colors.primary);
   pdf.text(options.title, pageWidth / 2, yOffset, { align: 'center' });
   
   yOffset += pdfStyles.spacing.headerMargin;
   pdf.setFont(pdfStyles.fonts.normal);
-  pdf.setFontSize(pdfStyles.sizes.body);
-  pdf.setTextColor(pdfStyles.colors.text);
+  pdf.setFontSize(pdfStyles.sizes.subHeader);
+  pdf.setTextColor(pdfStyles.colors.subtext);
   pdf.text(options.date, pageWidth / 2, yOffset, { align: 'center' });
   
   yOffset += pdfStyles.spacing.sectionMargin;
   addPageNumber(pageNumber);
   
   try {
-    // First ensure all charts and graphs are fully rendered
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Ensure all charts and graphs are fully rendered with enhanced quality
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Take a high-quality screenshot of the report
     const canvas = await html2canvas(reportElement, {
-      scale: 2, // Higher resolution
+      scale: 3,  // Higher resolution for better quality
       logging: false,
       useCORS: true,
       allowTaint: true,
@@ -69,21 +68,41 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
       windowWidth: reportElement.scrollWidth,
       windowHeight: reportElement.scrollHeight,
       onclone: (document) => {
-        // Enhance content for PDF capture
         const clonedReport = document.querySelector('#sentiment-report');
         if (clonedReport) {
-          // Ensure charts are visible
+          // Enhance chart visibility and size
           const charts = clonedReport.querySelectorAll('.recharts-wrapper');
           charts.forEach((chart: Element) => {
             (chart as HTMLElement).style.visibility = 'visible';
-            (chart as HTMLElement).style.height = '320px';
+            (chart as HTMLElement).style.height = '400px'; // Larger charts
+            (chart as HTMLElement).style.width = '100%';
           });
           
-          // Enhance text readability
+          // Improve text elements styling
           const textElements = clonedReport.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
           textElements.forEach((el: Element) => {
-            (el as HTMLElement).style.margin = '1em 0';
-            (el as HTMLElement).style.lineHeight = '1.5';
+            (el as HTMLElement).style.margin = '1.5em 0';
+            (el as HTMLElement).style.lineHeight = '1.8';
+            (el as HTMLElement).style.color = '#1a1a1a';
+          });
+          
+          // Enhance headings
+          clonedReport.querySelectorAll('h1, h2, h3').forEach((el: Element) => {
+            (el as HTMLElement).style.fontWeight = 'bold';
+            (el as HTMLElement).style.color = '#1a365d';
+          });
+          
+          // Improve table readability
+          clonedReport.querySelectorAll('table').forEach((table: Element) => {
+            (table as HTMLElement).style.width = '100%';
+            (table as HTMLElement).style.borderCollapse = 'collapse';
+          });
+          
+          // Enhance card visuals
+          clonedReport.querySelectorAll('.card').forEach((card: Element) => {
+            (card as HTMLElement).style.padding = '2em';
+            (card as HTMLElement).style.margin = '1.5em 0';
+            (card as HTMLElement).style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)';
           });
         }
       }
@@ -96,7 +115,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     // Calculate number of pages needed
     const pagesNeeded = Math.ceil(imgHeight / maxContentHeight);
     
-    // Add all pages
+    // Add all pages with enhanced quality
     for (let pageNum = 0; pageNum < pagesNeeded; pageNum++) {
       if (pageNum > 0) {
         pdf.addPage();
@@ -105,7 +124,6 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         addPageNumber(pageNumber);
       }
       
-      // Calculate the portion of the image for this page
       const sourceY = pageNum * maxContentHeight * (canvas.height / imgHeight);
       const sourceHeight = Math.min(
         maxContentHeight * (canvas.height / imgHeight),
@@ -120,18 +138,18 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         y: margin.top,
         width: imgWidth,
         height: destHeight,
-        compression: 'FAST',
-        rotation: 0
+        compression: 'FAST'
       });
     }
     
-    console.log(`Generated PDF with ${pageNumber} pages`);
+    console.log(`Generated enhanced PDF with ${pageNumber} pages`);
     return pdf;
   } catch (error) {
     console.error("Error generating PDF:", error);
     
-    // Fallback to simplified PDF
+    // Fallback to simplified PDF with error message
     pdf.setFontSize(pdfStyles.sizes.body);
+    pdf.setTextColor(pdfStyles.colors.text);
     pdf.text("Error generating full report visualization.", margin.left, yOffset);
     yOffset += 10;
     pdf.text("Please try again or check browser console for errors.", margin.left, yOffset);
@@ -139,4 +157,3 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     return pdf;
   }
 };
-

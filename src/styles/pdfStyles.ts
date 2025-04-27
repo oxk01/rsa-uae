@@ -5,34 +5,34 @@ export const pdfStyles = {
     bold: 'helvetica-bold',
   },
   sizes: {
-    title: 28,          // Large, clear title
-    sectionHeader: 20,  // Prominent section headers
-    subHeader: 16,      // Clear sub-headers
-    body: 12,           // Readable body text
-    caption: 10,        // Small but legible captions
+    title: 32,          // Larger title for better hierarchy
+    sectionHeader: 24,   // Prominent section headers
+    subHeader: 18,      // Clear sub-headers
+    body: 14,           // Larger body text for better readability
+    caption: 12,        // Readable captions
   },
   spacing: {
-    sectionMargin: 40,  // Generous space between sections
-    paragraphMargin: 20,  // Clear paragraph separation
-    headerMargin: 30,    // Ample space around headers
-    pageMargin: {        // Ensure content doesn't touch page edges
-      top: 40,
-      bottom: 40,
-      left: 30,
-      right: 30
+    sectionMargin: 50,    // More space between sections
+    paragraphMargin: 25,  // Better paragraph separation
+    headerMargin: 35,     // More space around headers
+    pageMargin: {         // Wider margins for better layout
+      top: 50,
+      bottom: 50,
+      left: 40,
+      right: 40
     },
-    lineHeight: 1.5,     // Improved readability with increased line spacing
-    contentSpacing: 10   // Additional spacing to prevent content bleeding
+    lineHeight: 1.6,      // Increased line height for better readability
+    contentSpacing: 15    // More space between elements
   },
   colors: {
-    primary: '#1a365d',
-    text: '#000000',     // Pure black for maximum readability
-    header: '#1a365d',   // Dark, professional header color
-    background: '#FFFFFF'  // Clean white background
+    primary: '#1a365d',    // Deep blue for headers
+    text: '#1a1a1a',       // Slightly softer than pure black
+    header: '#1a365d',     // Consistent with primary
+    subtext: '#4a5568',    // Grey for secondary text
+    background: '#FFFFFF'   // Clean white background
   },
   layout: {
-    maxContentHeight: 0.8,  // Ensure content uses only 80% of page height
-    minMarginBetweenElements: 10  // Minimum spacing between different content blocks
+    maxContentHeight: 0.75,  // Slightly reduced to prevent content crowding
+    minMarginBetweenElements: 15  // More spacing between elements
   }
 };
-
