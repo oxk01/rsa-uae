@@ -41,11 +41,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
   };
 
   const handleDownloadPDF = async () => {
-    toast({
-      title: "Preparing PDF",
-      description: "Please wait while we generate your PDF...",
-    });
-    
     try {
       const reportElement = document.getElementById('sentiment-report');
       if (!reportElement) return;
@@ -60,17 +55,8 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       const pageHeight = pdf.internal.pageSize.getHeight();
       const margin = pdfStyles.spacing.pageMargin;
       const contentWidth = pageWidth - (margin.left + margin.right);
+      const maxContentHeight = pageHeight * pdfStyles.layout.maxContentHeight;
       
-      pdf.setProperties({
-        title: 'Sentiment Analysis Report',
-        subject: 'Analysis Results',
-        creator: 'Sentiment Analysis Tool',
-        author: 'Report Generator'
-      });
-      
-      let yOffset = margin.top;
-      let pageNumber = 1;
-
       const setupPage = () => {
         pdf.setFont(pdfStyles.fonts.normal);
         pdf.setFontSize(pdfStyles.sizes.body);
@@ -83,7 +69,10 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         pdf.setTextColor(pdfStyles.colors.text);
         pdf.text(`Page ${pageNum}`, pageWidth - margin.right, pageHeight - (margin.bottom / 2), { align: 'right' });
       };
-
+      
+      let yOffset = margin.top;
+      let pageNumber = 1;
+      
       pdf.setFont(pdfStyles.fonts.bold);
       pdf.setFontSize(pdfStyles.sizes.title);
       pdf.setTextColor(pdfStyles.colors.header);
@@ -101,7 +90,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
       
       const sections = reportElement.querySelectorAll('section');
       for (const section of sections) {
-        if (yOffset > pageHeight - margin.bottom - 60) {
+        if (yOffset > maxContentHeight) {
           pdf.addPage();
           pageNumber++;
           yOffset = margin.top;
@@ -132,20 +121,12 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         let imgWidth = contentWidth;
         let imgHeight = (canvas.height * imgWidth) / canvas.width;
         
-        if (yOffset + imgHeight > pageHeight - margin.bottom) {
-          const availableHeight = pageHeight - margin.bottom - yOffset;
-          
-          if (availableHeight < imgHeight * 0.3) {
-            pdf.addPage();
-            pageNumber++;
-            yOffset = margin.top;
-            setupPage();
-            addPageNumber(pageNumber);
-          } else {
-            const scaleFactor = availableHeight / imgHeight;
-            imgWidth *= scaleFactor;
-            imgHeight = availableHeight;
-          }
+        if (yOffset + imgHeight > maxContentHeight) {
+          pdf.addPage();
+          pageNumber++;
+          yOffset = margin.top;
+          setupPage();
+          addPageNumber(pageNumber);
         }
         
         pdf.addImage(
@@ -159,7 +140,7 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           'FAST'
         );
         
-        yOffset += imgHeight + pdfStyles.spacing.sectionMargin;
+        yOffset += imgHeight + pdfStyles.spacing.sectionMargin + pdfStyles.spacing.contentSpacing;
       }
       
       pdf.save('sentiment_analysis_report.pdf');
