@@ -1,4 +1,3 @@
-
 import React, { useRef, useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { AlertCircle } from 'lucide-react';
@@ -12,6 +11,7 @@ import HeaderSection from './Report/HeaderSection';
 import InsightsSection from './Report/InsightsSection';
 import VisualizationsSection from './Report/VisualizationsSection';
 import MetricsExplanation from './Report/MetricsExplanation';
+import SectionTitle from './Report/SectionTitle';
 
 const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
@@ -157,6 +157,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         </Card>
       ) : (
         <>
+          <SectionTitle title="Executive Summary" />
           <MetricsExplanation 
             accuracyScore={analysisData?.fileAnalysis?.accuracyScore || 70}
             totalReviews={analysisData?.fileAnalysis?.totalReviews || 0}
@@ -167,6 +168,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
             }}
           />
 
+          <SectionTitle title="Analysis Results" />
           <VisualizationsSection 
             distributionData={[
               { name: 'Positive', value: analysisData?.fileAnalysis?.sentimentBreakdown?.positive || 33 },

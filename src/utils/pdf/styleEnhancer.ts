@@ -1,7 +1,7 @@
 
 import { applyTextElementStyles, applyHeadingStyles } from './styles/elementStyles';
 import { applyChartStyles, applySvgStyles } from './styles/chartStyles';
-import { applyCardStyles, addSectionTitles } from './styles/sectionStyles';
+import { applyCardStyles } from './styles/sectionStyles';
 
 export const enhanceStyles = (el: HTMLElement) => {
   // Apply text element styles
@@ -23,8 +23,4 @@ export const enhanceStyles = (el: HTMLElement) => {
   // Apply card styles
   const cards = el.querySelectorAll('.card');
   applyCardStyles(cards);
-  
-  // Add section titles
-  const reportDiv = el.querySelector('#sentiment-report');
-  addSectionTitles(reportDiv);
 };
