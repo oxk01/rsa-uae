@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+
+import React, { useState, useRef } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import SentimentReport from './SentimentReport';
 import { generatePDF } from '@/utils/pdfGenerator';
 
@@ -14,7 +15,9 @@ interface GenerateReportButtonProps {
 const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonProps) => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [showReport, setShowReport] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
+  const reportRef = useRef<HTMLDivElement>(null);
 
   const handleGenerateReport = () => {
     if (!hasData) {
@@ -39,8 +42,20 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
 
   const handleDownloadPDF = async () => {
     try {
-      const reportElement = document.getElementById('sentiment-report');
-      if (!reportElement) return;
+      setIsDownloading(true);
+      
+      const reportElement = reportRef.current;
+      if (!reportElement) {
+        throw new Error("Report element not found");
+      }
+
+      toast({
+        title: "Preparing Report",
+        description: "Generating PDF, please wait...",
+      });
+      
+      // Wait for visualizations to render
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       const pdf = await generatePDF(reportElement, {
         title: 'Sentiment Analysis Report',
@@ -53,6 +68,8 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           title: "PDF Downloaded",
           description: "Your report has been downloaded successfully.",
         });
+      } else {
+        throw new Error("Failed to generate PDF");
       }
     } catch (error) {
       console.error("Error generating PDF:", error);
@@ -61,6 +78,8 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         description: "There was an error generating your PDF. Please try again.",
         variant: "destructive"
       });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -129,9 +148,12 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold">Sentiment Analysis Report</DialogTitle>
+            <DialogDescription className="text-sm text-gray-500">
+              View and download your comprehensive analysis report
+            </DialogDescription>
           </DialogHeader>
           
-          <div id="sentiment-report">
+          <div id="sentiment-report" ref={reportRef}>
             <SentimentReport analysisData={analysisData} />
           </div>
           
@@ -149,10 +171,11 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
               variant="default" 
               size="sm"
               onClick={handleDownloadPDF}
+              disabled={isDownloading}
               className="flex items-center gap-2"
             >
               <FileText className="h-4 w-4" />
-              Download PDF
+              {isDownloading ? "Downloading..." : "Download PDF"}
             </Button>
           </div>
         </DialogContent>
