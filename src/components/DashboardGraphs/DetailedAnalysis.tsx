@@ -3,7 +3,8 @@ import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList, ResponsiveContainer } from 'recharts';
 import DashboardCard from '../DashboardCard';
 import { BarChart3, Hash } from 'lucide-react';
-import { COLORS } from './constants';
+import { getThemeColors } from './constants';
+import { useTheme } from 'next-themes';
 
 interface DetailedAnalysisProps {
   aspectData: any[];
@@ -11,6 +12,10 @@ interface DetailedAnalysisProps {
 }
 
 const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordCloudData }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+  
   return (
     <>
       <DashboardCard
@@ -38,7 +43,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               <Bar 
                 dataKey="positive" 
                 name="Positive" 
-                fill={COLORS.positive} 
+                fill={colors.positive} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList dataKey="positive" position="top" />
@@ -46,7 +51,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               <Bar 
                 dataKey="neutral" 
                 name="Neutral" 
-                fill={COLORS.neutral} 
+                fill={colors.neutral} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList dataKey="neutral" position="top" />
@@ -54,7 +59,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               <Bar 
                 dataKey="negative" 
                 name="Negative" 
-                fill={COLORS.negative} 
+                fill={colors.negative} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList dataKey="negative" position="top" />
@@ -70,7 +75,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
               <tr>
                 <th className="px-6 py-3">Word</th>
                 <th className="px-6 py-3">Count</th>
@@ -82,15 +87,15 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               {wordCloudData.slice(0, 20).map((word, i) => {
                 const maxCount = Math.max(...wordCloudData.map(w => w.value));
                 return (
-                  <tr key={i} className="bg-white border-b hover:bg-gray-50">
+                  <tr key={i} className="bg-white border-b hover:bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
                     <td className="px-6 py-4 font-medium">{word.text}</td>
                     <td className="px-6 py-4">{word.value}</td>
                     <td className="px-6 py-4">
                       <span 
                         className={`px-2 py-1 rounded text-xs font-medium ${
-                          word.sentiment === 'positive' ? 'bg-green-100 text-green-800' : 
-                          word.sentiment === 'negative' ? 'bg-red-100 text-red-800' : 
-                          'bg-gray-100 text-gray-800'
+                          word.sentiment === 'positive' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' : 
+                          word.sentiment === 'negative' ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200' : 
+                          'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                         }`}
                       >
                         {word.sentiment}
@@ -111,4 +116,3 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
 };
 
 export default DetailedAnalysis;
-

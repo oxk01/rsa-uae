@@ -1,15 +1,20 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, LabelList, ResponsiveContainer } from 'recharts';
-import { COLORS } from './constants';
+import { getThemeColors } from './constants';
 import DashboardCard from '../DashboardCard';
 import { BarChart2 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface MentionedAspectsProps {
   data: any[];
 }
 
 const MentionedAspects: React.FC<MentionedAspectsProps> = ({ data }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+  
   // Process data to ensure it has the required fields
   const processedData = data
     .filter(aspect => aspect.aspect || aspect.name) // Ensure we have a valid aspect name
@@ -56,7 +61,7 @@ const MentionedAspects: React.FC<MentionedAspectsProps> = ({ data }) => {
               {processedData.map((entry, index) => (
                 <Cell 
                   key={`cell-${index}`} 
-                  fill={COLORS.mentioned[index % COLORS.mentioned.length]} 
+                  fill={colors.mentioned[index % colors.mentioned.length]} 
                 />
               ))}
               <LabelList 
@@ -64,7 +69,7 @@ const MentionedAspects: React.FC<MentionedAspectsProps> = ({ data }) => {
                 position="right" 
                 offset={15}
                 formatter={(value) => `${value}`}
-                style={{ fontSize: '12px', fill: '#333' }}
+                style={{ fontSize: '12px', fill: isDark ? '#d1d5db' : '#333' }}
               />
             </Bar>
           </BarChart>

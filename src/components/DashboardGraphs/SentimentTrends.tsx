@@ -1,15 +1,20 @@
 
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { COLORS } from './constants';
+import { getThemeColors } from './constants';
 import DashboardCard from '../DashboardCard';
 import { LineChart as LineChartIcon } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface SentimentTrendsProps {
   data: any[];
 }
 
 const SentimentTrends: React.FC<SentimentTrendsProps> = ({ data }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+  
   return (
     <DashboardCard
       title="Sentiment Trends Over Time"
@@ -36,7 +41,7 @@ const SentimentTrends: React.FC<SentimentTrendsProps> = ({ data }) => {
               type="monotone"
               dataKey="positive"
               name="Positive"
-              stroke={COLORS.positive}
+              stroke={colors.positive}
               activeDot={{ r: 6 }}
               strokeWidth={2}
             />
@@ -44,7 +49,7 @@ const SentimentTrends: React.FC<SentimentTrendsProps> = ({ data }) => {
               type="monotone"
               dataKey="neutral"
               name="Neutral"
-              stroke={COLORS.neutral}
+              stroke={colors.neutral}
               activeDot={{ r: 6 }}
               strokeWidth={2}
             />
@@ -52,7 +57,7 @@ const SentimentTrends: React.FC<SentimentTrendsProps> = ({ data }) => {
               type="monotone"
               dataKey="negative"
               name="Negative"
-              stroke={COLORS.negative}
+              stroke={colors.negative}
               activeDot={{ r: 6 }}
               strokeWidth={2}
             />
@@ -64,4 +69,3 @@ const SentimentTrends: React.FC<SentimentTrendsProps> = ({ data }) => {
 };
 
 export default SentimentTrends;
-

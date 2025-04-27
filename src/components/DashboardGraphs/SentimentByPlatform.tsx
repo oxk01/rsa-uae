@@ -1,15 +1,20 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { COLORS } from './constants';
+import { getThemeColors } from './constants';
 import DashboardCard from '../DashboardCard';
 import { BarChart3 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 interface SentimentByPlatformProps {
   data: any[];
 }
 
 const SentimentByPlatform: React.FC<SentimentByPlatformProps> = ({ data }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+  
   return (
     <DashboardCard
       title="Sentiment by Platform/Source"
@@ -31,19 +36,19 @@ const SentimentByPlatform: React.FC<SentimentByPlatformProps> = ({ data }) => {
               dataKey="positive" 
               name="Positive" 
               stackId="a" 
-              fill={COLORS.positive} 
+              fill={colors.positive} 
             />
             <Bar 
               dataKey="neutral" 
               name="Neutral" 
               stackId="a" 
-              fill={COLORS.neutral} 
+              fill={colors.neutral} 
             />
             <Bar 
               dataKey="negative" 
               name="Negative" 
               stackId="a" 
-              fill={COLORS.negative} 
+              fill={colors.negative} 
             />
           </BarChart>
         </ResponsiveContainer>
@@ -53,4 +58,3 @@ const SentimentByPlatform: React.FC<SentimentByPlatformProps> = ({ data }) => {
 };
 
 export default SentimentByPlatform;
-

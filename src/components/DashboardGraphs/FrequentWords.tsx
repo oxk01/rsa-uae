@@ -2,7 +2,8 @@
 import React from 'react';
 import DashboardCard from '../DashboardCard';
 import { Hash } from 'lucide-react';
-import { COLORS } from './constants';
+import { getThemeColors } from './constants';
+import { useTheme } from 'next-themes';
 
 interface FrequentWordsProps {
   data: any[];
@@ -17,21 +18,25 @@ const getWordSize = (count: number, max: number, min: number) => {
   return minSize + ((count - min) / (max - min)) * (maxSize - minSize);
 };
 
-const getSentimentColor = (sentiment: string) => {
-  switch (sentiment.toLowerCase()) {
-    case 'positive': return COLORS.positive;
-    case 'negative': return COLORS.negative;
-    default: return COLORS.neutral;
-  }
-};
-
 const FrequentWords: React.FC<FrequentWordsProps> = ({ data }) => {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  const colors = getThemeColors(isDark);
+  
   let minCount = 0, maxCount = 0;
   
   if (data.length > 0) {
     minCount = Math.min(...data.map(item => item.value));
     maxCount = Math.max(...data.map(item => item.value));
   }
+
+  const getSentimentColor = (sentiment: string) => {
+    switch (sentiment.toLowerCase()) {
+      case 'positive': return colors.positive;
+      case 'negative': return colors.negative;
+      default: return colors.neutral;
+    }
+  };
 
   return (
     <DashboardCard
@@ -57,16 +62,16 @@ const FrequentWords: React.FC<FrequentWordsProps> = ({ data }) => {
       </div>
       <div className="flex justify-center gap-6 mt-2">
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#10b981] mr-2"></div>
-          <span className="text-sm">Positive</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.positive }}></div>
+          <span className="text-sm ml-2">Positive</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#6b7280] mr-2"></div>
-          <span className="text-sm">Neutral</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.neutral }}></div>
+          <span className="text-sm ml-2">Neutral</span>
         </div>
         <div className="flex items-center">
-          <div className="w-3 h-3 rounded-full bg-[#ef4444] mr-2"></div>
-          <span className="text-sm">Negative</span>
+          <div className="w-3 h-3 rounded-full" style={{ backgroundColor: colors.negative }}></div>
+          <span className="text-sm ml-2">Negative</span>
         </div>
       </div>
     </DashboardCard>
@@ -74,4 +79,3 @@ const FrequentWords: React.FC<FrequentWordsProps> = ({ data }) => {
 };
 
 export default FrequentWords;
-
