@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -79,6 +78,20 @@ export default {
 				},
 				gray: {
 					850: '#161b22', // New dark shade for better contrast in dark mode
+				},
+				chart: {
+					positive: {
+						DEFAULT: '#10b981',
+						dark: '#22c55e'
+					},
+					neutral: {
+						DEFAULT: '#6b7280',
+						dark: '#9ca3af'
+					},
+					negative: {
+						DEFAULT: '#ef4444',
+						dark: '#f87171'
+					}
 				}
 			},
 			borderRadius: {
