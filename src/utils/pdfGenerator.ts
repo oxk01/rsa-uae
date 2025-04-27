@@ -59,7 +59,7 @@ const handleError = (): jsPDF => {
   const { pdf, pageData } = setupPDFDocument();
   let yOffset = pageData.margin.top;
   
-  pdf.setFontSize(pdfStyles.sizes.heading);
+  pdf.setFontSize(pdfStyles.sizes.sectionHeader); // Changed from heading to sectionHeader
   pdf.setTextColor(255, 0, 0);  // Red color for error
   pdf.text("Error Generating Report", pageData.pageWidth / 2, yOffset, { align: 'center' });
   
