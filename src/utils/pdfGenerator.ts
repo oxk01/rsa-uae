@@ -94,20 +94,22 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
       );
       const destHeight = Math.min(maxContentHeight, imgHeight - (pageNum * maxContentHeight));
       
-      pdf.addImage(
-        imgData,
-        'PNG',
-        margin.left,
-        margin.top,
-        imgWidth,
-        destHeight,
-        undefined,
-        'FAST',
-        0,
-        sourceY,
-        canvas.width,
-        sourceHeight
-      );
+      // Fixed the addImage call to use the correct number of arguments
+      // Using object syntax for clarity and to avoid argument count issues
+      pdf.addImage({
+        imageData: imgData,
+        format: 'PNG',
+        x: margin.left,
+        y: margin.top,
+        width: imgWidth,
+        height: destHeight,
+        compression: 'FAST',
+        rotation: 0,
+        srcX: 0,
+        srcY: sourceY,
+        srcWidth: canvas.width,
+        srcHeight: sourceHeight
+      });
     }
     
     console.log(`Generated PDF with ${pageNumber} pages`);
