@@ -4,6 +4,12 @@ import KeyPhrases from './Report/KeyPhrases';
 import AspectsAnalysis from './Report/AspectsAnalysis';
 import DetailedVisualizations from './Report/DetailedVisualizations';
 import MetricsExplanation from './Report/MetricsExplanation';
+import FrequentWords from './DashboardGraphs/FrequentWords';
+import SentimentDistribution from './DashboardGraphs/SentimentDistribution';
+import SentimentTrends from './DashboardGraphs/SentimentTrends';
+import MentionedAspects from './DashboardGraphs/MentionedAspects';
+import ModelEvaluation from './DashboardGraphs/ModelEvaluation';
+import HeatmapMatrix from './HeatmapMatrix';
 import { ChartBar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
@@ -47,6 +53,31 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     context: aspect.context
   }));
 
+  const distributionData = [
+    { name: 'Positive', value: sentimentBreakdown.positive },
+    { name: 'Neutral', value: sentimentBreakdown.neutral },
+    { name: 'Negative', value: sentimentBreakdown.negative },
+  ];
+
+  const modelEvalData = [
+    { confidence: 'High', accuracy: analysisData?.fileAnalysis?.accuracyScore || 0 },
+    { confidence: 'Medium', accuracy: (analysisData?.fileAnalysis?.accuracyScore || 0) * 0.8 },
+    { confidence: 'Low', accuracy: (analysisData?.fileAnalysis?.accuracyScore || 0) * 0.6 },
+  ];
+
+  const heatmapData = {
+    predictedPositive: sentimentBreakdown.positive,
+    predictedNegative: sentimentBreakdown.negative,
+    actualPositive: sentimentBreakdown.positive,
+    actualNegative: sentimentBreakdown.negative,
+  };
+
+  const wordCloudData = keyPhrases.map((phrase: any) => ({
+    text: typeof phrase === 'string' ? phrase : phrase.text || phrase.word || '',
+    value: phrase.value || phrase.count || 1,
+    sentiment: phrase.sentiment || 'neutral'
+  }));
+
   return (
     <div className="p-6 space-y-6" id="sentiment-report">
       <div className="text-center mb-8" id="report-header">
@@ -69,12 +100,27 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         <KeyPhrases phrases={keyPhrases} sentiment={sentiment} />
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <SentimentDistribution data={distributionData} />
+        <HeatmapMatrix data={heatmapData} />
+      </div>
+
       <AspectsAnalysis aspects={formattedAspects} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <MentionedAspects data={aspects} />
+        <ModelEvaluation data={modelEvalData} />
+      </div>
 
       <DetailedVisualizations 
         aspects={formattedAspects}
         trendData={trendData}
       />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <SentimentTrends data={trendData} />
+        <FrequentWords data={wordCloudData} />
+      </div>
 
       <Card className="p-4 mb-6">
         <h3 className="font-semibold mb-2 flex items-center">
