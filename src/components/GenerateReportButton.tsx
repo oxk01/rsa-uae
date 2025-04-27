@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -155,28 +154,6 @@ const GenerateReportButton = ({ analysisData, hasData }: GenerateReportButtonPro
           
           <div id="sentiment-report" ref={reportRef}>
             <SentimentReport analysisData={analysisData} />
-          </div>
-          
-          <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={handleDownloadCSV}
-              className="flex items-center gap-2"
-            >
-              <Download className="h-4 w-4" />
-              Download CSV
-            </Button>
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={handleDownloadPDF}
-              disabled={isDownloading}
-              className="flex items-center gap-2"
-            >
-              <FileText className="h-4 w-4" />
-              {isDownloading ? "Downloading..." : "Download PDF"}
-            </Button>
           </div>
         </DialogContent>
       </Dialog>
