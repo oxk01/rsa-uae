@@ -44,7 +44,6 @@ export const renderContent = async (
     const sourceHeight = (destHeight * canvas.height) / imgHeight;
     
     // Add image using the correct parameter signature for jsPDF
-    // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
     pdf.addImage(
       imgData,                  // imageData
       'PNG',                    // format
@@ -52,9 +51,6 @@ export const renderContent = async (
       pageData.margin.top,      // y
       imgWidth,                 // width
       destHeight,               // height
-      undefined,                // alias
-      'FAST',                   // compression
-      0                         // rotation
     );
     
     // Handle image slicing by first drawing the full image and then applying clipping
