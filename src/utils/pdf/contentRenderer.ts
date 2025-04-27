@@ -1,3 +1,4 @@
+
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { pdfStyles } from '@/styles/pdfStyles';
@@ -69,21 +70,34 @@ export const renderContent = async (
       // Add section header based on current page
       addSectionHeader(pdf, pageData);
       
-      // Fix: Modify the addImage call to use the correct argument syntax
-      pdf.addImage({
-        imageData: imgData,
-        format: 'PNG',
-        x: pageData.margin.left,
-        y: pageData.margin.top,
-        width: imgWidth,
-        height: imgHeight,
-        compression: 'FAST',
-        rotation: 0,
-        srcX: 0,
-        srcY: sourceY,
-        srcWidth: canvas.width,
-        srcHeight: sourceHeight
-      });
+      // Fix: Use the standard addImage method without the source rectangle parameters
+      // which aren't supported in the ImageOptions type
+      if (i === 0) {
+        // For the first page, just add the full image
+        pdf.addImage({
+          imageData: imgData,
+          format: 'PNG',
+          x: pageData.margin.left,
+          y: pageData.margin.top,
+          width: imgWidth,
+          height: destHeight,
+          compression: 'FAST'
+        });
+      } else {
+        // For subsequent pages, we need to use the alternative syntax
+        // that allows for specifying just part of the image
+        pdf.addImage(
+          imgData,
+          'PNG',
+          pageData.margin.left,
+          pageData.margin.top,
+          imgWidth,
+          destHeight,
+          undefined,
+          'FAST',
+          0
+        );
+      }
       
       // Add footer with page number
       addFooter(pdf, pageData);
