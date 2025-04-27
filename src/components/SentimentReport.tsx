@@ -1,9 +1,7 @@
-
-import React, { useRef, useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
-import { generatePDF } from '@/utils/pdfGenerator';
+import React, { useRef } from 'react';
 import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
 import { SentimentReportProps } from './types';
+import { usePDFDownload } from '@/hooks/usePDFDownload';
 import HeaderSection from './Report/HeaderSection';
 import InsightsSection from './Report/InsightsSection';
 import VisualizationsSection from './Report/VisualizationsSection';
@@ -13,9 +11,8 @@ import ReportNotFoundCard from './Report/ReportNotFoundCard';
 import { processKeyPhrases, processAspects, processTrendData } from './Report/helpers/dataProcessing';
 
 const SentimentReport = ({ analysisData }: SentimentReportProps) => {
-  const [isDownloadingPDF, setIsDownloadingPDF] = useState(false);
-  const { toast } = useToast();
   const reportRef = useRef<HTMLDivElement>(null);
+  const { isDownloading, downloadPDF } = usePDFDownload();
 
   const currentDate = new Date().toLocaleDateString('en-US', { 
     year: 'numeric', 
@@ -24,45 +21,11 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   });
 
   const handleDownloadPDF = async () => {
-    try {
-      setIsDownloadingPDF(true);
-      
-      const reportElement = reportRef.current;
-      if (!reportElement) {
-        throw new Error("Report element not found");
-      }
-
-      toast({
-        title: "Preparing Report",
-        description: "Generating PDF, please wait...",
-      });
-      
-      // Wait for visualizations to render completely
-      await new Promise(resolve => setTimeout(resolve, 1500));
-
-      const pdf = await generatePDF(reportElement, {
+    if (reportRef.current) {
+      await downloadPDF(reportRef.current, {
         title: 'Sentiment Analysis Report',
         date: currentDate
       });
-
-      if (pdf) {
-        pdf.save('sentiment_analysis_report.pdf');
-        toast({
-          title: "PDF Downloaded",
-          description: "Your report has been downloaded successfully.",
-        });
-      } else {
-        throw new Error("Failed to generate PDF");
-      }
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-      toast({
-        title: "Download Failed",
-        description: "There was an error generating your PDF. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsDownloadingPDF(false);
     }
   };
 
@@ -72,7 +35,6 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     return <ReportNotFoundCard />;
   }
 
-  // Process data for visualization components
   const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
     ? analysisData?.overallSentiment 
     : { sentiment: 'neutral', score: 50 };
@@ -95,7 +57,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
         currentDate={currentDate}
         hasData={hasData}
         onExportPDF={handleDownloadPDF}
-        isDownloadingPDF={isDownloadingPDF}
+        isDownloadingPDF={isDownloading}
       />
 
       <SectionTitle title="Executive Summary" />
