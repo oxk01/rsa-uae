@@ -1,0 +1,195 @@
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
+import { pdfStyles } from '@/styles/pdfStyles';
+import { PageData } from './types';
+import { addHeader, addPageNumber } from './pageSetup';
+
+export const renderContent = async (
+  pdf: jsPDF,
+  pageData: PageData,
+  reportElement: HTMLElement,
+  totalPages: number
+) => {
+  const canvas = await captureContent(reportElement);
+  const imgData = canvas.toDataURL('image/png');
+  
+  const imgWidth = pageData.contentWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  
+  // Calculate number of pages needed
+  const contentHeight = pageData.maxContentHeight - pageData.margin.top;
+  const pagesNeeded = Math.ceil(imgHeight / contentHeight);
+  
+  // Add content pages
+  for (let i = 0; i < pagesNeeded; i++) {
+    pdf.addPage();
+    pageData.pageNumber++;
+    addHeader(pdf, pageData, pageData.pageNumber);
+    
+    const destHeight = Math.min(contentHeight, imgHeight - (i * contentHeight));
+    
+    addSectionHeader(pdf, pageData);
+    
+    // Add image slice for current page
+    pdf.addImage(
+      imgData,
+      'PNG',
+      pageData.margin.left,
+      pageData.margin.top,
+      imgWidth,
+      destHeight
+    );
+    
+    addPageNumber(pdf, pageData, pageData.pageNumber, totalPages);
+  }
+};
+
+const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
+  // Apply styles to enhance rendering quality
+  const enhanceStyles = (el: HTMLElement) => {
+    // Update font styles
+    const textElements = el.querySelectorAll('p, h1, h2, h3, h4, h5, h6, span, li');
+    textElements.forEach((element: Element) => {
+      (element as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
+      (element as HTMLElement).style.color = pdfStyles.colors.text;
+      (element as HTMLElement).style.lineHeight = pdfStyles.spacing.lineHeight.toString();
+    });
+    
+    // Enhance headings
+    el.querySelectorAll('h1').forEach((element: Element) => {
+      (element as HTMLElement).style.color = pdfStyles.colors.primary;
+      (element as HTMLElement).style.fontSize = '24px';
+      (element as HTMLElement).style.fontWeight = 'bold';
+      (element as HTMLElement).style.marginBottom = '20px';
+      (element as HTMLElement).style.marginTop = '25px';
+      (element as HTMLElement).style.borderBottom = `1px solid ${pdfStyles.colors.primary}`;
+      (element as HTMLElement).style.paddingBottom = '8px';
+    });
+    
+    el.querySelectorAll('h2').forEach((element: Element) => {
+      (element as HTMLElement).style.color = pdfStyles.colors.primary;
+      (element as HTMLElement).style.fontSize = '20px';
+      (element as HTMLElement).style.fontWeight = 'bold';
+      (element as HTMLElement).style.marginBottom = '15px';
+      (element as HTMLElement).style.marginTop = '20px';
+    });
+    
+    el.querySelectorAll('h3').forEach((element: Element) => {
+      (element as HTMLElement).style.color = pdfStyles.colors.primary;
+      (element as HTMLElement).style.fontSize = '18px';
+      (element as HTMLElement).style.fontWeight = 'bold';
+      (element as HTMLElement).style.marginBottom = '12px';
+      (element as HTMLElement).style.marginTop = '18px';
+    });
+    
+    // Enhance chart visibility
+    el.querySelectorAll('.recharts-wrapper').forEach((chart: Element) => {
+      (chart as HTMLElement).style.margin = '25px auto';
+      (chart as HTMLElement).style.height = '400px';
+      (chart as HTMLElement).style.width = '100%';
+    });
+    
+    // Enhance card visuals
+    el.querySelectorAll('.card').forEach((card: Element) => {
+      (card as HTMLElement).style.padding = '20px';
+      (card as HTMLElement).style.margin = '20px 0';
+      (card as HTMLElement).style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
+      (card as HTMLElement).style.borderRadius = '8px';
+      (card as HTMLElement).style.backgroundColor = pdfStyles.colors.background;
+      (card as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
+    });
+    
+    // Improve list formatting
+    el.querySelectorAll('ul, ol').forEach((list: Element) => {
+      (list as HTMLElement).style.paddingLeft = '25px';
+      (list as HTMLElement).style.marginTop = '12px';
+      (list as HTMLElement).style.marginBottom = '12px';
+    });
+    
+    el.querySelectorAll('li').forEach((item: Element) => {
+      (item as HTMLElement).style.marginBottom = '8px';
+      (item as HTMLElement).style.paddingLeft = '5px';
+    });
+    
+    // Enhance tables
+    el.querySelectorAll('table').forEach((table: Element) => {
+      (table as HTMLElement).style.width = '100%';
+      (table as HTMLElement).style.borderCollapse = 'collapse';
+      (table as HTMLElement).style.marginTop = '15px';
+      (table as HTMLElement).style.marginBottom = '15px';
+      (table as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
+    });
+    
+    el.querySelectorAll('th').forEach((th: Element) => {
+      (th as HTMLElement).style.backgroundColor = pdfStyles.colors.tableHeader;
+      (th as HTMLElement).style.color = pdfStyles.colors.primary;
+      (th as HTMLElement).style.padding = '12px';
+      (th as HTMLElement).style.fontSize = '14px';
+      (th as HTMLElement).style.fontWeight = 'bold';
+      (th as HTMLElement).style.textAlign = 'left';
+      (th as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
+    });
+    
+    el.querySelectorAll('td').forEach((td: Element) => {
+      (td as HTMLElement).style.padding = '10px';
+      (td as HTMLElement).style.fontSize = '12px';
+      (td as HTMLElement).style.border = `1px solid ${pdfStyles.colors.tableHeader}`;
+    });
+    
+    // Fix chart text sizes
+    el.querySelectorAll('.recharts-text').forEach((text: Element) => {
+      (text as HTMLElement).style.fontSize = '12px';
+      (text as HTMLElement).style.fontFamily = 'Arial, Helvetica, sans-serif';
+    });
+    
+    // Fix container for report sections
+    el.querySelectorAll('#sentiment-report > div').forEach((div: Element) => {
+      (div as HTMLElement).style.marginBottom = '30px';
+    });
+  };
+  
+  // Wait for visualizations to render
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  // Create enhanced canvas
+  return html2canvas(element, {
+    scale: 4,
+    logging: false,
+    useCORS: true,
+    allowTaint: true,
+    width: element.offsetWidth,
+    height: element.offsetHeight,
+    onclone: (document) => {
+      const clonedReport = document.querySelector('#sentiment-report');
+      if (clonedReport) {
+        enhanceStyles(clonedReport as HTMLElement);
+      }
+    }
+  });
+};
+
+const addSectionHeader = (pdf: jsPDF, pageData: PageData) => {
+  let currentSection = "";
+  if (pageData.pageNumber === 2) {
+    currentSection = "Executive Summary & Analysis Overview";
+  } else if (pageData.pageNumber === 3) {
+    currentSection = "Sentiment Distribution Analysis";
+  } else if (pageData.pageNumber === 4) {
+    currentSection = "Key Aspects Analysis";
+  } else if (pageData.pageNumber === 5) {
+    currentSection = "Trends Over Time";
+  } else if (pageData.pageNumber === 6) {
+    currentSection = "Detailed Visualizations";
+  } else if (pageData.pageNumber === 7) {
+    currentSection = "Model Evaluation";
+  } else if (pageData.pageNumber === 8) {
+    currentSection = "Key Insights & Recommendations";
+  }
+  
+  if (currentSection) {
+    pdf.setFont(pdfStyles.fonts.heading);
+    pdf.setFontSize(pdfStyles.sizes.body);
+    pdf.setTextColor(pdfStyles.colors.primary);
+    pdf.text(currentSection, pageData.pageWidth / 2, pageData.margin.top / 2, { align: 'center' });
+  }
+};
