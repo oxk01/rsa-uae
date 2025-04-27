@@ -1,4 +1,3 @@
-
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { pdfStyles } from '@/styles/pdfStyles';
@@ -41,21 +40,21 @@ export const renderContent = async (
     const sourceY = i * contentHeight * (canvas.height / imgHeight);
     const sourceHeight = destHeight * (canvas.height / imgHeight);
     
-    // Add image slice for current page
-    pdf.addImage(
-      imgData,
-      'PNG',
-      pageData.margin.left,
-      pageData.margin.top,
-      imgWidth,
-      destHeight,
-      undefined,
-      'FAST',
-      0,
-      sourceY,  // Source Y position
-      canvas.width,  // Source width
-      sourceHeight   // Source height
-    );
+    // Add image slice for current page - fix the parameters to match jsPDF's addImage method
+    pdf.addImage({
+      imageData: imgData,
+      format: 'PNG',
+      x: pageData.margin.left,
+      y: pageData.margin.top,
+      width: imgWidth,
+      height: destHeight,
+      compression: 'FAST',
+      rotation: 0,
+      srcX: 0,
+      srcY: sourceY,
+      srcWidth: canvas.width,
+      srcHeight: sourceHeight
+    });
     
     // Add footer with page number
     addFooter(pdf, pageData);
