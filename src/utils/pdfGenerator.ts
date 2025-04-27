@@ -55,19 +55,38 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
   addPageNumber(pageNumber);
   
   try {
-    // First make sure all the charts and visualizations are rendered
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // First ensure all charts and graphs are fully rendered
+    await new Promise(resolve => setTimeout(resolve, 1000));
     
-    // Take a screenshot of the entire report instead of processing section by section
+    // Take a high-quality screenshot of the report
     const canvas = await html2canvas(reportElement, {
-      scale: 2,
+      scale: 2, // Higher resolution
       logging: false,
       useCORS: true,
       allowTaint: true,
       width: reportElement.offsetWidth,
       height: reportElement.offsetHeight,
       windowWidth: reportElement.scrollWidth,
-      windowHeight: reportElement.scrollHeight
+      windowHeight: reportElement.scrollHeight,
+      onclone: (document) => {
+        // Enhance content for PDF capture
+        const clonedReport = document.querySelector('#sentiment-report');
+        if (clonedReport) {
+          // Ensure charts are visible
+          const charts = clonedReport.querySelectorAll('.recharts-wrapper');
+          charts.forEach((chart: Element) => {
+            (chart as HTMLElement).style.visibility = 'visible';
+            (chart as HTMLElement).style.height = '320px';
+          });
+          
+          // Enhance text readability
+          const textElements = clonedReport.querySelectorAll('p, h1, h2, h3, h4, h5, h6');
+          textElements.forEach((el: Element) => {
+            (el as HTMLElement).style.margin = '1em 0';
+            (el as HTMLElement).style.lineHeight = '1.5';
+          });
+        }
+      }
     });
     
     const imgData = canvas.toDataURL('image/png');
@@ -86,7 +105,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         addPageNumber(pageNumber);
       }
       
-      // Calculate the portion of the image to add to this page
+      // Calculate the portion of the image for this page
       const sourceY = pageNum * maxContentHeight * (canvas.height / imgHeight);
       const sourceHeight = Math.min(
         maxContentHeight * (canvas.height / imgHeight),
@@ -94,10 +113,9 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
       );
       const destHeight = Math.min(maxContentHeight, imgHeight - (pageNum * maxContentHeight));
       
-      // Use standard addImage method with proper parameters for clipping
       pdf.addImage({
         imageData: imgData,
-        format: 'PNG', 
+        format: 'PNG',
         x: margin.left,
         y: margin.top,
         width: imgWidth,
@@ -121,3 +139,4 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
     return pdf;
   }
 };
+
