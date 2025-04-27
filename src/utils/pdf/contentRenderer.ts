@@ -40,18 +40,19 @@ export const renderContent = async (
     const sourceY = i * contentHeight * (canvas.height / imgHeight);
     const sourceHeight = destHeight * (canvas.height / imgHeight);
     
-    // Add image slice for current page - using the standard parameters
-    pdf.addImage(
-      imgData,
-      'PNG',
-      pageData.margin.left,
-      pageData.margin.top,
-      imgWidth,
-      destHeight,
-      '',
-      'FAST',
-      0
-    );
+    // Fix the image slicing - use the correct method signature for jsPDF addImage 
+    // that supports source coordinates (1.5.3+ version)
+    pdf.addImage({
+      imageData: imgData,
+      format: 'PNG',
+      x: pageData.margin.left,
+      y: pageData.margin.top,
+      width: imgWidth,
+      height: destHeight,
+      alias: undefined,
+      compression: 'FAST',
+      rotation: 0
+    });
     
     // Add footer with page number
     addFooter(pdf, pageData);
