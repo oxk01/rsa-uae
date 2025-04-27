@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, LabelList, ResponsiveContainer } from 'recharts';
 import DashboardCard from '../DashboardCard';
@@ -21,7 +20,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
       <DashboardCard
         title="Aspect-based Sentiment Breakdown"
         icon={<BarChart3 className="h-4 w-4" />}
-        className={isDark ? "bg-gray-800/50" : ""}
+        className={isDark ? "bg-gray-900/95" : ""}
       >
         <div className="h-[500px]">
           <ResponsiveContainer width="100%" height="100%">
@@ -30,17 +29,15 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               margin={{ top: 20, right: 30, left: 20, bottom: 40 }}
               barSize={24}
             >
-              <CartesianGrid strokeDasharray="3 3" opacity={0.1} />
+              <CartesianGrid strokeDasharray="3 3" opacity={isDark ? 0.2 : 0.1} stroke={isDark ? "#374151" : "#e5e7eb"} />
               <XAxis 
                 dataKey="aspect" 
-                tick={{ fontSize: 12, fill: isDark ? "#d1d5db" : "#374151" }}
+                tick={{ fontSize: 12, fill: isDark ? "#e5e7eb" : "#374151" }}
                 angle={-30}
                 textAnchor="end"
                 height={60}
               />
-              <YAxis 
-                tick={{ fill: isDark ? "#d1d5db" : "#374151" }}
-              />
+              <YAxis tick={{ fill: isDark ? "#e5e7eb" : "#374151" }} />
               <Tooltip 
                 wrapperStyle={{ zIndex: 100 }} 
                 contentStyle={{
@@ -53,37 +50,37 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
               <Bar 
                 dataKey="positive" 
                 name="Positive" 
-                fill={colors.positive}
+                fill={colors.positive} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList 
                   dataKey="positive" 
                   position="top" 
-                  fill={isDark ? "#d1d5db" : "#000000"}
+                  fill={isDark ? "#e5e7eb" : "#000000"}
                 />
               </Bar>
               <Bar 
                 dataKey="neutral" 
                 name="Neutral" 
-                fill={colors.neutral}
+                fill={colors.neutral} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList 
                   dataKey="neutral" 
                   position="top"
-                  fill={isDark ? "#d1d5db" : "#000000"}
+                  fill={isDark ? "#e5e7eb" : "#000000"}
                 />
               </Bar>
               <Bar 
                 dataKey="negative" 
                 name="Negative" 
-                fill={colors.negative}
+                fill={colors.negative} 
                 radius={[4, 4, 0, 0]}
               >
                 <LabelList 
                   dataKey="negative" 
                   position="top"
-                  fill={isDark ? "#d1d5db" : "#000000"}
+                  fill={isDark ? "#e5e7eb" : "#000000"}
                 />
               </Bar>
             </BarChart>
@@ -94,7 +91,7 @@ const DetailedAnalysis: React.FC<DetailedAnalysisProps> = ({ aspectData, wordClo
       <DashboardCard
         title="Top Keywords Analysis"
         icon={<Hash className="h-4 w-4" />}
-        className={isDark ? "bg-gray-800/50" : ""}
+        className={isDark ? "bg-gray-900/95" : ""}
       >
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">

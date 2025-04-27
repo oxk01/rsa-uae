@@ -16,20 +16,20 @@ const DashboardCard = ({ title, icon, className = '', children }: DashboardCardP
 
   return (
     <Card className={`shadow-sm ${isDark 
-      ? 'bg-gray-800/50 border-gray-700 backdrop-blur-xl' 
+      ? 'bg-gray-900/90 border-gray-700 backdrop-blur-xl' 
       : 'bg-white border-gray-200'} ${className}`}
     >
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <CardTitle className={`text-sm font-medium flex items-center gap-2 ${
-            isDark ? 'text-gray-300' : 'text-muted-foreground'
+            isDark ? 'text-gray-100' : 'text-muted-foreground'
           }`}>
-            {icon && <span className={isDark ? "text-gray-400" : ""}>{icon}</span>}
+            {icon && <span className={isDark ? "text-gray-100" : ""}>{icon}</span>}
             {title}
           </CardTitle>
         </div>
       </CardHeader>
-      <CardContent className={isDark ? "text-gray-200" : ""}>{children}</CardContent>
+      <CardContent className={isDark ? "text-gray-100" : ""}>{children}</CardContent>
     </Card>
   );
 };
