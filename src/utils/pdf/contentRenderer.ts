@@ -39,24 +39,41 @@ export const renderContent = async (
     // Add section header based on current page
     addSectionHeader(pdf, pageData);
     
-    // Calculate source coordinates for image slicing
+    // Calculate source dimensions for current slice
     const sourceY = (i * contentHeight * canvas.height) / imgHeight;
     const sourceHeight = (destHeight * canvas.height) / imgHeight;
     
-    // Add image using correct parameters for slicing
-    pdf.addImage(imgData, 'PNG', 
-      pageData.margin.left,  // destination x
-      pageData.margin.top,   // destination y
-      imgWidth,             // destination width
-      destHeight,           // destination height
-      undefined,            // alias
-      'FAST',              // compression
-      0,                   // rotation
-      sourceY,             // source y
-      0,                   // source x
-      canvas.width,        // source width
-      sourceHeight         // source height
+    // Add image using the correct parameter signature for jsPDF
+    // addImage(imageData, format, x, y, width, height, alias, compression, rotation)
+    pdf.addImage(
+      imgData,                  // imageData
+      'PNG',                    // format
+      pageData.margin.left,     // x
+      pageData.margin.top,      // y
+      imgWidth,                 // width
+      destHeight,               // height
+      undefined,                // alias
+      'FAST',                   // compression
+      0                         // rotation
     );
+    
+    // Handle image slicing by first drawing the full image and then applying clipping
+    if (i > 0) {
+      // Save the current graphics state
+      pdf.saveGraphicsState();
+      
+      // Define a clipping region for the current page slice
+      pdf.rect(
+        pageData.margin.left, 
+        pageData.margin.top, 
+        imgWidth, 
+        destHeight
+      );
+      pdf.clip();
+      
+      // Restore the graphics state
+      pdf.restoreGraphicsState();
+    }
     
     // Add footer with page number
     addFooter(pdf, pageData);
