@@ -1,39 +1,327 @@
 
-/* Additional dark mode enhancements for charts and graphs */
-.dark .recharts-cartesian-grid line {
-  stroke: rgba(255, 255, 255, 0.1) !important;
+@import url('https://fonts.googleapis.com/css2?family=Times+New+Roman:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 222.2 84% 4.9%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    --primary: 210 92% 23%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 187 72% 33%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 222.2 84% 4.9%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+    
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+    
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+    
+    --primary: 217.2 91.2% 59.8%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+    
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+    
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 75.1%; /* Increased brightness for better visibility */
+    
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+    
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+    
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 60%; /* Brighter primary color for sidebar */
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
 }
 
-.dark .recharts-text {
-  fill: rgba(255, 255, 255, 0.7) !important;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Times New Roman', serif;
+  }
+  
+  /* Add smooth transitions when switching between themes */
+  .theme-transition {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
 }
 
-.dark .recharts-tooltip-wrapper {
-  background-color: rgba(31, 41, 55, 0.9) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  backdrop-filter: blur(10px);
+/* Enhanced dark mode styles for better visibility */
+.dark .text-gray-600,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  @apply text-gray-100;  /* Significantly brighter text */
 }
 
-.dark .recharts-tooltip-label {
-  color: white !important;
+/* Fix for the circular dependency - use direct color instead of apply */
+.dark .text-gray-500 {
+  color: rgb(229, 231, 235); /* This is the equivalent of text-gray-200 - much brighter */
 }
 
-.dark .recharts-legend-item-text {
-  color: rgba(255, 255, 255, 0.8) !important;
+.dark .text-gray-300 {
+  color: rgb(255, 255, 255); /* Pure white for better visibility */
 }
 
-.dark .recharts-surface {
-  background-color: transparent !important;
+.dark .text-gray-400 {
+  color: rgb(243, 244, 246); /* Very bright gray for better visibility */
 }
 
-.dark .recharts-bar-rectangle,
-.dark .recharts-line-dot,
-.dark .recharts-pie-sector {
-  transition: all 0.3s ease;
+.dark .bg-white {
+  @apply bg-gray-800;
 }
 
-.dark .recharts-bar-rectangle:hover,
-.dark .recharts-line-dot:hover,
-.dark .recharts-pie-sector:hover {
-  opacity: 0.8;
+.dark .bg-gray-50,
+.dark .bg-slate-50,
+.dark .bg-gray-100 {
+  @apply bg-gray-900;
+}
+
+.dark .border-gray-100,
+.dark .border-gray-200,
+.dark .border-gray-300 {
+  @apply border-gray-700;
+}
+
+/* High contrast buttons in dark mode */
+.dark .bg-blue-600 {
+  background-color: rgb(96, 165, 250); /* Much brighter blue */
+}
+
+.dark .bg-blue-700 {
+  background-color: rgb(59, 130, 246); /* Brighter blue */
+}
+
+.dark .bg-blue-800,
+.dark .bg-blue-900 {
+  background-color: rgb(59, 130, 246); /* Use bright blue to ensure visibility */
+}
+
+.dark .hover\:bg-blue-700:hover {
+  background-color: rgb(96, 165, 250);
+}
+
+.dark .hover\:bg-blue-800:hover {
+  background-color: rgb(59, 130, 246);
+}
+
+.dark .text-blue-600 {
+  @apply text-blue-300; /* Much brighter blue text */
+}
+
+/* Fix for link visibility in dark mode */
+.dark .hover\:text-gray-300:hover {
+  @apply text-white;
+}
+
+/* Enhanced link visibility in dark mode */
+.dark a:not(.no-dark-styling) {
+  @apply text-blue-300 hover:text-blue-200; /* Brighter links */
+}
+
+.dark .text-blue-900,
+.dark .text-blue-800,
+.dark .text-blue-700 {
+  @apply text-blue-300; /* Consistently bright blue text */
+}
+
+/* Better shadows for dark mode */
+.dark .shadow-md,
+.dark .shadow-sm,
+.dark .shadow-lg {
+  @apply shadow-gray-900;
+}
+
+/* Better button visibility in dark mode */
+.dark .btn,
+.dark button:not(.no-dark-styling) {
+  @apply border-gray-700 bg-gray-800 hover:bg-gray-700;
+}
+
+/* More readable paragraphs in dark mode */
+.dark p {
+  @apply text-gray-100; /* Significantly brighter text for paragraphs */
+}
+
+/* Ensure form elements are readable */
+.dark input, 
+.dark textarea, 
+.dark select {
+  @apply bg-gray-800 border-gray-700 text-gray-50;
+}
+
+/* Better code blocks and pre elements */
+.dark pre, 
+.dark code {
+  @apply bg-gray-900 text-gray-200;
+}
+
+/* General utility for enforcing dark text in light mode / light text in dark mode */
+.text-adaptive {
+  @apply text-gray-900 dark:text-gray-100;
+}
+
+/* Fix for all buttons to ensure they're visible */
+.dark button[class*="bg-blue"] {
+  background-color: rgb(59, 130, 246); /* bright blue */
+  color: white;
+}
+
+.dark button[class*="bg-blue"]:hover {
+  background-color: rgb(96, 165, 250); /* brighter blue on hover */
+}
+
+.dark button[class*="bg-gray"] {
+  @apply bg-gray-700 text-white;
+}
+
+.dark button[class*="bg-gray"]:hover {
+  @apply bg-gray-600;
+}
+
+/* Improved form fields visibility in dark mode */
+.dark label {
+  @apply text-gray-100; /* Brighten labels significantly */
+}
+
+/* Fix circular dependency in placeholder styling */
+.dark .placeholder-slate-400::placeholder {
+  color: rgb(209, 213, 219); /* Equivalent of text-gray-300 - brighter */
+}
+
+/* Enhanced chat button visibility */
+.fixed.bottom-6.right-6 {
+  @apply z-50 shadow-xl;
+}
+
+.dark .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 
+              0 4px 6px -4px rgba(0, 0, 0, 0.4);
+}
+
+/* Alerts and notifications better visibility in dark mode */
+.dark [role="alert"] {
+  @apply bg-gray-800 border-gray-700;
+}
+
+.dark .bg-blue-50 {
+  @apply bg-blue-900/40 border-blue-700;
+}
+
+/* Login/Signup form improvements */
+.dark .auth-form-container {
+  @apply bg-gray-800 shadow-xl border border-gray-700;
+}
+
+/* Chat interface dark mode enhancements */
+.dark .bg-slate-50 {
+  @apply bg-gray-850; /* Using a slightly darker shade for chat area */
+}
+
+/* Enhanced text input fields for dark mode */
+.dark input {
+  @apply text-white placeholder-gray-300;
+}
+
+/* Enhanced form elements for dark mode */
+.dark .form-group label,
+.dark form label {
+  @apply text-gray-100;
+}
+
+/* Navigation specific enhancements */
+.dark nav a,
+.dark header a {
+  @apply text-gray-100 hover:text-white;
+}
+
+/* Enhanced dark mode for scrollbars */
+.dark ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(75, 85, 99, 0.1);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+/* Enhance focus states in dark mode */
+.dark *:focus-visible {
+  outline-color: rgb(96, 165, 250); /* blue-400 */
+}
+
+/* Specific improvements for headings in dark mode */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  @apply text-white;
+}
+
+/* Ensure checkbox and radio labels are visible */
+.dark .checkbox-label,
+.dark .radio-label {
+  @apply text-gray-100;
 }

@@ -26,7 +26,7 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
     <div className="mt-8">
       <Tabs defaultValue="charts" className="w-full">
         <div className="mb-6 flex justify-between items-center">
-          <h2 className="text-xl font-semibold">Sentiment Analysis Insights</h2>
+          <h2 className="text-xl font-semibold text-gray-800">Sentiment Analysis Insights</h2>
           <TabsList>
             <TabsTrigger value="charts" onClick={() => setViewType('charts')}>
               <BarChart2 className="h-4 w-4 mr-2" />
@@ -68,3 +68,4 @@ const DashboardGraphs: React.FC<DashboardGraphsProps> = ({
 };
 
 export default DashboardGraphs;
+
