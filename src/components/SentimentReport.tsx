@@ -1,20 +1,15 @@
 
 import React from 'react';
-import SentimentScore from './Report/SentimentScore';
-import KeyPhrases from './Report/KeyPhrases';
-import AspectsAnalysis from './Report/AspectsAnalysis';
-import DetailedVisualizations from './Report/DetailedVisualizations';
-import MetricsExplanation from './Report/MetricsExplanation';
-import FrequentWords from './DashboardGraphs/FrequentWords';
-import SentimentDistribution from './DashboardGraphs/SentimentDistribution';
-import SentimentTrends from './DashboardGraphs/SentimentTrends';
-import MentionedAspects from './DashboardGraphs/MentionedAspects';
-import ModelEvaluation from './DashboardGraphs/ModelEvaluation';
-import HeatmapMatrix from './HeatmapMatrix';
-import { ChartBar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
 import { SentimentReportProps } from './types';
+import HeaderSection from './Report/HeaderSection';
+import InsightsSection from './Report/InsightsSection';
+import VisualizationsSection from './Report/VisualizationsSection';
+import MetricsExplanation from './Report/MetricsExplanation';
 
 const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const currentDate = new Date().toLocaleDateString('en-US', { 
@@ -30,33 +25,12 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     
   const sentiment = overallSentimentObj?.sentiment || 'neutral';
   const score = overallSentimentObj?.score || 50;
-  
+
   // Process key phrases data
-  const rawKeyPhrases = analysisData?.fileAnalysis?.keywords || [];
-  const keyPhrases = Array.isArray(rawKeyPhrases) 
-    ? rawKeyPhrases.map(phrase => {
-        if (typeof phrase === 'string') {
-          return { text: phrase, value: 1, sentiment: 'neutral' };
-        }
-        return {
-          text: phrase.text || '',
-          value: phrase.value || 1,
-          sentiment: phrase.sentiment || 'neutral'
-        };
-      })
-    : [];
+  const keyPhrases = processKeyPhrases(analysisData?.fileAnalysis?.keywords || []);
   
   // Process aspects data
-  const rawAspects = analysisData?.fileAnalysis?.aspects || [];
-  const aspects = rawAspects.map(aspect => ({
-    aspect: aspect.aspect || aspect.name || 'Unknown',
-    sentiment: aspect.sentiment || 'neutral',
-    confidence: aspect.confidence || Math.floor(Math.random() * 20) + 60, // 60-80% if not provided
-    context: aspect.context || '',
-    positive: aspect.positive,
-    neutral: aspect.neutral,
-    negative: aspect.negative
-  }));
+  const aspects = processAspects(analysisData?.fileAnalysis?.aspects || []);
   
   // Sentiment breakdown data
   const sentimentBreakdown = analysisData?.fileAnalysis?.sentimentBreakdown || {
@@ -66,85 +40,8 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   };
   
   // Process trend data
-  let trendData = [];
-  
-  if (analysisData?.fileAnalysis?.reviews && analysisData.fileAnalysis.reviews.length > 0) {
-    // Try to create trend data from reviews
-    trendData = analysisData.fileAnalysis.reviews
-      .filter(review => review.date)
-      .map(review => {
-        const reviewDate = review.date ? new Date(review.date) : new Date();
-        const formattedDate = isNaN(reviewDate.getTime()) 
-          ? 'Unknown Date' 
-          : reviewDate.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-          
-        let positive = 0, neutral = 0, negative = 0;
-        
-        if (review.sentimentLabel === 'positive' || 
-            (review.sentiment && review.sentiment.sentiment === 'positive')) {
-          positive = 100;
-        } else if (review.sentimentLabel === 'negative' || 
-                  (review.sentiment && review.sentiment.sentiment === 'negative')) {
-          negative = 100;
-        } else {
-          neutral = 100;
-        }
-        
-        return {
-          date: formattedDate,
-          positive,
-          neutral,
-          negative
-        };
-      });
-      
-    // Group by date and calculate averages
-    const dateGroups = {};
-    trendData.forEach(item => {
-      if (!dateGroups[item.date]) {
-        dateGroups[item.date] = { 
-          positive: 0, 
-          neutral: 0, 
-          negative: 0,
-          count: 0
-        };
-      }
-      
-      dateGroups[item.date].positive += item.positive;
-      dateGroups[item.date].neutral += item.neutral;
-      dateGroups[item.date].negative += item.negative;
-      dateGroups[item.date].count += 1;
-    });
-    
-    // Convert back to array and calculate averages
-    trendData = Object.keys(dateGroups).map(date => ({
-      date,
-      positive: Math.round(dateGroups[date].positive / dateGroups[date].count),
-      neutral: Math.round(dateGroups[date].neutral / dateGroups[date].count),
-      negative: Math.round(dateGroups[date].negative / dateGroups[date].count)
-    }));
-  }
-  
-  // Add sample data if we don't have enough data points
-  if (trendData.length < 3) {
-    const baseDate = new Date();
-    for (let i = 0; i < 5; i++) {
-      const date = new Date();
-      date.setDate(baseDate.getDate() - (i * 5));
-      
-      trendData.push({
-        date: date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}),
-        positive: Math.floor(Math.random() * 40) + 30,
-        neutral: Math.floor(Math.random() * 30) + 10,
-        negative: Math.floor(Math.random() * 20) + 5
-      });
-    }
-  }
+  const trendData = processTrendData(analysisData?.fileAnalysis?.reviews || []);
 
-  // Generate insights and recommendations
-  const insights = generateInsights(analysisData);
-  const recommendations = generateRecommendations(analysisData);
-  
   // Distribution data for pie chart
   const distributionData = [
     { name: 'Positive', value: sentimentBreakdown.positive },
@@ -167,7 +64,7 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     actualNegative: sentimentBreakdown.negative,
   };
 
-  // Word cloud data - Fixed to use text and value properties according to KeywordData type
+  // Word cloud data
   const wordCloudData = keyPhrases.map(phrase => ({
     text: phrase.text,
     value: phrase.value,
@@ -177,81 +74,121 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   // Enhanced aspect data for MentionedAspects component
   const mentionedAspectData = aspects.map(aspect => ({
     aspect: aspect.aspect,
-    name: aspect.aspect, // Adding name as a fallback for MentionedAspects component
-    count: Math.floor(Math.random() * 50) + 10, // Random count between 10-60 if not provided
+    name: aspect.aspect,
+    count: Math.floor(Math.random() * 50) + 10,
     sentiment: aspect.sentiment
   }));
 
+  // Generate insights and recommendations
+  const insights = generateInsights(analysisData);
+  const recommendations = generateRecommendations(analysisData);
+
+  const hasData = analysisData && Object.keys(analysisData).length > 0;
+
   return (
     <div className="p-6 space-y-6" id="sentiment-report">
-      <div className="text-center mb-8" id="report-header">
-        <h1 className="text-2xl font-bold mb-2">Comprehensive Sentiment Analysis Report</h1>
-        <p className="text-gray-500">Generated on {currentDate}</p>
-      </div>
-
-      <MetricsExplanation 
-        accuracyScore={analysisData?.fileAnalysis?.accuracyScore || 70}
-        totalReviews={analysisData?.fileAnalysis?.totalReviews || 0}
-        sentimentBreakdown={sentimentBreakdown}
+      <HeaderSection 
+        currentDate={currentDate}
+        hasData={hasData}
+        onExport={() => {/* Export functionality */}}
       />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <SentimentScore 
-          sentiment={sentiment}
-          score={score}
-          breakdown={sentimentBreakdown}
-        />
-        <KeyPhrases phrases={keyPhrases} sentiment={sentiment} />
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <SentimentDistribution data={distributionData} />
-        <HeatmapMatrix data={heatmapData} />
-      </div>
-
-      <AspectsAnalysis aspects={aspects} />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <MentionedAspects data={mentionedAspectData} />
-        <ModelEvaluation data={modelEvalData} />
-      </div>
-
-      <DetailedVisualizations 
-        aspects={aspects}
-        trendData={trendData}
-      />
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <SentimentTrends data={trendData} />
-        <FrequentWords data={wordCloudData} />
-      </div>
-
-      <Card className="p-4 mb-6">
-        <h3 className="font-semibold mb-2 flex items-center">
-          <ChartBar className="h-4 w-4 mr-2" />
-          Key Insights & Recommendations
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Insights:</h4>
-            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-              {insights.map((insight, idx) => (
-                <li key={idx}>{insight}</li>
-              ))}
-            </ul>
+      {!hasData ? (
+        <Card className="mb-6 border-amber-200 bg-amber-50 dark:bg-amber-950 dark:border-amber-800">
+          <div className="p-4 flex flex-col items-center gap-3">
+            <AlertCircle className="h-5 w-5 text-amber-600 dark:text-amber-500" />
+            <p className="text-amber-700 dark:text-amber-300 mb-4">
+              No analysis data available. Please run an analysis to see insights here.
+            </p>
+            <Button asChild className="bg-blue-600 hover:bg-blue-700">
+              <Link to="/demo">Analyze New Reviews</Link>
+            </Button>
           </div>
-          <div>
-            <h4 className="text-sm font-medium text-gray-700 mb-2">Recommendations:</h4>
-            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-600">
-              {recommendations.map((recommendation, idx) => (
-                <li key={idx}>{recommendation}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      ) : (
+        <>
+          <MetricsExplanation 
+            accuracyScore={analysisData?.fileAnalysis?.accuracyScore || 70}
+            totalReviews={analysisData?.fileAnalysis?.totalReviews || 0}
+            sentimentBreakdown={sentimentBreakdown}
+          />
+
+          <VisualizationsSection 
+            distributionData={distributionData}
+            trendData={trendData}
+            mentionedAspectsData={mentionedAspectData}
+            wordCloudData={wordCloudData}
+            modelEvalData={modelEvalData}
+            heatmapData={heatmapData}
+          />
+
+          <InsightsSection 
+            insights={insights}
+            recommendations={recommendations}
+          />
+        </>
+      )}
     </div>
   );
+};
+
+// Helper functions
+const processKeyPhrases = (rawKeyPhrases: any[]) => {
+  return Array.isArray(rawKeyPhrases) 
+    ? rawKeyPhrases.map(phrase => {
+        if (typeof phrase === 'string') {
+          return { text: phrase, value: 1, sentiment: 'neutral' };
+        }
+        return {
+          text: phrase.text || '',
+          value: phrase.value || 1,
+          sentiment: phrase.sentiment || 'neutral'
+        };
+      })
+    : [];
+};
+
+const processAspects = (rawAspects: any[]) => {
+  return rawAspects.map(aspect => ({
+    aspect: aspect.aspect || aspect.name || 'Unknown',
+    sentiment: aspect.sentiment || 'neutral',
+    confidence: aspect.confidence || Math.floor(Math.random() * 20) + 60,
+    context: aspect.context || '',
+    positive: aspect.positive,
+    neutral: aspect.neutral,
+    negative: aspect.negative
+  }));
+};
+
+const processTrendData = (reviews: any[]) => {
+  if (!reviews.length) return [];
+  
+  const reviewsByDate: Record<string, any> = {};
+  
+  reviews.forEach(review => {
+    const date = review.date ? new Date(review.date) : new Date();
+    const formattedDate = isNaN(date.getTime()) 
+      ? 'Unknown Date' 
+      : date.toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+      
+    if (!reviewsByDate[formattedDate]) {
+      reviewsByDate[formattedDate] = { positive: 0, neutral: 0, negative: 0, count: 0 };
+    }
+    
+    reviewsByDate[formattedDate].count++;
+    const sentiment = review.sentimentLabel || 
+      (review.sentiment && review.sentiment.sentiment) || 'neutral';
+    reviewsByDate[formattedDate][sentiment.toLowerCase()]++;
+  });
+  
+  return Object.entries(reviewsByDate)
+    .map(([date, data]: [string, any]) => ({
+      date,
+      positive: (data.positive / data.count) * 100,
+      neutral: (data.neutral / data.count) * 100,
+      negative: (data.negative / data.count) * 100
+    }))
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 };
 
 export default SentimentReport;
