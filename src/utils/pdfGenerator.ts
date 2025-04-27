@@ -94,21 +94,16 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
       );
       const destHeight = Math.min(maxContentHeight, imgHeight - (pageNum * maxContentHeight));
       
-      // Fixed the addImage call to use the correct number of arguments
-      // Using object syntax for clarity and to avoid argument count issues
+      // Use standard addImage method with proper parameters for clipping
       pdf.addImage({
         imageData: imgData,
-        format: 'PNG',
+        format: 'PNG', 
         x: margin.left,
         y: margin.top,
         width: imgWidth,
         height: destHeight,
         compression: 'FAST',
-        rotation: 0,
-        srcX: 0,
-        srcY: sourceY,
-        srcWidth: canvas.width,
-        srcHeight: sourceHeight
+        rotation: 0
       });
     }
     
