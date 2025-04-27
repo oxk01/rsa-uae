@@ -4,6 +4,7 @@ import { PDFGeneratorOptions } from './pdf/types';
 import { setupPDFDocument, addPageNumber } from './pdf/pageSetup';
 import { addCoverPage } from './pdf/coverPage';
 import { renderContent } from './pdf/contentRenderer';
+import { pdfStyles } from '@/styles/pdfStyles';  // Add this import
 
 export const generatePDF = async (reportElement: HTMLElement, options: PDFGeneratorOptions) => {
   if (!reportElement) return null;
@@ -51,3 +52,4 @@ const handleError = (): jsPDF => {
   
   return pdf;
 };
+
