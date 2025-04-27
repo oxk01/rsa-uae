@@ -1,8 +1,9 @@
-
 import React from 'react';
 import SentimentScore from './Report/SentimentScore';
 import KeyPhrases from './Report/KeyPhrases';
 import AspectsAnalysis from './Report/AspectsAnalysis';
+import DetailedVisualizations from './Report/DetailedVisualizations';
+import MetricsExplanation from './Report/MetricsExplanation';
 import { ChartBar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
@@ -15,7 +16,6 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     day: 'numeric' 
   });
 
-  // Extract sentiment data with proper type checking
   const overallSentimentObj = typeof analysisData?.overallSentiment === 'object' 
     ? analysisData?.overallSentiment 
     : { sentiment: 'neutral', score: 50 };
@@ -30,11 +30,16 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
     negative: 34
   };
 
-  // Generate insights and recommendations
+  const trendData = analysisData?.fileAnalysis?.reviews?.map(review => ({
+    date: new Date(review.date || '').toLocaleDateString(),
+    positive: review.sentiment?.sentiment === 'positive' ? 100 : 0,
+    neutral: review.sentiment?.sentiment === 'neutral' ? 100 : 0,
+    negative: review.sentiment?.sentiment === 'negative' ? 100 : 0
+  })) || [];
+
   const insights = generateInsights(analysisData);
   const recommendations = generateRecommendations(analysisData);
 
-  // Convert AspectData[] to AspectProps[] by ensuring required properties
   const formattedAspects = aspects.map(aspect => ({
     aspect: aspect.aspect || aspect.name || 'Unknown',
     sentiment: aspect.sentiment || 'neutral',
@@ -45,9 +50,15 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   return (
     <div className="p-6 space-y-6" id="sentiment-report">
       <div className="text-center mb-8" id="report-header">
-        <h1 className="text-2xl font-bold mb-2">Sentiment Analysis Report</h1>
+        <h1 className="text-2xl font-bold mb-2">Comprehensive Sentiment Analysis Report</h1>
         <p className="text-gray-500">Generated on {currentDate}</p>
       </div>
+
+      <MetricsExplanation 
+        accuracyScore={analysisData?.fileAnalysis?.accuracyScore || 0}
+        totalReviews={analysisData?.fileAnalysis?.totalReviews || 0}
+        sentimentBreakdown={sentimentBreakdown}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         <SentimentScore 
@@ -59,6 +70,11 @@ const SentimentReport = ({ analysisData }: SentimentReportProps) => {
       </div>
 
       <AspectsAnalysis aspects={formattedAspects} />
+
+      <DetailedVisualizations 
+        aspects={formattedAspects}
+        trendData={trendData}
+      />
 
       <Card className="p-4 mb-6">
         <h3 className="font-semibold mb-2 flex items-center">
