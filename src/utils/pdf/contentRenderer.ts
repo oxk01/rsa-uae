@@ -13,13 +13,16 @@ export const renderContent = async (
   // Apply enhanced styles before capturing
   enhanceStyles(reportElement);
   
+  // Wait for all charts and visualizations to render
+  await new Promise(resolve => setTimeout(resolve, 2000));
+  
   const canvas = await captureContent(reportElement);
   const imgData = canvas.toDataURL('image/png');
   
   const imgWidth = pageData.contentWidth;
   const imgHeight = (canvas.height * imgWidth) / canvas.width;
   
-  // Calculate number of pages needed
+  // Calculate number of pages needed for content
   const contentHeight = pageData.maxContentHeight - pageData.margin.top;
   const pagesNeeded = Math.ceil(imgHeight / contentHeight);
   
@@ -36,23 +39,24 @@ export const renderContent = async (
     // Add section header based on current page
     addSectionHeader(pdf, pageData);
     
-    // Determine source Y position on the canvas for current page slice
-    const sourceY = i * contentHeight * (canvas.height / imgHeight);
-    const sourceHeight = destHeight * (canvas.height / imgHeight);
+    // Calculate source coordinates for image slicing
+    const sourceY = (i * contentHeight * canvas.height) / imgHeight;
+    const sourceHeight = (destHeight * canvas.height) / imgHeight;
     
-    // Fix the image slicing - use the correct method signature for jsPDF addImage 
-    // that supports source coordinates (1.5.3+ version)
-    pdf.addImage({
-      imageData: imgData,
-      format: 'PNG',
-      x: pageData.margin.left,
-      y: pageData.margin.top,
-      width: imgWidth,
-      height: destHeight,
-      alias: undefined,
-      compression: 'FAST',
-      rotation: 0
-    });
+    // Add image using correct parameters for slicing
+    pdf.addImage(imgData, 'PNG', 
+      pageData.margin.left,  // destination x
+      pageData.margin.top,   // destination y
+      imgWidth,             // destination width
+      destHeight,           // destination height
+      undefined,            // alias
+      'FAST',              // compression
+      0,                   // rotation
+      sourceY,             // source y
+      0,                   // source x
+      canvas.width,        // source width
+      sourceHeight         // source height
+    );
     
     // Add footer with page number
     addFooter(pdf, pageData);
@@ -200,17 +204,19 @@ const addSectionTitles = (el: HTMLElement) => {
 };
 
 const captureContent = async (element: HTMLElement): Promise<HTMLCanvasElement> => {
-  // Wait for visualizations to render
-  await new Promise(resolve => setTimeout(resolve, 1500));
+  // Wait for visualizations to render fully
+  await new Promise(resolve => setTimeout(resolve, 2000));
   
   // Create enhanced canvas with high quality
   return html2canvas(element, {
-    scale: 2, // Higher quality
+    scale: 2,           // Higher quality
     logging: false,
     useCORS: true,
     allowTaint: true,
     width: element.offsetWidth,
-    height: element.offsetHeight
+    height: element.offsetHeight,
+    windowWidth: element.offsetWidth,
+    windowHeight: element.offsetHeight
   });
 };
 
