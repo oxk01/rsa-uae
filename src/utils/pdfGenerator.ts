@@ -1,4 +1,3 @@
-
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { pdfStyles } from '@/styles/pdfStyles';
@@ -320,7 +319,7 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         pdf.text(currentSection, pageWidth / 2, margin.top / 2, { align: 'center' });
       }
       
-      // Add image slice for current page
+      // Add image slice for current page - Fix here: use the correct properties for addImage
       pdf.addImage({
         imageData: imgData,
         format: 'PNG',
@@ -328,10 +327,6 @@ export const generatePDF = async (reportElement: HTMLElement, options: PDFGenera
         y: margin.top,
         width: imgWidth,
         height: destHeight,
-        srcX: 0,
-        srcY: sourceY,
-        srcWidth: canvas.width,
-        srcHeight: sourceHeight
       });
       
       // Add page number
