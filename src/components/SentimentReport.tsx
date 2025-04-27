@@ -5,10 +5,8 @@ import KeyPhrases from './Report/KeyPhrases';
 import AspectsAnalysis from './Report/AspectsAnalysis';
 import { ChartBar } from 'lucide-react';
 import { Card } from '@/components/ui/card';
-
-interface SentimentReportProps {
-  analysisData: any;
-}
+import { generateInsights, generateRecommendations } from '@/utils/reportUtils';
+import { SentimentReportProps } from './types';
 
 const SentimentReport = ({ analysisData }: SentimentReportProps) => {
   const currentDate = new Date().toLocaleDateString('en-US', { 
