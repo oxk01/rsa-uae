@@ -32,23 +32,23 @@ const HeatmapMatrix = ({ data }: HeatmapMatrixProps) => {
           <div className="text-center font-medium text-sm text-gray-600">Predicted Negative</div>
           
           <div className="font-medium text-sm text-gray-600 self-center">Actual Positive</div>
-          <div className={`${isDark ? "bg-green-100" : "bg-green-100"} rounded-lg p-4 text-center`}>
-            <div className="font-bold text-green-700">{data.predictedPositive}%</div>
-            <div className="text-xs text-green-600">True Positive</div>
+          <div className={`bg-green-200 rounded-lg p-4 text-center`}>
+            <div className="font-bold text-green-800">{data.predictedPositive}%</div>
+            <div className="text-xs text-green-800">True Positive</div>
           </div>
-          <div className={`${isDark ? "bg-red-100" : "bg-red-100"} rounded-lg p-4 text-center`}>
-            <div className="font-bold text-red-700">{data.predictedNegative}%</div>
-            <div className="text-xs text-red-600">False Negative</div>
+          <div className={`bg-red-200 rounded-lg p-4 text-center`}>
+            <div className="font-bold text-red-800">{data.predictedNegative}%</div>
+            <div className="text-xs text-red-800">False Negative</div>
           </div>
           
           <div className="font-medium text-sm text-gray-600 self-center">Actual Negative</div>
-          <div className={`${isDark ? "bg-red-100" : "bg-red-100"} rounded-lg p-4 text-center`}>
-            <div className="font-bold text-red-700">{data.actualPositive}%</div>
-            <div className="text-xs text-red-600">False Positive</div>
+          <div className={`bg-red-200 rounded-lg p-4 text-center`}>
+            <div className="font-bold text-red-800">{data.actualPositive}%</div>
+            <div className="text-xs text-red-800">False Positive</div>
           </div>
-          <div className={`${isDark ? "bg-green-100" : "bg-green-100"} rounded-lg p-4 text-center`}>
-            <div className="font-bold text-green-700">{data.actualNegative}%</div>
-            <div className="text-xs text-green-600">True Negative</div>
+          <div className={`bg-green-200 rounded-lg p-4 text-center`}>
+            <div className="font-bold text-green-800">{data.actualNegative}%</div>
+            <div className="text-xs text-green-800">True Negative</div>
           </div>
         </div>
       </div>
