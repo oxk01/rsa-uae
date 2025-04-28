@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardCard from './DashboardCard';
@@ -11,6 +12,28 @@ interface SentimentTrendChartProps {
     negative: number;
   }>;
 }
+
+// Format timestamps for chart display
+const formatTimestamp = (timestamp: string | number) => {
+  if (typeof timestamp === 'number') {
+    // If it's a unix timestamp (in seconds)
+    try {
+      return format(fromUnixTime(timestamp), 'MMM d, yyyy');
+    } catch (e) {
+      console.error("Error formatting unix timestamp:", e);
+      return timestamp.toString();
+    }
+  } else if (timestamp && timestamp.length > 0) {
+    // If it's a string date format
+    try {
+      return format(new Date(timestamp), 'MMM d, yyyy');
+    } catch (e) {
+      console.error("Error formatting date string:", e);
+      return timestamp;
+    }
+  }
+  return 'Unknown date';
+};
 
 const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
   const hasData = data && data.length > 0;

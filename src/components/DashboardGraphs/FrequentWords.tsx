@@ -1,3 +1,4 @@
+
 import React from 'react';
 import DashboardCard from '../DashboardCard';
 import { Hash } from 'lucide-react';
@@ -17,10 +18,27 @@ const getWordSize = (count: number, max: number, min: number) => {
   return minSize + ((count - min) / (max - min)) * (maxSize - minSize);
 };
 
+const getSentimentColor = (sentiment: string) => {
+  switch (sentiment.toLowerCase()) {
+    case 'positive': return '#10b981';
+    case 'negative': return '#ef4444';
+    default: return '#6b7280';
+  }
+};
+
 const FrequentWords: React.FC<FrequentWordsProps> = ({ data }) => {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
   const colors = getThemeColors(isDark);
+  
+  // Calculate min and max counts for word sizing
+  let minCount = 0;
+  let maxCount = 0;
+  
+  if (data.length > 0) {
+    minCount = Math.min(...data.map(item => item.value));
+    maxCount = Math.max(...data.map(item => item.value));
+  }
   
   return (
     <DashboardCard
