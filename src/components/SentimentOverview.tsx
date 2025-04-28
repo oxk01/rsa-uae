@@ -20,6 +20,7 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
     <DashboardCard 
       title="Overall Sentiment Distribution" 
       className="bg-gradient-to-br from-white via-gray-50 to-gray-100 border-blue-100"
+      isChart={true}
     >
       {!hasData ? (
         <div className="bg-amber-50 border border-amber-200 rounded p-2 mb-3 flex items-center gap-2 text-sm text-amber-700">
@@ -60,7 +61,8 @@ const SentimentOverview = ({ data }: SentimentOverviewProps) => {
                   border: '1px solid #e5e7eb',
                   padding: '12px',
                   fontSize: '12px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  color: '#111827'
                 }}
               />
             </PieChart>
