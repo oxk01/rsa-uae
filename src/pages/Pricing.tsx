@@ -59,7 +59,7 @@ const PricingPlan = () => {
     {
       name: "Basic",
       description: "Perfect for small businesses or startups with minimal data needs",
-      price: { monthly: 199, annually: 179 },
+      price: { monthly: 49, annually: 44 },
       highlight: false,
       features: [
         "Up to 5,000 reviews per month",
@@ -75,7 +75,7 @@ const PricingPlan = () => {
     {
       name: "Standard",
       description: "For medium-sized businesses handling moderate data volumes",
-      price: { monthly: 499, annually: 449 },
+      price: { monthly: 99, annually: 89 },
       highlight: true,
       features: [
         "Up to 15,000 reviews per month",
@@ -92,7 +92,7 @@ const PricingPlan = () => {
     {
       name: "Premium",
       description: "For larger enterprises with high volumes of customer reviews",
-      price: { monthly: 999, annually: 899 },
+      price: { monthly: 199, annually: 179 },
       highlight: false,
       features: [
         "Up to 50,000 reviews per month",
