@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardCard from '../DashboardCard';
 import { Hash } from 'lucide-react';
@@ -23,25 +22,11 @@ const FrequentWords: React.FC<FrequentWordsProps> = ({ data }) => {
   const isDark = theme === 'dark';
   const colors = getThemeColors(isDark);
   
-  let minCount = 0, maxCount = 0;
-  
-  if (data.length > 0) {
-    minCount = Math.min(...data.map(item => item.value));
-    maxCount = Math.max(...data.map(item => item.value));
-  }
-
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment.toLowerCase()) {
-      case 'positive': return colors.positive;
-      case 'negative': return colors.negative;
-      default: return colors.neutral;
-    }
-  };
-
   return (
     <DashboardCard
       title="Frequent Words in Reviews"
       icon={<Hash className="h-4 w-4" />}
+      isChart={true}
     >
       <div className="h-[320px] relative overflow-hidden">
         <div className="absolute inset-0 flex flex-wrap justify-center items-center p-6">

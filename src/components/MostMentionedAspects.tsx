@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, LabelList } from 'recharts';
 import DashboardCard from './DashboardCard';
@@ -39,7 +38,8 @@ const MostMentionedAspects = ({ data = [] }: MostMentionedAspectsProps) => {
   return (
     <DashboardCard 
       title="Aspect-Based Sentiment Analysis"
-      className="bg-gradient-to-br from-white via-amber-50/30 to-amber-100/20 border-amber-100"
+      className="border-amber-100"
+      isChart={true}
     >
       {!hasData ? (
         <div className="h-[260px] flex items-center justify-center text-gray-400">

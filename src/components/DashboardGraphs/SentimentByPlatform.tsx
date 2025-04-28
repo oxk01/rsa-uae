@@ -19,6 +19,7 @@ const SentimentByPlatform: React.FC<SentimentByPlatformProps> = ({ data }) => {
     <DashboardCard
       title="Sentiment by Platform/Source"
       icon={<BarChart3 className="h-4 w-4" />}
+      isChart={true}
     >
       <div className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">

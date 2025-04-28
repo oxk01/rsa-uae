@@ -13,6 +13,7 @@ const ModelEvaluation: React.FC<ModelEvaluationProps> = ({ data }) => {
     <DashboardCard
       title="Model Evaluation"
       icon={<Activity className="h-4 w-4" />}
+      isChart={true}
     >
       <div className="h-[320px]">
         <ResponsiveContainer width="100%" height="100%">
@@ -70,4 +71,3 @@ const ModelEvaluation: React.FC<ModelEvaluationProps> = ({ data }) => {
 };
 
 export default ModelEvaluation;
-

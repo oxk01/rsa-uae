@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Cell, LabelList, ResponsiveContainer } from 'recharts';
 import { getThemeColors } from './constants';
@@ -15,21 +14,21 @@ const MentionedAspects: React.FC<MentionedAspectsProps> = ({ data }) => {
   const isDark = theme === 'dark';
   const colors = getThemeColors(isDark);
   
-  // Process data to ensure it has the required fields
   const processedData = data
-    .filter(aspect => aspect.aspect || aspect.name) // Ensure we have a valid aspect name
+    .filter(aspect => aspect.aspect || aspect.name)
     .map(aspect => ({
       aspect: aspect.aspect || aspect.name,
-      count: aspect.count || Math.floor(Math.random() * 50) + 10, // Add random count if not present
+      count: aspect.count || Math.floor(Math.random() * 50) + 10,
       displayCount: `${aspect.count || Math.floor(Math.random() * 50) + 10}`
     }))
-    .sort((a, b) => b.count - a.count) // Sort by count (highest first)
-    .slice(0, 5); // Take top 5
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 5);
 
   return (
     <DashboardCard
       title="Most Mentioned Aspects"
       icon={<BarChart2 className="h-4 w-4" />}
+      isChart={true}
     >
       <div className="h-[400px]">
         <ResponsiveContainer width="100%" height="100%">

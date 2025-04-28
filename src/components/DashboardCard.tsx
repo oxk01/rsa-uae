@@ -19,7 +19,7 @@ const DashboardCard = ({ title, icon, className = '', children, isChart = false 
     <Card className={`shadow-sm ${
       isDark 
         ? isChart 
-          ? 'bg-white border-gray-700'  // White background for charts in dark mode
+          ? 'bg-white border-gray-700 text-gray-900'  // White background and dark text for all charts in dark mode
           : 'bg-gray-900/90 border-gray-700 backdrop-blur-xl'
         : 'bg-white border-gray-200'
       } ${className}`}

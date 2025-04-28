@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import DashboardCard from './DashboardCard';
@@ -13,26 +12,14 @@ interface SentimentTrendChartProps {
   }>;
 }
 
-const formatTimestamp = (timestamp: string | number): string => {
-  try {
-    // Convert string to number if needed
-    const numericTimestamp = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
-    // Convert seconds to milliseconds if needed (Unix timestamps are in seconds)
-    const timestampInMs = numericTimestamp > 9999999999 ? numericTimestamp : numericTimestamp * 1000;
-    return format(fromUnixTime(timestampInMs / 1000), 'MMM d, yyyy');
-  } catch (error) {
-    console.error("Error formatting timestamp:", error, "for input:", timestamp);
-    return String(timestamp);
-  }
-};
-
 const SentimentTrendChart = ({ data = [] }: SentimentTrendChartProps) => {
   const hasData = data && data.length > 0;
   
   return (
     <DashboardCard 
       title="Sentiment Trends (Last 6 Months)" 
-      className="bg-gradient-to-br from-white via-blue-50/30 to-blue-100/20 border-blue-100"
+      className="border-blue-100"
+      isChart={true}
     >
       {!hasData ? (
         <div className="h-[260px] flex items-center justify-center text-gray-400">
